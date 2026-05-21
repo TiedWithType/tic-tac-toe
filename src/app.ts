@@ -1,10 +1,14 @@
 const tiles = document.querySelectorAll<HTMLElement>("[data-tile]");
+const player1 = document.querySelector<HTMLElement>("#player_1")!;
+const player2 = document.querySelector<HTMLElement>("#player_2")!;
 const player1Result = document.querySelector<HTMLElement>("#player_1 .result")!;
 const player2Result = document.querySelector<HTMLElement>("#player_2 .result")!;
 const resetBtn = document.querySelector<HTMLButtonElement>("#reset")!;
 
 let current = "circle";
 let gameOver = false;
+
+updateActivePlayer();
 
 const score = {
   circle: 0,
@@ -43,7 +47,10 @@ const wins = [
       }
     }
 
-    current = current === "circle" ? "cross" : "circle";
+    if (!gameOver) {
+      current = current === "circle" ? "cross" : "circle";
+      updateActivePlayer();
+    }
   });
 });
 
@@ -54,8 +61,9 @@ resetBtn.addEventListener("click", () => {
     tile.classList.remove("winner");
   });
 
-  current = "circle";
+  current = current === "circle" ? "cross" : "circle";;
   gameOver = false;
+  updateActivePlayer();
 });
 
 function checkWinner() {
@@ -89,4 +97,9 @@ function updateScore(winner: string) {
 
   player1Result.textContent = String(score.circle);
   player2Result.textContent = String(score.cross);
+}
+
+function updateActivePlayer() {
+  player1.classList.toggle("active", current === "circle" && !gameOver);
+  player2.classList.toggle("active", current === "cross" && !gameOver);
 }
