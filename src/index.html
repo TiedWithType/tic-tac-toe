@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Quicksand:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="./app.ts"></script>
+    <title>Tic Tac Toe</title>
+  </head>
+  <body>
+    <header>
+      <section id="player_1">
+        <span class="name">player 1 (O)</span>
+        <span class="result">0</span>
+      </section>
+      <span class="divider">:</span>
+      <section id="player_2">
+        <span class="name">player 2 (X)</span>
+        <span class="result">0</span>
+      </section>
+    </header>
+    <section id="board">
+      <figure data-tile="tile_1"></figure>
+      <figure data-tile="tile_2"></figure>
+      <figure data-tile="tile_3"></figure>
+      <figure data-tile="tile_4"></figure>
+      <figure data-tile="tile_5"></figure>
+      <figure data-tile="tile_6"></figure>
+      <figure data-tile="tile_7"></figure>
+      <figure data-tile="tile_8"></figure>
+      <figure data-tile="tile_9"></figure>
+    </section>
+    <button id="reset">new round</button>
+  </body>
+</html>

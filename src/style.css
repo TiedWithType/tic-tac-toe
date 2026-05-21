@@ -1,0 +1,144 @@
+:root {
+  --circle-color: #2196f3;
+  --cross-color: #f44336;
+  --bg: #16161a;
+  --surface: #1e1e24;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --text: #e8e8f0;
+  --text-muted: rgba(232, 232, 240, 0.45);
+  --winner-bg: var(--text);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Quicksand", sans-serif;
+  transition: cubic-bezier(0.19, 1, 0.22, 1) 0.5s;
+}
+
+html,
+body {
+  block-size: 100dvh;
+  inline-size: 100dvw;
+  display: grid;
+  place-items: center;
+  place-content: center;
+  gap: 2rem;
+  color: var(--text);
+  background-color: var(--bg);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+
+  section {
+    display: grid;
+    place-items: center;
+    gap: 0.5rem;
+
+    .name {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .result {
+      font-size: 2.5rem;
+      font-weight: 500;
+
+      line-height: 1;
+    }
+
+    &#player_1 .result {
+      color: var(--circle-color);
+    }
+
+    &#player_2 .result {
+      color: var(--cross-color);
+    }
+  }
+
+  .divider {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+
+    align-self: flex-end;
+    padding-bottom: 0.25rem;
+  }
+}
+
+#board {
+  inline-size: 300px;
+  block-size: 300px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  place-content: center;
+  gap: 0.5rem;
+
+  figure {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    background: var(--surface);
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+
+    &:hover:not(:has(img), .winner) {
+      border-color: var(--border-hover);
+      background: #24242c;
+    }
+
+    &.winner {
+      background: var(--winner-bg);
+    }
+  }
+}
+
+img {
+  animation: anim cubic-bezier(0.19, 1, 0.22, 1) 0.5s;
+}
+
+@keyframes anim {
+  from {
+    transform: scale(0) rotate(-15deg);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+#reset {
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover {
+    color: var(--text);
+    border-color: var(--border-hover);
+    background: var(--surface);
+  }
+}
