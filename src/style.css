@@ -34,8 +34,8 @@ body {
 
 header {
   display: flex;
-  align-items: center;
-  gap: 2rem;
+  place-content: space-between;
+  inline-size: 300px;
 
   section {
     display: grid;
@@ -47,6 +47,9 @@ header {
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--text-muted);
+      background: var(--border);
+      padding: 0.5rem;
+      border-radius: 12px;
     }
 
     .result {
@@ -134,7 +137,15 @@ img {
   transition:
     color 0.15s,
     border-color 0.15s,
-    background 0.15s;
+    background 0.15s visibilty 0.3s;
+
+  visibility: hidden;
+  transform: scale(0);
+
+  &.show {
+    visibility: visible;
+    transform: scale(1);
+  }
 
   &:hover {
     color: var(--text);

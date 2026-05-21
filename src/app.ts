@@ -37,7 +37,10 @@ const wins = [
 
     if (!won) {
       const isDraw = [...tiles].every((t) => t.innerHTML.length > 0);
-      if (isDraw) gameOver = true;
+      if (isDraw) {
+        resetBtn.classList.add("show");
+        gameOver = true;
+      }
     }
 
     current = current === "circle" ? "cross" : "circle";
@@ -45,6 +48,7 @@ const wins = [
 });
 
 resetBtn.addEventListener("click", () => {
+  resetBtn.classList.remove("show");
   [...tiles].forEach((tile) => {
     tile.innerHTML = "";
     tile.classList.remove("winner");
@@ -72,6 +76,7 @@ function checkWinner() {
 
       updateScore(values[a]);
 
+      resetBtn.classList.add("show");
       return true;
     }
 
