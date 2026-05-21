@@ -8,6 +8,10 @@
   --text: #e8e8f0;
   --text-muted: rgba(232, 232, 240, 0.45);
   --winner-bg: var(--text);
+  --easy-color: #34d399;
+  --normal-color: #ffc857;
+  --hard-color: #f44336;
+  --difficulty-color: var(--normal-color);
 }
 
 *,
@@ -25,12 +29,56 @@ html,
 body {
   block-size: 100dvh;
   inline-size: 100dvw;
+  overflow: hidden;
+}
+
+body {
   display: grid;
   place-items: center;
-  place-content: center;
-  gap: 2rem;
   color: var(--text);
   background-color: var(--bg);
+}
+
+body[data-ai-difficulty="easy"] {
+  --difficulty-color: var(--easy-color);
+}
+
+body[data-ai-difficulty="normal"] {
+  --difficulty-color: var(--normal-color);
+}
+
+body[data-ai-difficulty="hard"] {
+  --difficulty-color: var(--hard-color);
+}
+
+#game {
+  display: grid;
+  place-items: center;
+  gap: 1.5rem;
+  transition:
+    filter 0.25s,
+    transform 0.25s,
+    opacity 0.25s;
+}
+
+body:not(.game-started) #game {
+  filter: blur(8px);
+  opacity: 0.7;
+  pointer-events: none;
+  transform: scale(0.98);
+  user-select: none;
+}
+
+#round_status {
+  min-block-size: 1.4rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  max-inline-size: 300px;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 
 header {
@@ -49,9 +97,42 @@ header {
       text-transform: uppercase;
       color: var(--text-muted);
       background: var(--border);
-      padding: 0.5rem;
-      border-radius: 12px;
+      padding: 1rem;
+      border-radius: 8px;
+      block-size: 3rem;
+      inline-size: 8.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-inline-size: 0;
+      overflow: hidden;
+      text-align: center;
       transition: cubic-bezier(0.19, 1, 0.22, 1) 0.5s;
+      user-select: none;
+    }
+
+    .player-name {
+      border-radius: 4px;
+      min-inline-size: 0;
+      outline: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      &.editing {
+        background: rgba(255, 255, 255, 0.16);
+        color: var(--text);
+        cursor: text;
+        max-inline-size: 6.25rem;
+        overflow-x: auto;
+        padding: 0 0.15rem;
+        user-select: text;
+      }
+    }
+
+    .marker {
+      flex: none;
+      white-space: nowrap;
     }
 
     .result {
@@ -137,7 +218,16 @@ img {
   }
 }
 
-#reset {
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-block-size: 2.4rem;
+  inline-size: 300px;
+}
+
+button {
   font-size: 0.85rem;
   letter-spacing: 0.1em;
   text-transform: lowercase;
@@ -150,8 +240,18 @@ img {
   transition:
     color 0.15s,
     border-color 0.15s,
-    background 0.15s visibilty 0.3s;
+    background 0.15s,
+    transform 0.15s,
+    visibility 0.15s;
 
+  &:hover {
+    color: var(--text);
+    border-color: var(--border-hover);
+    background: var(--surface);
+  }
+}
+
+#reset {
   visibility: hidden;
   transform: scale(0);
 
@@ -159,10 +259,139 @@ img {
     visibility: visible;
     transform: scale(1);
   }
+}
+
+#start_overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  gap: 1.4rem;
+  place-items: center;
+  place-content: center;
+  padding: 1rem;
+  background: rgba(22, 22, 26, 0.38);
+  backdrop-filter: blur(4px);
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
+}
+
+body.game-started #start_overlay {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.difficulty-panel {
+  display: grid;
+  gap: 0.7rem;
+  inline-size: min(340px, 100%);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.difficulty-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.difficulty-options button {
+  min-inline-size: 0;
+  padding: 0.55rem 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.difficulty-options button[data-difficulty="easy"] {
+  color: var(--easy-color);
+  border-color: color-mix(in srgb, var(--easy-color), transparent 55%);
+}
+
+.difficulty-options button[data-difficulty="normal"] {
+  color: var(--normal-color);
+  border-color: color-mix(in srgb, var(--normal-color), transparent 55%);
+}
+
+.difficulty-options button[data-difficulty="hard"] {
+  color: var(--hard-color);
+  border-color: color-mix(in srgb, var(--hard-color), transparent 55%);
+}
+
+.difficulty-options button.active {
+  color: var(--bg);
+  border-color: var(--difficulty-color);
+  background: var(--difficulty-color);
+}
+
+.start-actions {
+  display: grid;
+  gap: 1.1rem;
+  inline-size: min(340px, 100%);
+}
+
+.start-actions button {
+  position: relative;
+  inline-size: 100%;
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--difficulty-color), transparent 58%);
+  background: rgba(30, 30, 36, 0.92);
+  box-shadow:
+    0 1rem 3rem rgba(0, 0, 0, 0.32),
+    0 0 0 1px color-mix(in srgb, var(--difficulty-color), transparent 86%);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  overflow: hidden;
+  padding: 1rem 1.2rem;
+  text-transform: none;
+  transform: translateY(0);
+}
+
+.start-actions button::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 0.35rem;
+  background: var(--difficulty-color);
+  opacity: 0.9;
+}
+
+.start-actions button[data-mode="user-user"]::before {
+  background: var(--circle-color);
+}
+
+.start-actions button:hover,
+.start-actions button:focus-visible {
+  border-color: var(--difficulty-color);
+  background: #292933;
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+.start-actions button[data-mode="user-user"]:hover,
+.start-actions button[data-mode="user-user"]:focus-visible {
+  border-color: var(--circle-color);
+}
+
+#start_game {
+  color: var(--text);
+  border-color: var(--circle-color);
+  background: var(--circle-color);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.35);
+  font-size: 1rem;
+  padding: 0.85rem 1.75rem;
+  text-transform: none;
 
   &:hover {
-    color: var(--text);
-    border-color: var(--border-hover);
-    background: var(--surface);
+    background: #42a5f5;
+    border-color: #42a5f5;
   }
 }

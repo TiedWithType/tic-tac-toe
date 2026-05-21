@@ -14,28 +14,55 @@
     <title>Tic Tac Toe</title>
   </head>
   <body>
-    <header>
-      <section id="player_1">
-        <span class="name">player 1 (O)</span>
-        <span class="result">0</span>
+    <main id="game">
+      <p id="round_status" aria-live="polite"></p>
+      <header>
+        <section id="player_1">
+          <span class="name">
+            <span class="player-name">player 1</span>
+            <span class="marker"> (O)</span>
+          </span>
+          <span class="result">0</span>
+        </section>
+        <section class="divider">:</section>
+        <section id="player_2">
+          <span class="name">
+            <span class="player-name">player 2</span>
+            <span class="marker"> (X)</span>
+          </span>
+          <span class="result">0</span>
+        </section>
+      </header>
+      <section id="board">
+        <figure data-tile="tile_1"></figure>
+        <figure data-tile="tile_2"></figure>
+        <figure data-tile="tile_3"></figure>
+        <figure data-tile="tile_4"></figure>
+        <figure data-tile="tile_5"></figure>
+        <figure data-tile="tile_6"></figure>
+        <figure data-tile="tile_7"></figure>
+        <figure data-tile="tile_8"></figure>
+        <figure data-tile="tile_9"></figure>
       </section>
-      <section class="divider">:</section>
-      <section id="player_2">
-        <span class="name">player 2 (X)</span>
-        <span class="result">0</span>
+      <section class="controls">
+        <button id="reset">new round</button>
+        <button id="reset_game">reset game</button>
       </section>
-    </header>
-    <section id="board">
-      <figure data-tile="tile_1"></figure>
-      <figure data-tile="tile_2"></figure>
-      <figure data-tile="tile_3"></figure>
-      <figure data-tile="tile_4"></figure>
-      <figure data-tile="tile_5"></figure>
-      <figure data-tile="tile_6"></figure>
-      <figure data-tile="tile_7"></figure>
-      <figure data-tile="tile_8"></figure>
-      <figure data-tile="tile_9"></figure>
+    </main>
+    <section id="start_overlay" aria-label="Start game">
+      <section class="difficulty-panel" aria-label="AI difficulty">
+        <span>AI difficulty</span>
+        <div class="difficulty-options">
+          <button data-difficulty="easy" type="button">easy</button>
+          <button data-difficulty="normal" type="button">normal</button>
+          <button data-difficulty="hard" type="button">hard</button>
+        </div>
+      </section>
+      <div class="start-actions">
+        <button id="start_game" data-mode="user-user">Start game</button>
+        <button data-mode="user-ai">Start game (user vs ai)</button>
+        <button data-mode="ai-ai">Start game (ai vs ai)</button>
+      </div>
     </section>
-    <button id="reset">new round</button>
   </body>
 </html>

@@ -1,18 +1,45 @@
 const tiles = document.querySelectorAll<HTMLElement>("[data-tile]");
+const game = document.querySelector<HTMLElement>("#game")!;
+const roundStatus = document.querySelector<HTMLElement>("#round_status")!;
 const player1 = document.querySelector<HTMLElement>("#player_1")!;
 const player2 = document.querySelector<HTMLElement>("#player_2")!;
+const player1Name = document.querySelector<HTMLElement>("#player_1 .player-name")!;
+const player2Name = document.querySelector<HTMLElement>("#player_2 .player-name")!;
 const player1Result = document.querySelector<HTMLElement>("#player_1 .result")!;
 const player2Result = document.querySelector<HTMLElement>("#player_2 .result")!;
 const resetBtn = document.querySelector<HTMLButtonElement>("#reset")!;
+const resetGameBtn = document.querySelector<HTMLButtonElement>("#reset_game")!;
+const startBtn = document.querySelector<HTMLButtonElement>("#start_game")!;
+const startButtons = document.querySelectorAll<HTMLButtonElement>("[data-mode]");
+const difficultyButtons = document.querySelectorAll<HTMLButtonElement>("[data-difficulty]");
 
-let current = "circle";
+type Player = "circle" | "cross";
+type GameMode = "user-user" | "user-ai" | "ai-ai";
+type AiDifficulty = "easy" | "normal" | "hard";
+type BoardValue = Player | null;
+
+const MAX_PLAYER_NAME_LENGTH = 8;
+const AI_MOVE_DELAY = 450;
+
+let current: Player = "circle";
 let gameOver = false;
-
-updateActivePlayer();
+let gameStarted = false;
+let roundWinner: Player | "draw" | null = null;
+let gameMode: GameMode = "user-user";
+let aiDifficulty: AiDifficulty = "normal";
+let aiMoveTimer: number | null = null;
 
 const score = {
   circle: 0,
   cross: 0,
+};
+const playerNames = {
+  circle: "player 1",
+  cross: "player 2",
+};
+const playerNameElements = {
+  circle: player1Name,
+  cross: player2Name,
 };
 
 const wins = [
@@ -28,55 +55,112 @@ const wins = [
   [2, 4, 6],
 ];
 
+Object.entries(playerNameElements).forEach(([player, nameElement]) => {
+  setupPlayerNameEditor(player as Player, nameElement);
+});
+
+setAiDifficulty(aiDifficulty);
+updateGameState();
+
 [...tiles].forEach((tile) => {
   tile.addEventListener("click", () => {
+    if (!gameStarted) return;
     if (gameOver) return;
-    if (tile.innerHTML.length > 0) return;
+    if (isAiTurn()) return;
 
-    tile.innerHTML = `
-      <img src="assets/${current}.svg" data-value='${current}' alt="${current}" />
-    `;
+    makeMove(tile, current);
+  });
+});
 
-    const won = checkWinner();
+startButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    startGame(button.dataset.mode as GameMode);
+  });
+});
 
-    if (!won) {
-      const isDraw = [...tiles].every((t) => t.innerHTML.length > 0);
-      if (isDraw) {
-        resetBtn.classList.add("show");
-        gameOver = true;
-      }
-    }
-
-    if (!gameOver) {
-      current = current === "circle" ? "cross" : "circle";
-      updateActivePlayer();
-    }
+difficultyButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setAiDifficulty(button.dataset.difficulty as AiDifficulty);
   });
 });
 
 resetBtn.addEventListener("click", () => {
+  cancelAiMove();
   resetBtn.classList.remove("show");
-  [...tiles].forEach((tile) => {
-    tile.innerHTML = "";
-    tile.classList.remove("winner");
-  });
+  clearBoard();
 
-  current = current === "circle" ? "cross" : "circle";;
+  current = current === "circle" ? "cross" : "circle";
   gameOver = false;
-  updateActivePlayer();
+  roundWinner = null;
+  updateGameState();
+  scheduleAiMove();
 });
 
+resetGameBtn.addEventListener("click", () => {
+  cancelAiMove();
+  clearBoard();
+  resetBtn.classList.remove("show");
+
+  score.circle = 0;
+  score.cross = 0;
+  current = "circle";
+  gameMode = "user-user";
+  gameOver = false;
+  gameStarted = false;
+  roundWinner = null;
+
+  renderScore();
+  updateGameState();
+  startBtn.focus();
+});
+
+function startGame(mode: GameMode) {
+  cancelAiMove();
+  gameMode = mode;
+  gameStarted = true;
+  gameOver = false;
+  roundWinner = null;
+  updateGameState();
+  scheduleAiMove();
+}
+
+function makeMove(tile: HTMLElement, player: Player) {
+  if (tile.querySelector("img")) return;
+
+  tile.innerHTML = `
+    <img src="assets/${player}.svg" data-value="${player}" alt="${player}" />
+  `;
+
+  finishTurn();
+}
+
+function finishTurn() {
+  const won = checkWinner();
+
+  if (!won && isBoardFull()) {
+    resetBtn.classList.add("show");
+    gameOver = true;
+    roundWinner = "draw";
+    updateGameState();
+    return;
+  }
+
+  if (gameOver) return;
+
+  current = current === "circle" ? "cross" : "circle";
+  updateGameState();
+  scheduleAiMove();
+}
+
 function checkWinner() {
-  const values = [...tiles].map((tile) => {
-    const img = tile.querySelector("img");
-    return img?.alt || null;
-  });
+  const values = getBoardValues();
 
   return wins.some((combination) => {
     const [a, b, c] = combination;
 
     if (values[a] && values[a] === values[b] && values[a] === values[c]) {
       gameOver = true;
+      roundWinner = values[a];
 
       tiles[a].classList.add("winner");
       tiles[b].classList.add("winner");
@@ -85,6 +169,7 @@ function checkWinner() {
       updateScore(values[a]);
 
       resetBtn.classList.add("show");
+      updateGameState();
       return true;
     }
 
@@ -92,14 +177,333 @@ function checkWinner() {
   });
 }
 
-function updateScore(winner: string) {
-  score[winner as keyof typeof score]++;
+function updateScore(winner: Player) {
+  score[winner]++;
 
+  renderScore();
+}
+
+function renderScore() {
   player1Result.textContent = String(score.circle);
   player2Result.textContent = String(score.cross);
 }
 
+function clearBoard() {
+  [...tiles].forEach((tile) => {
+    tile.innerHTML = "";
+    tile.classList.remove("winner");
+  });
+}
+
+function updateGameState() {
+  document.body.classList.toggle("game-started", gameStarted);
+  (game as HTMLElement & { inert: boolean }).inert = !gameStarted;
+  renderStatus();
+  updateActivePlayer();
+}
+
+function renderStatus() {
+  if (!gameStarted) {
+    roundStatus.textContent = "Start game";
+    return;
+  }
+
+  if (roundWinner === "draw") {
+    roundStatus.textContent = "draw";
+    return;
+  }
+
+  if (roundWinner) {
+    roundStatus.textContent = `${playerNames[roundWinner]} wins`;
+    return;
+  }
+
+  if (isAiTurn()) {
+    roundStatus.textContent = `${playerNames[current]} is thinking`;
+    return;
+  }
+
+  roundStatus.textContent = `${playerNames[current]}'s turn`;
+}
+
 function updateActivePlayer() {
-  player1.classList.toggle("active", current === "circle" && !gameOver);
-  player2.classList.toggle("active", current === "cross" && !gameOver);
+  player1.classList.toggle("active", current === "circle" && !gameOver && gameStarted);
+  player2.classList.toggle("active", current === "cross" && !gameOver && gameStarted);
+}
+
+function isAiTurn() {
+  if (!gameStarted || gameOver) return false;
+  if (gameMode === "ai-ai") return true;
+  return gameMode === "user-ai" && current === "cross";
+}
+
+function scheduleAiMove() {
+  cancelAiMove();
+
+  if (!isAiTurn()) return;
+
+  aiMoveTimer = window.setTimeout(() => {
+    aiMoveTimer = null;
+    playAiMove();
+  }, AI_MOVE_DELAY);
+}
+
+function cancelAiMove() {
+  if (aiMoveTimer === null) return;
+
+  window.clearTimeout(aiMoveTimer);
+  aiMoveTimer = null;
+}
+
+function playAiMove() {
+  if (!isAiTurn()) return;
+
+  const moveIndex = getAiMove(current);
+  if (moveIndex === null) return;
+
+  makeMove(tiles[moveIndex], current);
+}
+
+function getAiMove(aiPlayer: Player) {
+  const board = getBoardValues();
+
+  if (aiDifficulty === "easy") {
+    const shouldThink = Math.random() < 0.3;
+    return shouldThink ? getTacticalMove(board, aiPlayer) : getRandomMove(board);
+  }
+
+  if (aiDifficulty === "normal") {
+    const tacticalMove = getTacticalMove(board, aiPlayer);
+    if (tacticalMove !== null) return tacticalMove;
+
+    const shouldPlayBest = Math.random() < 0.55;
+    return shouldPlayBest ? getBestMove(aiPlayer) : getRandomMove(board);
+  }
+
+  return getBestMove(aiPlayer);
+}
+
+function getBestMove(aiPlayer: Player) {
+  const board = getBoardValues();
+  const opponent = getOpponent(aiPlayer);
+  let bestScore = -Infinity;
+  const bestMoves: number[] = [];
+
+  getAvailableMoves(board).forEach((move) => {
+    board[move] = aiPlayer;
+    const score = minimax(board, false, aiPlayer, opponent, 0);
+    board[move] = null;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMoves.length = 0;
+      bestMoves.push(move);
+      return;
+    }
+
+    if (score === bestScore) {
+      bestMoves.push(move);
+    }
+  });
+
+  if (bestMoves.length === 0) return null;
+
+  return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+}
+
+function getTacticalMove(board: BoardValue[], aiPlayer: Player) {
+  const winningMove = findImmediateMove(board, aiPlayer);
+  if (winningMove !== null) return winningMove;
+
+  const blockingMove = findImmediateMove(board, getOpponent(aiPlayer));
+  if (blockingMove !== null) return blockingMove;
+
+  return getRandomMove(board);
+}
+
+function findImmediateMove(board: BoardValue[], player: Player) {
+  for (const move of getAvailableMoves(board)) {
+    board[move] = player;
+    const isWinningMove = getBoardWinner(board) === player;
+    board[move] = null;
+
+    if (isWinningMove) return move;
+  }
+
+  return null;
+}
+
+function getRandomMove(board: BoardValue[]) {
+  const availableMoves = getAvailableMoves(board);
+
+  if (availableMoves.length === 0) return null;
+
+  return availableMoves[Math.floor(Math.random() * availableMoves.length)];
+}
+
+function minimax(
+  board: BoardValue[],
+  isMaximizing: boolean,
+  aiPlayer: Player,
+  opponent: Player,
+  depth: number,
+): number {
+  const winner = getBoardWinner(board);
+
+  if (winner === aiPlayer) return 10 - depth;
+  if (winner === opponent) return depth - 10;
+  if (getAvailableMoves(board).length === 0) return 0;
+
+  if (isMaximizing) {
+    let bestScore = -Infinity;
+
+    getAvailableMoves(board).forEach((move) => {
+      board[move] = aiPlayer;
+      bestScore = Math.max(bestScore, minimax(board, false, aiPlayer, opponent, depth + 1));
+      board[move] = null;
+    });
+
+    return bestScore;
+  }
+
+  let bestScore = Infinity;
+
+  getAvailableMoves(board).forEach((move) => {
+    board[move] = opponent;
+    bestScore = Math.min(bestScore, minimax(board, true, aiPlayer, opponent, depth + 1));
+    board[move] = null;
+  });
+
+  return bestScore;
+}
+
+function getBoardValues() {
+  return [...tiles].map((tile) => {
+    const img = tile.querySelector("img");
+    return (img?.dataset.value as Player | undefined) || null;
+  });
+}
+
+function getBoardWinner(board: BoardValue[]) {
+  for (const combination of wins) {
+    const [a, b, c] = combination;
+
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return board[a];
+    }
+  }
+
+  return null;
+}
+
+function getAvailableMoves(board: BoardValue[]) {
+  return board
+    .map((value, index) => (value ? null : index))
+    .filter((index): index is number => index !== null);
+}
+
+function isBoardFull() {
+  return getBoardValues().every(Boolean);
+}
+
+function getOpponent(player: Player): Player {
+  return player === "circle" ? "cross" : "circle";
+}
+
+function setAiDifficulty(difficulty: AiDifficulty) {
+  aiDifficulty = difficulty;
+  document.body.dataset.aiDifficulty = aiDifficulty;
+
+  difficultyButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.difficulty === aiDifficulty);
+  });
+}
+
+function setupPlayerNameEditor(player: Player, nameElement: HTMLElement) {
+  const editTrigger = nameElement.parentElement || nameElement;
+
+  editTrigger.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    startPlayerNameEdit(nameElement);
+  });
+
+  nameElement.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      nameElement.blur();
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      nameElement.textContent = playerNames[player];
+      nameElement.blur();
+      return;
+    }
+
+    const isSingleCharacter = event.key.length === 1;
+    const hasSelection = getSelectionTextLength() > 0;
+    const currentLength = nameElement.textContent?.length || 0;
+
+    if (isSingleCharacter && !hasSelection && currentLength >= MAX_PLAYER_NAME_LENGTH) {
+      event.preventDefault();
+    }
+  });
+
+  nameElement.addEventListener("input", () => {
+    limitPlayerNameInput(nameElement);
+  });
+
+  nameElement.addEventListener("blur", () => {
+    const nextName = normalizePlayerName(nameElement.textContent || "");
+
+    playerNames[player] = nextName || playerNames[player];
+    nameElement.textContent = playerNames[player];
+    nameElement.contentEditable = "false";
+    nameElement.classList.remove("editing");
+    renderStatus();
+  });
+}
+
+function startPlayerNameEdit(nameElement: HTMLElement) {
+  nameElement.contentEditable = "true";
+  nameElement.classList.add("editing");
+  nameElement.focus();
+  selectText(nameElement);
+}
+
+function limitPlayerNameInput(nameElement: HTMLElement) {
+  const currentName = nameElement.textContent || "";
+
+  if (currentName.length <= MAX_PLAYER_NAME_LENGTH) return;
+
+  nameElement.textContent = currentName.slice(0, MAX_PLAYER_NAME_LENGTH);
+  moveCaretToEnd(nameElement);
+}
+
+function normalizePlayerName(name: string) {
+  return name.replace(/\s+/g, " ").trim().slice(0, MAX_PLAYER_NAME_LENGTH);
+}
+
+function getSelectionTextLength() {
+  return window.getSelection()?.toString().length || 0;
+}
+
+function selectText(element: HTMLElement) {
+  const range = document.createRange();
+  const selection = window.getSelection();
+
+  range.selectNodeContents(element);
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+}
+
+function moveCaretToEnd(element: HTMLElement) {
+  const range = document.createRange();
+  const selection = window.getSelection();
+
+  range.selectNodeContents(element);
+  range.collapse(false);
+  selection?.removeAllRanges();
+  selection?.addRange(range);
 }
