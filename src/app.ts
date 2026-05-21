@@ -12,11 +12,23 @@ const resetGameBtn = document.querySelector<HTMLButtonElement>("#reset_game")!;
 const startBtn = document.querySelector<HTMLButtonElement>("#start_game")!;
 const startButtons = document.querySelectorAll<HTMLButtonElement>("[data-mode]");
 const difficultyButtons = document.querySelectorAll<HTMLButtonElement>("[data-difficulty]");
+const appFooter = document.querySelector<HTMLElement>("#app_footer")!;
 
 type Player = "circle" | "cross";
 type GameMode = "user-user" | "user-ai" | "ai-ai";
 type AiDifficulty = "easy" | "normal" | "hard";
 type BoardValue = Player | null;
+type AppConfig = {
+  appName: string;
+  version: {
+    major: number;
+    minor: number;
+    patch: number;
+    release: string;
+    codename: string;
+  };
+  defaultPlayers: Partial<Record<Player, string>>;
+};
 
 const MAX_PLAYER_NAME_LENGTH = 8;
 const AI_MOVE_DELAY = 450;
@@ -41,6 +53,7 @@ const playerNameElements = {
   circle: player1Name,
   cross: player2Name,
 };
+const appConfig = getAppConfig();
 
 const wins = [
   [0, 1, 2],
@@ -59,6 +72,7 @@ Object.entries(playerNameElements).forEach(([player, nameElement]) => {
   setupPlayerNameEditor(player as Player, nameElement);
 });
 
+applyAppConfig();
 setAiDifficulty(aiDifficulty);
 updateGameState();
 
@@ -417,6 +431,58 @@ function setAiDifficulty(difficulty: AiDifficulty) {
   difficultyButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.difficulty === aiDifficulty);
   });
+}
+
+function getAppConfig(): AppConfig {
+  const env = (import.meta as ImportMeta & { env: Record<string, string | undefined> }).env;
+
+  return {
+    appName: env.VITE_APP_NAME || "Tic Tac Toe",
+    version: {
+      major: getEnvNumber(env.VITE_APP_VERSION_MAJOR, 1),
+      minor: getEnvNumber(env.VITE_APP_VERSION_MINOR, 0),
+      patch: getEnvNumber(env.VITE_APP_VERSION_PATCH, 0),
+      release: env.VITE_APP_VERSION_RELEASE || "alpha",
+      codename: env.VITE_APP_VERSION_CODENAME || "First Move",
+    },
+    defaultPlayers: {
+      circle: env.VITE_DEFAULT_PLAYER_CIRCLE,
+      cross: env.VITE_DEFAULT_PLAYER_CROSS,
+    },
+  };
+}
+
+function getEnvNumber(value: string | undefined, fallback: number) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function applyAppConfig() {
+  renderAppFooter(appConfig);
+  applyDefaultPlayers(appConfig.defaultPlayers);
+}
+
+function renderAppFooter(config: AppConfig) {
+  const { major, minor, patch, release, codename } = config.version;
+  const version = `${major}.${minor}.${patch}`;
+  const releaseLabel = release ? ` ${release}` : "";
+  const codenameLabel = codename ? ` "${codename}"` : "";
+
+  appFooter.textContent = `${config.appName} v${version}${releaseLabel}${codenameLabel} by TiedWithType`;
+}
+
+function applyDefaultPlayers(defaultPlayers: AppConfig["defaultPlayers"]) {
+  if (!defaultPlayers) return;
+
+  (["circle", "cross"] as Player[]).forEach((player) => {
+    const defaultName = defaultPlayers[player];
+    if (!defaultName) return;
+
+    playerNames[player] = normalizePlayerName(defaultName) || playerNames[player];
+    playerNameElements[player].textContent = playerNames[player];
+  });
+
+  renderStatus();
 }
 
 function setupPlayerNameEditor(player: Player, nameElement: HTMLElement) {

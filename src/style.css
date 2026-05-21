@@ -21,8 +21,9 @@
   margin: 0;
   padding: 0;
   font-family: "Quicksand", sans-serif;
-
   will-change: contents;
+  contain: content;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -394,4 +395,19 @@ body.game-started #start_overlay {
     background: #42a5f5;
     border-color: #42a5f5;
   }
+}
+
+#app_footer {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0.75rem;
+  z-index: 20;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  padding-inline: 1rem;
+  pointer-events: none;
+  text-align: center;
 }
