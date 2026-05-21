@@ -53,6 +53,16 @@
       <div id="desktop_options_mount">
         <section id="options_menu" class="controls" aria-label="Game options">
           <button id="options_close" type="button">close</button>
+          <section class="color-options" aria-label="Marker colors">
+            <label>
+              <span>O</span>
+              <input id="circle_color" type="color" value="#2196f3" />
+            </label>
+            <label>
+              <span>X</span>
+              <input id="cross_color" type="color" value="#f44336" />
+            </label>
+          </section>
           <button id="reset">new round</button>
           <button id="change_mode">change mode</button>
           <button id="history_toggle">history</button>
@@ -67,6 +77,7 @@
     </button>
     <dialog id="options_modal" aria-label="Game options"></dialog>
     <section id="start_overlay" aria-label="Start game">
+      <h1 id="app_title"></h1>
       <section class="difficulty-panel" aria-label="AI difficulty">
         <span>AI difficulty</span>
         <div class="difficulty-options">
@@ -104,6 +115,6 @@
       </section>
       <ol id="history_list"></ol>
     </aside>
-    <footer id="app_footer">Tic Tac Toe v1.0.0 alpha "First Move" by TiedWithType</footer>
+    <footer id="app_footer">v.1.0.0 "First Move" by TiedWithType</footer>
   </body>
 </html>

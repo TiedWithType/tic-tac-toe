@@ -1,0 +1,56 @@
+export type Player = "circle" | "cross";
+export type GameMode = "user-user" | "user-ai" | "ai-ai";
+export type AiDifficulty = "easy" | "normal" | "hard";
+export type BoardValue = Player | null;
+export type Starter = Player | "random";
+
+export type Score = Record<Player, number>;
+export type PlayerNames = Record<Player, string>;
+export type MarkerColors = Record<Player, string>;
+
+export type RoundRecord = {
+  round: number;
+  mode: GameMode;
+  difficulty: AiDifficulty;
+  starter: Player;
+  winner: Player | "draw";
+};
+
+export type AppConfig = {
+  appName: string;
+  version: {
+    major: number;
+    minor: number;
+    patch: number;
+    release: string;
+    codename: string;
+  };
+  defaultPlayers: Partial<Record<Player, string>>;
+};
+
+export type GameState = {
+  board: BoardValue[];
+  current: Player;
+  roundStarter: Player;
+  gameOver: boolean;
+  gameStarted: boolean;
+  roundWinner: Player | "draw" | null;
+  winningCombination: number[] | null;
+  gameMode: GameMode;
+  aiDifficulty: AiDifficulty;
+  starter: Starter;
+  muted: boolean;
+  markerColors: MarkerColors;
+  score: Score;
+  playerNames: PlayerNames;
+  history: RoundRecord[];
+};
+
+export type SettingsSnapshot = Partial<{
+  playerNames: Partial<PlayerNames>;
+  markerColors: Partial<MarkerColors>;
+  gameMode: GameMode;
+  aiDifficulty: AiDifficulty;
+  starter: Starter;
+  muted: boolean;
+}>;

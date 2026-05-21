@@ -7,7 +7,7 @@
   --border-hover: rgba(255, 255, 255, 0.16);
   --text: #e8e8f0;
   --text-muted: rgba(232, 232, 240, 0.45);
-  --winner-bg: var(--text);
+  --winner-color: var(--circle-color);
   --easy-color: #34d399;
   --normal-color: #ffc857;
   --hard-color: #f44336;
@@ -196,6 +196,7 @@ header {
   gap: 0.5rem;
 
   figure {
+    position: relative;
     border: 1px solid var(--border);
     border-radius: 12px;
     display: grid;
@@ -206,14 +207,59 @@ header {
       border-color 0.15s,
       background 0.15s;
 
-    &:hover:not(:has(img), .winner) {
+    &:hover:not([data-value], .winner) {
       border-color: var(--border-hover);
       background: #24242c;
     }
 
     &.winner {
-      background: var(--winner-bg);
+      border-color: color-mix(in srgb, var(--winner-color), transparent 28%);
+      background:
+        radial-gradient(
+          circle,
+          color-mix(in srgb, var(--winner-color), transparent 70%),
+          transparent 68%
+        ),
+        color-mix(in srgb, var(--winner-color), var(--surface) 86%);
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--winner-color), transparent 72%),
+        0 0 1.25rem color-mix(in srgb, var(--winner-color), transparent 68%);
     }
+  }
+
+  figure[data-value]::before,
+  figure[data-value]::after {
+    content: "";
+    position: absolute;
+    animation: marker-in cubic-bezier(0.19, 1, 0.22, 1) 0.35s;
+    pointer-events: none;
+  }
+
+  figure[data-value="circle"]::before {
+    inline-size: 58%;
+    aspect-ratio: 1;
+    border: 0.72rem solid var(--circle-color);
+    border-radius: 50%;
+  }
+
+  figure[data-value="circle"]::after {
+    display: none;
+  }
+
+  figure[data-value="cross"]::before,
+  figure[data-value="cross"]::after {
+    inline-size: 64%;
+    block-size: 0.72rem;
+    border-radius: 999px;
+    background: var(--cross-color);
+  }
+
+  figure[data-value="cross"]::before {
+    transform: rotate(45deg);
+  }
+
+  figure[data-value="cross"]::after {
+    transform: rotate(-45deg);
   }
 }
 
@@ -230,8 +276,17 @@ header {
   inline-size: var(--line-length);
   block-size: 0.38rem;
   border-radius: 999px;
-  background: #ffffff;
-  box-shadow: 0 0 1rem rgba(255, 255, 255, 0.32);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--winner-color), white 22%) 18%,
+    var(--winner-color) 50%,
+    color-mix(in srgb, var(--winner-color), white 22%) 82%,
+    transparent
+  );
+  box-shadow:
+    0 0 0.4rem color-mix(in srgb, var(--winner-color), transparent 36%),
+    0 0 1.2rem color-mix(in srgb, var(--winner-color), transparent 48%);
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -50%) rotate(var(--line-rotation)) scaleX(0);
@@ -279,18 +334,61 @@ header {
   }
 }
 
-img {
-  animation: anim cubic-bezier(0.19, 1, 0.22, 1) 0.5s;
-}
-
-@keyframes anim {
+@keyframes marker-in {
   from {
     transform: scale(0) rotate(0);
     opacity: 0;
   }
 
   to {
-    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+#board figure[data-value="circle"]::before {
+  animation-name: circle-in;
+}
+
+#board figure[data-value="cross"]::before {
+  animation-name: cross-a-in;
+}
+
+#board figure[data-value="cross"]::after {
+  animation-name: cross-b-in;
+}
+
+@keyframes circle-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes cross-a-in {
+  from {
+    transform: scale(0) rotate(45deg);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) rotate(45deg);
+    opacity: 1;
+  }
+}
+
+@keyframes cross-b-in {
+  from {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) rotate(-45deg);
     opacity: 1;
   }
 }
@@ -340,6 +438,11 @@ button {
     border-color: var(--border-hover);
     background: var(--surface);
   }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.62;
+  }
 }
 
 .controls button {
@@ -347,6 +450,53 @@ button {
   min-inline-size: 0;
   padding-inline: 0.65rem;
   white-space: nowrap;
+}
+
+.color-options {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  inline-size: 100%;
+}
+
+.color-options label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-inline-size: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem 0.45rem 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.color-options input {
+  inline-size: 2rem;
+  block-size: 2rem;
+  flex: none;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.color-options input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-options input::-webkit-color-swatch {
+  border: 1px solid var(--border-hover);
+  border-radius: 50%;
+}
+
+.color-options input::-moz-color-swatch {
+  border: 1px solid var(--border-hover);
+  border-radius: 50%;
 }
 
 #desktop_options_mount {
@@ -453,6 +603,22 @@ body.game-started #start_overlay {
   visibility: hidden;
 }
 
+#app_title {
+  inline-size: min(340px, 100%);
+  margin: 0;
+  color: #fff;
+  font-size: clamp(2.6rem, 13vw, 4rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 0.95;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-shadow:
+    0 0 0.45rem color-mix(in srgb, var(--circle-color), transparent 18%),
+    0 0 1.2rem color-mix(in srgb, var(--cross-color), transparent 36%),
+    0 0 2.4rem color-mix(in srgb, var(--circle-color), transparent 62%);
+}
+
 .difficulty-panel {
   display: grid;
   gap: 0.7rem;
@@ -489,12 +655,39 @@ body.game-started #start_overlay {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
+}
 
-  &.active {
-    color: var(--bg);
-    border-color: var(--circle-color);
-    background: var(--circle-color);
-  }
+.starter-options button[data-starter="circle"] {
+  color: var(--circle-color);
+  border-color: color-mix(in srgb, var(--circle-color), transparent 55%);
+}
+
+.starter-options button[data-starter="cross"] {
+  color: var(--cross-color);
+  border-color: color-mix(in srgb, var(--cross-color), transparent 55%);
+}
+
+.starter-options button[data-starter="random"] {
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+
+.starter-options button[data-starter="circle"].active {
+  color: var(--bg);
+  border-color: var(--circle-color);
+  background: var(--circle-color);
+}
+
+.starter-options button[data-starter="cross"].active {
+  color: var(--text);
+  border-color: var(--cross-color);
+  background: var(--cross-color);
+}
+
+.starter-options button[data-starter="random"].active {
+  color: var(--text);
+  border-color: var(--border-hover);
+  background: var(--surface);
 }
 
 .difficulty-options {
@@ -584,17 +777,31 @@ body.game-started #start_overlay {
 }
 
 #start_game {
+  position: relative;
   color: var(--text);
-  border-color: var(--circle-color);
-  background: var(--circle-color);
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(90deg, var(--circle-color), var(--cross-color)) border-box;
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.35);
   font-size: 1rem;
+  overflow: hidden;
   padding: 0.85rem 1.75rem;
   text-transform: none;
+  transform: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, var(--circle-color), var(--cross-color));
+  }
 
   &:hover {
-    background: #42a5f5;
-    border-color: #42a5f5;
+    filter: brightness(1.08);
+    transform: none;
+    box-shadow: 0 1.15rem 3.2rem rgba(0, 0, 0, 0.42);
   }
 }
 
@@ -611,6 +818,7 @@ body.game-started #start_overlay {
   padding-inline: 1rem;
   pointer-events: none;
   text-align: center;
+  bottom: 2px;
 }
 
 #history_panel {

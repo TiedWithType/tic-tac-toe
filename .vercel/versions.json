@@ -5,7 +5,7 @@
   "codename_policy": {
     "theme": "alphabetical desserts",
     "format": "Title Case",
-    "next_codename_letter": "D",
+    "next_codename_letter": "E",
     "patch_releases_keep_parent_codename": true
   },
   "releases": [
@@ -83,28 +83,46 @@
       },
       "codename": "Cheesecake",
       "codename_letter": "C",
-      "status": "current",
+      "status": "previous",
       "notes": [
         "Kept mobile new round action under the board.",
         "Used a Material Symbols settings icon for mobile options.",
         "Split move sounds per player and made draw sound distinct."
       ]
+    },
+    {
+      "version": {
+        "major": 2,
+        "minor": 0,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Donut",
+      "codename_letter": "D",
+      "status": "current",
+      "notes": [
+        "Refactored the app into controller, view, game, AI and service modules.",
+        "Replaced environment variable config with typed src/app.config.ts metadata.",
+        "Moved intro audio to generated Web Audio tones instead of public assets.",
+        "Added the configured app name above the start menu with player-color glow.",
+        "Removed unused marker SVG assets after switching O and X rendering to CSS."
+      ]
     }
   ],
   "planned_codenames": [
     {
-      "letter": "D",
-      "codename": "Donut",
-      "status": "next"
-    },
-    {
       "letter": "E",
       "codename": "Eclair",
-      "status": "reserved"
+      "status": "next"
     },
     {
       "letter": "F",
       "codename": "Fudge",
+      "status": "reserved"
+    },
+    {
+      "letter": "G",
+      "codename": "Gelato",
       "status": "reserved"
     }
   ],

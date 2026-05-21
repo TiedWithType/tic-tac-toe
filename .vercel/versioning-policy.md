@@ -23,7 +23,7 @@ Rules:
 - `MINOR` changes for new player-facing features, new modes, UI additions, or AI behavior changes.
 - `PATCH` changes for bug fixes, copy tweaks, visual polish, and small compatibility fixes.
 - `RELEASE` must be one of: `alpha`, `beta`, `rc`, `stable`.
-- `.env` and `.vercel/versions.json` must be updated together for every release.
+- `src/app.config.ts` and `.vercel/versions.json` must be updated together for every release.
 
 ## Codename Rules
 
@@ -57,7 +57,7 @@ J: Jelly Roll
 
 Before tagging or deploying a release:
 
-- Update `.env` version fields.
+- Update `src/app.config.ts` version fields.
 - Update `.vercel/versions.json`.
 - Confirm the footer shows the expected app name, version, release, codename, and author.
 - Run the production build.
