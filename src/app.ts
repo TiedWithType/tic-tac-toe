@@ -1,6 +1,7 @@
 const tiles = document.querySelectorAll<HTMLElement>("[data-tile]");
 const game = document.querySelector<HTMLElement>("#game")!;
 const roundStatus = document.querySelector<HTMLElement>("#round_status")!;
+const roundMeta = document.querySelector<HTMLElement>("#round_meta")!;
 const player1 = document.querySelector<HTMLElement>("#player_1")!;
 const player2 = document.querySelector<HTMLElement>("#player_2")!;
 const player1Name = document.querySelector<HTMLElement>("#player_1 .player-name")!;
@@ -8,16 +9,44 @@ const player2Name = document.querySelector<HTMLElement>("#player_2 .player-name"
 const player1Result = document.querySelector<HTMLElement>("#player_1 .result")!;
 const player2Result = document.querySelector<HTMLElement>("#player_2 .result")!;
 const resetBtn = document.querySelector<HTMLButtonElement>("#reset")!;
+const mobileResetBtn = document.querySelector<HTMLButtonElement>("#mobile_reset")!;
 const resetGameBtn = document.querySelector<HTMLButtonElement>("#reset_game")!;
+const changeModeBtn = document.querySelector<HTMLButtonElement>("#change_mode")!;
+const historyToggleBtn = document.querySelector<HTMLButtonElement>("#history_toggle")!;
+const historyCloseBtn = document.querySelector<HTMLButtonElement>("#history_close")!;
+const muteToggleBtn = document.querySelector<HTMLButtonElement>("#mute_toggle")!;
+const optionsMenu = document.querySelector<HTMLElement>("#options_menu")!;
+const desktopOptionsMount = document.querySelector<HTMLElement>("#desktop_options_mount")!;
+const optionsModal = document.querySelector<HTMLDialogElement>("#options_modal")!;
+const optionsCloseBtn = document.querySelector<HTMLButtonElement>("#options_close")!;
+const settingsToggle = document.querySelector<HTMLButtonElement>("#settings_toggle")!;
 const startBtn = document.querySelector<HTMLButtonElement>("#start_game")!;
 const startButtons = document.querySelectorAll<HTMLButtonElement>("[data-mode]");
 const difficultyButtons = document.querySelectorAll<HTMLButtonElement>("[data-difficulty]");
+const starterButtons = document.querySelectorAll<HTMLButtonElement>("[data-starter]");
+const winLine = document.querySelector<HTMLElement>("#win_line")!;
+const historyPanel = document.querySelector<HTMLElement>("#history_panel")!;
+const historyList = document.querySelector<HTMLOListElement>("#history_list")!;
+const statRounds = document.querySelector<HTMLElement>("#stat_rounds")!;
+const statDraws = document.querySelector<HTMLElement>("#stat_draws")!;
+const statCircleWins = document.querySelector<HTMLElement>("#stat_circle_wins")!;
+const statCrossWins = document.querySelector<HTMLElement>("#stat_cross_wins")!;
+const statCircleRate = document.querySelector<HTMLElement>("#stat_circle_rate")!;
+const statCrossRate = document.querySelector<HTMLElement>("#stat_cross_rate")!;
 const appFooter = getOrCreateAppFooter();
 
 type Player = "circle" | "cross";
 type GameMode = "user-user" | "user-ai" | "ai-ai";
 type AiDifficulty = "easy" | "normal" | "hard";
 type BoardValue = Player | null;
+type Starter = Player | "random";
+type RoundRecord = {
+  round: number;
+  mode: GameMode;
+  difficulty: AiDifficulty;
+  starter: Player;
+  winner: Player | "draw";
+};
 type AppConfig = {
   appName: string;
   version: {
@@ -32,14 +61,27 @@ type AppConfig = {
 
 const MAX_PLAYER_NAME_LENGTH = 8;
 const AI_MOVE_DELAY = 450;
+const LONG_PRESS_DELAY = 550;
+const SETTINGS_KEY = "tic-tac-toe-settings-v1";
+const mobileOptionsQuery = window.matchMedia("(max-width: 640px)");
+const audioWindow = window as Window &
+  typeof globalThis & {
+    webkitAudioContext?: typeof AudioContext;
+  };
 
 let current: Player = "circle";
+let roundStarter: Player = "circle";
 let gameOver = false;
 let gameStarted = false;
 let roundWinner: Player | "draw" | null = null;
 let gameMode: GameMode = "user-user";
 let aiDifficulty: AiDifficulty = "normal";
+let starter: Starter = "circle";
+let muted = false;
 let aiMoveTimer: number | null = null;
+let longPressTimer: number | null = null;
+let audioContext: AudioContext | null = null;
+const sessionHistory: RoundRecord[] = [];
 
 const score = {
   circle: 0,
@@ -73,7 +115,13 @@ Object.entries(playerNameElements).forEach(([player, nameElement]) => {
 });
 
 applyAppConfig();
+loadSettings();
+syncOptionsPlacement();
+renderScore();
+renderHistory();
 setAiDifficulty(aiDifficulty);
+setStarter(starter);
+setMuted(muted);
 updateGameState();
 
 [...tiles].forEach((tile) => {
@@ -95,45 +143,100 @@ startButtons.forEach((button) => {
 difficultyButtons.forEach((button) => {
   button.addEventListener("click", () => {
     setAiDifficulty(button.dataset.difficulty as AiDifficulty);
+    saveSettings();
   });
 });
 
-resetBtn.addEventListener("click", () => {
-  cancelAiMove();
-  resetBtn.classList.remove("show");
-  clearBoard();
-
-  current = current === "circle" ? "cross" : "circle";
-  gameOver = false;
-  roundWinner = null;
-  updateGameState();
-  scheduleAiMove();
+starterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setStarter(button.dataset.starter as Starter);
+    saveSettings();
+  });
 });
+
+changeModeBtn.addEventListener("click", () => {
+  openModeSelector();
+  closeOptionsModal();
+});
+
+historyToggleBtn.addEventListener("click", () => {
+  setHistoryPanelOpen(!historyPanel.classList.contains("show"));
+  closeOptionsModal();
+});
+
+historyCloseBtn.addEventListener("click", () => {
+  setHistoryPanelOpen(false);
+});
+
+muteToggleBtn.addEventListener("click", () => {
+  setMuted(!muted);
+  saveSettings();
+});
+
+settingsToggle.addEventListener("click", (event) => {
+  event.stopPropagation();
+  openOptionsModal();
+});
+
+mobileOptionsQuery.addEventListener("change", () => {
+  syncOptionsPlacement();
+  updateSettingsToggle();
+});
+
+document.addEventListener("click", (event) => {
+  if (!optionsModal.open) return;
+  if (!(event.target instanceof Node)) return;
+  if (optionsMenu.contains(event.target)) return;
+
+  closeOptionsModal();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+
+  closeOptionsModal();
+});
+
+optionsCloseBtn.addEventListener("click", () => {
+  closeOptionsModal();
+});
+
+resetBtn.addEventListener("click", resetRound);
+mobileResetBtn.addEventListener("click", resetRound);
 
 resetGameBtn.addEventListener("click", () => {
   cancelAiMove();
   clearBoard();
-  resetBtn.classList.remove("show");
+  setNewRoundVisible(false);
 
   score.circle = 0;
   score.cross = 0;
-  current = "circle";
+  current = getNextStarter();
+  roundStarter = current;
   gameMode = "user-user";
   gameOver = false;
   gameStarted = false;
   roundWinner = null;
+  sessionHistory.length = 0;
 
   renderScore();
+  renderHistory();
+  saveSettings();
   updateGameState();
   startBtn.focus();
+  closeOptionsModal();
 });
 
 function startGame(mode: GameMode) {
   cancelAiMove();
   gameMode = mode;
+  current = getNextStarter();
+  roundStarter = current;
   gameStarted = true;
   gameOver = false;
   roundWinner = null;
+  resumeAudio();
+  saveSettings();
   updateGameState();
   scheduleAiMove();
 }
@@ -144,6 +247,7 @@ function makeMove(tile: HTMLElement, player: Player) {
   tile.innerHTML = `
     <img src="assets/${player}.svg" data-value="${player}" alt="${player}" />
   `;
+  playTone(player === "circle" ? 520 : 360, 0.06, 0.04);
 
   finishTurn();
 }
@@ -152,9 +256,11 @@ function finishTurn() {
   const won = checkWinner();
 
   if (!won && isBoardFull()) {
-    resetBtn.classList.add("show");
+    setNewRoundVisible(true);
     gameOver = true;
     roundWinner = "draw";
+    recordRound("draw");
+    playTone(220, 0.18, 0.04);
     updateGameState();
     return;
   }
@@ -179,10 +285,13 @@ function checkWinner() {
       tiles[a].classList.add("winner");
       tiles[b].classList.add("winner");
       tiles[c].classList.add("winner");
+      setWinningLine([a, b, c]);
 
       updateScore(values[a]);
+      recordRound(values[a]);
+      playWinSound();
 
-      resetBtn.classList.add("show");
+      setNewRoundVisible(true);
       updateGameState();
       return true;
     }
@@ -202,17 +311,35 @@ function renderScore() {
   player2Result.textContent = String(score.cross);
 }
 
+function resetRound() {
+  cancelAiMove();
+  setNewRoundVisible(false);
+  clearBoard();
+
+  current = getNextStarter();
+  roundStarter = current;
+  gameOver = false;
+  roundWinner = null;
+  updateGameState();
+  scheduleAiMove();
+  closeOptionsModal();
+}
+
 function clearBoard() {
   [...tiles].forEach((tile) => {
     tile.innerHTML = "";
     tile.classList.remove("winner");
   });
+  setWinningLine(null);
 }
 
 function updateGameState() {
   document.body.classList.toggle("game-started", gameStarted);
   (game as HTMLElement & { inert: boolean }).inert = !gameStarted;
+  updateSettingsToggle();
+  if (!gameStarted) closeOptionsModal();
   renderStatus();
+  renderMeta();
   updateActivePlayer();
 }
 
@@ -238,6 +365,19 @@ function renderStatus() {
   }
 
   roundStatus.textContent = `${playerNames[current]}'s turn`;
+}
+
+function renderMeta() {
+  if (!gameStarted) {
+    roundMeta.textContent = "";
+    return;
+  }
+
+  const mode = getModeLabel(gameMode);
+  const difficulty = gameMode === "user-user" ? "no AI" : aiDifficulty;
+  const starterName = playerNames[roundStarter];
+
+  roundMeta.textContent = `${mode} | ${difficulty} | started: ${starterName}`;
 }
 
 function updateActivePlayer() {
@@ -433,6 +573,237 @@ function setAiDifficulty(difficulty: AiDifficulty) {
   });
 }
 
+function setStarter(nextStarter: Starter) {
+  starter = nextStarter;
+
+  starterButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.starter === starter);
+  });
+}
+
+function setMuted(nextMuted: boolean) {
+  muted = nextMuted;
+  muteToggleBtn.textContent = muted ? "sound off" : "sound on";
+
+  if (!muted) resumeAudio();
+}
+
+function openModeSelector() {
+  cancelAiMove();
+  clearBoard();
+  setNewRoundVisible(false);
+  gameStarted = false;
+  gameOver = false;
+  roundWinner = null;
+  current = getNextStarter();
+  roundStarter = current;
+  updateGameState();
+}
+
+function getNextStarter(): Player {
+  if (starter === "random") {
+    return Math.random() < 0.5 ? "circle" : "cross";
+  }
+
+  return starter;
+}
+
+function getModeLabel(mode: GameMode) {
+  if (mode === "user-ai") return "user vs ai";
+  if (mode === "ai-ai") return "ai vs ai";
+  return "player vs player";
+}
+
+function recordRound(winner: Player | "draw") {
+  sessionHistory.unshift({
+    round: sessionHistory.length + 1,
+    mode: gameMode,
+    difficulty: aiDifficulty,
+    starter: roundStarter,
+    winner,
+  });
+  renderHistory();
+}
+
+function renderHistory() {
+  const rounds = sessionHistory.length;
+  const draws = sessionHistory.filter((round) => round.winner === "draw").length;
+  const circleWins = sessionHistory.filter((round) => round.winner === "circle").length;
+  const crossWins = sessionHistory.filter((round) => round.winner === "cross").length;
+
+  statRounds.textContent = `${rounds} ${rounds === 1 ? "round" : "rounds"}`;
+  statDraws.textContent = `${draws} ${draws === 1 ? "draw" : "draws"}`;
+  statCircleWins.textContent = `O ${circleWins} ${circleWins === 1 ? "win" : "wins"}`;
+  statCrossWins.textContent = `X ${crossWins} ${crossWins === 1 ? "win" : "wins"}`;
+  statCircleRate.textContent = `O ${getWinRate(circleWins, rounds)}%`;
+  statCrossRate.textContent = `X ${getWinRate(crossWins, rounds)}%`;
+  historyList.innerHTML = sessionHistory
+    .map((round) => {
+      const winner =
+        round.winner === "draw" ? "draw" : `${escapeHtml(playerNames[round.winner])} won`;
+
+      return `
+        <li>
+          <span>#${round.round}</span>
+          <strong>${winner}</strong>
+          <small>${getModeLabel(round.mode)} | ${round.difficulty} | ${escapeHtml(playerNames[round.starter])} started</small>
+        </li>
+      `;
+    })
+    .join("");
+}
+
+function getWinRate(wins: number, rounds: number) {
+  if (rounds === 0) return 0;
+  return Math.round((wins / rounds) * 100);
+}
+
+function setHistoryPanelOpen(isOpen: boolean) {
+  historyPanel.classList.toggle("show", isOpen);
+  historyPanel.setAttribute("aria-hidden", String(!isOpen));
+}
+
+function setNewRoundVisible(isVisible: boolean) {
+  resetBtn.classList.toggle("show", isVisible);
+  mobileResetBtn.classList.toggle("show", isVisible);
+}
+
+function openOptionsModal() {
+  if (!mobileOptionsQuery.matches) return;
+  if (optionsModal.open) return;
+
+  optionsModal.showModal();
+}
+
+function closeOptionsModal() {
+  if (!optionsModal.open) return;
+
+  optionsModal.close();
+}
+
+function syncOptionsPlacement() {
+  if (mobileOptionsQuery.matches) {
+    if (optionsMenu.parentElement !== optionsModal) {
+      optionsModal.append(optionsMenu);
+    }
+    return;
+  }
+
+  closeOptionsModal();
+  if (optionsMenu.parentElement !== desktopOptionsMount) {
+    desktopOptionsMount.append(optionsMenu);
+  }
+}
+
+function updateSettingsToggle() {
+  settingsToggle.hidden = !gameStarted || !mobileOptionsQuery.matches;
+}
+
+function setWinningLine(combination: number[] | null) {
+  winLine.className = "";
+
+  if (!combination) return;
+
+  const index = wins.findIndex((win) => win.every((tile, i) => tile === combination[i]));
+  if (index < 0) return;
+
+  winLine.classList.add("show", `line-${index}`);
+}
+
+function playWinSound() {
+  playTone(520, 0.08, 0.04);
+  window.setTimeout(() => playTone(660, 0.09, 0.04), 90);
+  window.setTimeout(() => playTone(820, 0.12, 0.04), 190);
+}
+
+function playTone(frequency: number, duration: number, volume: number) {
+  if (muted) return;
+
+  const context = resumeAudio();
+  if (!context) return;
+
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+
+  oscillator.frequency.value = frequency;
+  oscillator.type = "sine";
+  gain.gain.value = volume;
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start();
+  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + duration);
+  oscillator.stop(context.currentTime + duration);
+}
+
+function resumeAudio() {
+  const AudioContextConstructor = audioWindow.AudioContext || audioWindow.webkitAudioContext;
+  if (!AudioContextConstructor) return null;
+
+  audioContext ||= new AudioContextConstructor();
+  if (audioContext.state === "suspended") {
+    void audioContext.resume();
+  }
+
+  return audioContext;
+}
+
+function loadSettings() {
+  try {
+    const rawSettings = localStorage.getItem(SETTINGS_KEY);
+    if (!rawSettings) return;
+
+    const settings = JSON.parse(rawSettings) as Partial<{
+      playerNames: Partial<Record<Player, string>>;
+      gameMode: GameMode;
+      aiDifficulty: AiDifficulty;
+      starter: Starter;
+      muted: boolean;
+    }>;
+
+    if (settings.playerNames) {
+      (["circle", "cross"] as Player[]).forEach((player) => {
+        const savedName = settings.playerNames?.[player];
+        if (!savedName) return;
+
+        playerNames[player] = normalizePlayerName(savedName) || playerNames[player];
+        playerNameElements[player].textContent = playerNames[player];
+      });
+    }
+
+    if (isGameMode(settings.gameMode)) gameMode = settings.gameMode;
+    if (isDifficulty(settings.aiDifficulty)) aiDifficulty = settings.aiDifficulty;
+    if (isStarter(settings.starter)) starter = settings.starter;
+    if (typeof settings.muted === "boolean") muted = settings.muted;
+  } catch {
+    localStorage.removeItem(SETTINGS_KEY);
+  }
+}
+
+function saveSettings() {
+  localStorage.setItem(
+    SETTINGS_KEY,
+    JSON.stringify({
+      playerNames,
+      gameMode,
+      aiDifficulty,
+      starter,
+      muted,
+    }),
+  );
+}
+
+function isGameMode(value: unknown): value is GameMode {
+  return value === "user-user" || value === "user-ai" || value === "ai-ai";
+}
+
+function isDifficulty(value: unknown): value is AiDifficulty {
+  return value === "easy" || value === "normal" || value === "hard";
+}
+
+function isStarter(value: unknown): value is Starter {
+  return value === "circle" || value === "cross" || value === "random";
+}
+
 function getAppConfig(): AppConfig {
   const env = (import.meta as ImportMeta & { env: Record<string, string | undefined> }).env;
 
@@ -502,8 +873,23 @@ function setupPlayerNameEditor(player: Player, nameElement: HTMLElement) {
 
   editTrigger.addEventListener("contextmenu", (event) => {
     event.preventDefault();
+    clearLongPressTimer();
     startPlayerNameEdit(nameElement);
   });
+
+  editTrigger.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse") return;
+
+    clearLongPressTimer();
+    longPressTimer = window.setTimeout(() => {
+      longPressTimer = null;
+      startPlayerNameEdit(nameElement);
+    }, LONG_PRESS_DELAY);
+  });
+
+  editTrigger.addEventListener("pointerup", clearLongPressTimer);
+  editTrigger.addEventListener("pointerleave", clearLongPressTimer);
+  editTrigger.addEventListener("pointercancel", clearLongPressTimer);
 
   nameElement.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
@@ -540,7 +926,17 @@ function setupPlayerNameEditor(player: Player, nameElement: HTMLElement) {
     nameElement.contentEditable = "false";
     nameElement.classList.remove("editing");
     renderStatus();
+    renderMeta();
+    renderHistory();
+    saveSettings();
   });
+}
+
+function clearLongPressTimer() {
+  if (longPressTimer === null) return;
+
+  window.clearTimeout(longPressTimer);
+  longPressTimer = null;
 }
 
 function startPlayerNameEdit(nameElement: HTMLElement) {
@@ -584,4 +980,10 @@ function moveCaretToEnd(element: HTMLElement) {
   range.collapse(false);
   selection?.removeAllRanges();
   selection?.addRange(range);
+}
+
+function escapeHtml(value: string) {
+  const element = document.createElement("span");
+  element.textContent = value;
+  return element.innerHTML;
 }

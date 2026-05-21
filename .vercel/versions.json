@@ -1,0 +1,96 @@
+{
+  "app_name": "Tic Tac Toe",
+  "author": "TiedWithType",
+  "versioning": "semver",
+  "codename_policy": {
+    "theme": "alphabetical desserts",
+    "format": "Title Case",
+    "next_codename_letter": "D",
+    "patch_releases_keep_parent_codename": true
+  },
+  "releases": [
+    {
+      "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0,
+        "release": "alpha"
+      },
+      "codename": "First Move",
+      "codename_letter": null,
+      "status": "previous",
+      "notes": [
+        "Initial public app metadata release.",
+        "Historical pre-policy codename; dessert codenames start with the next release."
+      ]
+    },
+    {
+      "version": {
+        "major": 1,
+        "minor": 1,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Apple Pie",
+      "codename_letter": "A",
+      "status": "previous",
+      "notes": [
+        "Added current-session score history.",
+        "Added game mode and AI difficulty meta in the UI.",
+        "Added mode switching without a page reload.",
+        "Improved mobile long press for player name editing."
+      ]
+    },
+    {
+      "version": {
+        "major": 1,
+        "minor": 2,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Brownie",
+      "codename_letter": "B",
+      "status": "previous",
+      "notes": [
+        "Added winning line animation.",
+        "Added move, win and draw sound effects.",
+        "Added mute toggle.",
+        "Persisted player names, mode, starter, mute and AI difficulty in localStorage."
+      ]
+    },
+    {
+      "version": {
+        "major": 1,
+        "minor": 3,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Cheesecake",
+      "codename_letter": "C",
+      "status": "current",
+      "notes": [
+        "Added O, X and random round starter selection.",
+        "Added round, draw, win and win-rate statistics.",
+        "Added AI difficulty descriptions."
+      ]
+    }
+  ],
+  "planned_codenames": [
+    {
+      "letter": "D",
+      "codename": "Donut",
+      "status": "next"
+    },
+    {
+      "letter": "E",
+      "codename": "Eclair",
+      "status": "reserved"
+    },
+    {
+      "letter": "F",
+      "codename": "Fudge",
+      "status": "reserved"
+    }
+  ],
+  "planned_releases": []
+}

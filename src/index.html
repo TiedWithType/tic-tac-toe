@@ -16,6 +16,7 @@
   <body>
     <main id="game">
       <p id="round_status" aria-live="polite"></p>
+      <p id="round_meta"></p>
       <header>
         <section id="player_1">
           <span class="name">
@@ -43,19 +44,37 @@
         <figure data-tile="tile_7"></figure>
         <figure data-tile="tile_8"></figure>
         <figure data-tile="tile_9"></figure>
+        <span id="win_line" aria-hidden="true"></span>
       </section>
-      <section class="controls">
-        <button id="reset">new round</button>
-        <button id="reset_game">reset game</button>
-      </section>
+      <div id="desktop_options_mount">
+        <section id="options_menu" class="controls" aria-label="Game options">
+          <button id="options_close" type="button">close</button>
+          <button id="reset">new round</button>
+          <button id="change_mode">change mode</button>
+          <button id="history_toggle">history</button>
+          <button id="mute_toggle">sound on</button>
+          <button id="reset_game">reset game</button>
+        </section>
+      </div>
+      <button id="mobile_reset" type="button">new round</button>
     </main>
+    <button id="settings_toggle" type="button" aria-label="Open game settings" hidden>&#9881;</button>
+    <dialog id="options_modal" aria-label="Game options"></dialog>
     <section id="start_overlay" aria-label="Start game">
       <section class="difficulty-panel" aria-label="AI difficulty">
         <span>AI difficulty</span>
         <div class="difficulty-options">
-          <button data-difficulty="easy" type="button">easy</button>
-          <button data-difficulty="normal" type="button">normal</button>
-          <button data-difficulty="hard" type="button">hard</button>
+          <button data-difficulty="easy" type="button" title="Easy: mostly random moves with a small tactical chance.">easy</button>
+          <button data-difficulty="normal" type="button" title="Normal: blocks, wins and sometimes searches for the best move.">normal</button>
+          <button data-difficulty="hard" type="button" title="Hard: uses the best available move.">hard</button>
+        </div>
+      </section>
+      <section class="starter-panel" aria-label="Starting player">
+        <span>starts</span>
+        <div class="starter-options">
+          <button data-starter="circle" type="button">O</button>
+          <button data-starter="cross" type="button">X</button>
+          <button data-starter="random" type="button">random</button>
         </div>
       </section>
       <div class="start-actions">
@@ -64,6 +83,21 @@
         <button data-mode="ai-ai">Start game (ai vs ai)</button>
       </div>
     </section>
+    <aside id="history_panel" aria-label="Session history" aria-hidden="true">
+      <header>
+        <span>session</span>
+        <button id="history_close" type="button" aria-label="Close history">close</button>
+      </header>
+      <section class="stats">
+        <span id="stat_rounds">0 rounds</span>
+        <span id="stat_draws">0 draws</span>
+        <span id="stat_circle_wins">O 0 wins</span>
+        <span id="stat_cross_wins">X 0 wins</span>
+        <span id="stat_circle_rate">O 0%</span>
+        <span id="stat_cross_rate">X 0%</span>
+      </section>
+      <ol id="history_list"></ol>
+    </aside>
     <footer id="app_footer">Tic Tac Toe v1.0.0 alpha "First Move" by TiedWithType</footer>
   </body>
 </html>
