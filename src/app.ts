@@ -12,7 +12,7 @@ const resetGameBtn = document.querySelector<HTMLButtonElement>("#reset_game")!;
 const startBtn = document.querySelector<HTMLButtonElement>("#start_game")!;
 const startButtons = document.querySelectorAll<HTMLButtonElement>("[data-mode]");
 const difficultyButtons = document.querySelectorAll<HTMLButtonElement>("[data-difficulty]");
-const appFooter = document.querySelector<HTMLElement>("#app_footer")!;
+const appFooter = getOrCreateAppFooter();
 
 type Player = "circle" | "cross";
 type GameMode = "user-user" | "user-ai" | "ai-ai";
@@ -450,6 +450,18 @@ function getAppConfig(): AppConfig {
       cross: env.VITE_DEFAULT_PLAYER_CROSS,
     },
   };
+}
+
+function getOrCreateAppFooter() {
+  const existingFooter = document.querySelector<HTMLElement>("#app_footer");
+  if (existingFooter) return existingFooter;
+
+  const footer = document.createElement("footer");
+  footer.id = "app_footer";
+  footer.textContent = 'Tic Tac Toe v1.0.0 alpha "First Move" by TiedWithType';
+  document.body.append(footer);
+
+  return footer;
 }
 
 function getEnvNumber(value: string | undefined, fallback: number) {

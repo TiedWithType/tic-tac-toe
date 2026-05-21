@@ -3,3 +3,6 @@ dist
 node_modules
 bun.lock
 .vercel
+.vercel/*
+!.vercel/versioning-policy.md
+!.vercel/versions.json
