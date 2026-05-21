@@ -372,6 +372,22 @@ button {
   line-height: 1;
 }
 
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-size: 1.45rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
 #settings_toggle[hidden] {
   display: none;
 }

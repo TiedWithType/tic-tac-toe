@@ -247,7 +247,6 @@ function makeMove(tile: HTMLElement, player: Player) {
   tile.innerHTML = `
     <img src="assets/${player}.svg" data-value="${player}" alt="${player}" />
   `;
-  playTone(player === "circle" ? 520 : 360, 0.06, 0.04);
 
   finishTurn();
 }
@@ -260,13 +259,14 @@ function finishTurn() {
     gameOver = true;
     roundWinner = "draw";
     recordRound("draw");
-    playTone(220, 0.18, 0.04);
+    playDrawSound();
     updateGameState();
     return;
   }
 
   if (gameOver) return;
 
+  playPlayerMoveSound(current);
   current = current === "circle" ? "cross" : "circle";
   updateGameState();
   scheduleAiMove();
@@ -710,10 +710,53 @@ function setWinningLine(combination: number[] | null) {
   winLine.classList.add("show", `line-${index}`);
 }
 
+function playPlayerMoveSound(player: Player) {
+  if (player === "circle") {
+    playCircleMoveSound();
+    return;
+  }
+
+  playCrossMoveSound();
+}
+
+function playCircleMoveSound() {
+  playTone(523, 0.06, 0.04);
+  window.setTimeout(() => playTone(659, 0.05, 0.035), 45);
+}
+
+function playCrossMoveSound() {
+  playTone(392, 0.06, 0.04);
+  window.setTimeout(() => playTone(330, 0.06, 0.035), 55);
+}
+
+function playDrawSound() {
+  playTone(330, 0.16, 0.05);
+  window.setTimeout(() => playTone(330, 0.16, 0.045), 170);
+  window.setTimeout(() => playTone(262, 0.24, 0.045), 360);
+}
+
+function playFanfareRoyal() {
+  // Akord otwierający (C-dur)
+  playTone(523, 0.25, 0.05); // C
+  playTone(659, 0.25, 0.05); // E
+  playTone(784, 0.25, 0.05); // G
+
+  // Melodia
+  window.setTimeout(() => playTone(880, 0.18, 0.05), 260); // A5
+  window.setTimeout(() => playTone(988, 0.2, 0.05), 420); // B5
+  window.setTimeout(() => playTone(1046, 0.22, 0.05), 600); // C6
+
+  // Akord końcowy (C-dur wyżej)
+  window.setTimeout(() => {
+    playTone(1046, 0.35, 0.06); // C6
+    playTone(1318, 0.35, 0.06); // E6
+    playTone(1568, 0.35, 0.06); // G6
+  }, 850);
+}
+
+
 function playWinSound() {
-  playTone(520, 0.08, 0.04);
-  window.setTimeout(() => playTone(660, 0.09, 0.04), 90);
-  window.setTimeout(() => playTone(820, 0.12, 0.04), 190);
+  playFanfareRoyal();
 }
 
 function playTone(frequency: number, duration: number, volume: number) {

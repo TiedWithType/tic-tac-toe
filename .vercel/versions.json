@@ -67,11 +67,27 @@
       },
       "codename": "Cheesecake",
       "codename_letter": "C",
-      "status": "current",
+      "status": "previous",
       "notes": [
         "Added O, X and random round starter selection.",
         "Added round, draw, win and win-rate statistics.",
         "Added AI difficulty descriptions."
+      ]
+    },
+    {
+      "version": {
+        "major": 1,
+        "minor": 3,
+        "patch": 1,
+        "release": "beta"
+      },
+      "codename": "Cheesecake",
+      "codename_letter": "C",
+      "status": "current",
+      "notes": [
+        "Kept mobile new round action under the board.",
+        "Used a Material Symbols settings icon for mobile options.",
+        "Split move sounds per player and made draw sound distinct."
       ]
     }
   ],
