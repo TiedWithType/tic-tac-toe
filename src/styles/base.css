@@ -1,0 +1,173 @@
+:root {
+  --circle-color: #3F51B5;
+  --cross-color: #FF4081;
+  --bg: #16161a;
+  --surface: #1e1e24;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --text: #e8e8f0;
+  --text-muted: rgba(232, 232, 240, 0.45);
+  --winner-color: var(--circle-color);
+  --easy-color: #34d399;
+  --normal-color: #ffc857;
+  --hard-color: #f44336;
+  --difficulty-color: var(--normal-color);
+
+  --viewport-block: 100dvh;
+  --viewport-inline: 100dvw;
+  --board-size: 18.75rem;
+  --control-width: 18.75rem;
+  --panel-width: 21.25rem;
+  --history-panel-width: 20.625rem;
+  --options-modal-width: 22.5rem;
+
+  --space-2xs: 0.2rem;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 3rem;
+  --space-name-edit: 0.15rem;
+  --space-color-label-block: 0.45rem;
+  --space-color-input-gap: 0.55rem;
+  --space-stat-inline: 0.6rem;
+  --space-history-item: 0.7rem;
+  --space-start-overlay-gap: 1.4rem;
+  --space-panel-gap: 0.7rem;
+  --space-start-actions-gap: 1.1rem;
+  --space-color-label-inline: 0.75rem;
+  --space-control-inline: 0.65rem;
+  --space-button-block: 0.5rem;
+  --space-button-inline: 1.25rem;
+  --space-modal-inset: 50%;
+
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.125rem;
+  --radius-pill: 62.4375rem;
+  --radius-round: 50%;
+
+  --border-width: 0.0625rem;
+  --blur-game: 0.5rem;
+  --blur-overlay: 0.25rem;
+  --blur-backdrop: 0.125rem;
+  --hover-lift: -0.125rem;
+  --line-thickness: 0.38rem;
+  --marker-stroke: 0.72rem;
+  --marker-size-circle: 58%;
+  --marker-size-cross: 64%;
+  --win-line-length: 88%;
+  --line-length-diagonal: 118%;
+  --line-edge-position: 15.8%;
+  --line-center-position: 50%;
+  --line-opposite-edge-position: 84.2%;
+  --angle-quarter: 90deg;
+  --angle-diagonal: 45deg;
+  --angle-right: 90deg;
+  --angle-none: 0deg;
+
+  --font-2xs: 0.68rem;
+  --font-xs: 0.72rem;
+  --font-sm: 0.75rem;
+  --font-md: 0.85rem;
+  --font-lg: 0.95rem;
+  --font-xl: 1rem;
+  --font-2xl: 1.25rem;
+  --font-3xl: 1.45rem;
+  --font-score: 2.5rem;
+  --font-title-min: 2.6rem;
+  --font-title-fluid: 13vw;
+  --font-title-max: 4rem;
+  --font-button: 0.85rem;
+  --font-color-label: 0.78rem;
+  --font-history-title: 0.82rem;
+  --player-card-width: 8.5rem;
+  --player-name-edit-width: 6.25rem;
+  --round-status-height: 1.4rem;
+  --controls-height: 5.8rem;
+  --color-input-size: 2rem;
+  --settings-size: 2.75rem;
+  --start-stripe-width: 0.35rem;
+  --start-button-padding-block: 1rem;
+  --start-button-padding-inline: 1.2rem;
+  --start-primary-padding-block: 0.85rem;
+  --start-primary-padding-inline: 1.75rem;
+  --footer-bottom: 0.125rem;
+  --history-bottom-offset: 3rem;
+  --history-list-padding-end: 0.2rem;
+  --history-item-gap-row: 0.2rem;
+  --history-item-gap-column: 0.7rem;
+  --history-mobile-max-block: 70dvh;
+  --history-mobile-max-size: 32rem;
+  --mobile-breakpoint: 40rem;
+  --shadow-settings-y: 0.8rem;
+  --shadow-settings-blur: 2rem;
+  --shadow-modal-y: 1.5rem;
+  --shadow-modal-blur: 4rem;
+  --shadow-soft-y: 1rem;
+  --shadow-soft-blur: 3rem;
+  --shadow-start-hover-y: 1.15rem;
+  --shadow-start-hover-blur: 3.2rem;
+  --shadow-winner-blur: 1.25rem;
+  --shadow-win-line-sm: 0.4rem;
+  --shadow-win-line-lg: 1.2rem;
+  --shadow-title-sm: 0.45rem;
+  --shadow-title-md: 1.2rem;
+  --shadow-title-lg: 2.4rem;
+
+  --tracking-tight: 0.02em;
+  --tracking-sm: 0.08em;
+  --tracking-md: 0.1em;
+  --tracking-lg: 0.12em;
+
+  --duration-fast: 0.15s;
+  --duration-reset: 0.18s;
+  --duration-panel: 0.2s;
+  --duration-game: 0.25s;
+  --duration-marker: 0.35s;
+  --duration-win-line: 0.42s;
+  --duration-name: 0.5s;
+
+  --ease-spring: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Quicksand", sans-serif;
+  will-change: contents;
+  contain: content;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  block-size: var(--viewport-block);
+  inline-size: var(--viewport-inline);
+  overflow: hidden;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  background-color: var(--bg);
+
+  &[data-ai-difficulty="easy"] {
+    --difficulty-color: var(--easy-color);
+  }
+
+  &[data-ai-difficulty="normal"] {
+    --difficulty-color: var(--normal-color);
+  }
+
+  &[data-ai-difficulty="hard"] {
+    --difficulty-color: var(--hard-color);
+  }
+}

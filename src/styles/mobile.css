@@ -1,0 +1,77 @@
+@media (max-width: 40rem) {
+  body {
+    padding-block: var(--space-lg) var(--space-2xl);
+  }
+
+  #game {
+    gap: var(--space-lg);
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    inline-size: 100%;
+    min-block-size: auto;
+    justify-content: center;
+
+    button {
+      flex-basis: auto;
+      inline-size: 100%;
+      min-block-size: var(--settings-size);
+    }
+  }
+
+  #desktop_options_mount {
+    display: none;
+  }
+
+  #mobile_reset {
+    display: block;
+    inline-size: var(--control-width);
+    min-block-size: var(--settings-size);
+
+    &.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+      visibility: visible;
+
+      &:hover,
+      &:focus-visible {
+        transform: translateY(var(--hover-lift)) scale(1);
+      }
+    }
+  }
+
+  #settings_toggle:not([hidden]) {
+    display: grid;
+  }
+
+  #options_close {
+    display: block;
+  }
+
+  #options_modal {
+    inset: auto var(--space-lg) calc(var(--space-lg) + env(safe-area-inset-bottom))
+      var(--space-lg);
+    inline-size: auto;
+    max-inline-size: none;
+    border-radius: var(--radius-xl);
+    transform: none;
+
+    #reset {
+      display: none;
+    }
+  }
+
+  #history_panel {
+    inset-block: auto var(--history-bottom-offset);
+    inset-inline: var(--space-lg);
+    max-block-size: min(var(--history-mobile-max-block), var(--history-mobile-max-size));
+    transform: translateY(calc(100% + var(--space-lg)));
+
+    &.show {
+      transform: translateY(0);
+    }
+  }
+}

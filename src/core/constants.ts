@@ -1,4 +1,4 @@
-import type { MarkerColors, Player } from "./types";
+import type { MarkerColors, Player, PlayerNamesByMode } from "./types";
 
 export const PLAYERS = ["circle", "cross"] as const satisfies readonly Player[];
 
@@ -8,14 +8,26 @@ export const LONG_PRESS_DELAY = 550;
 export const SETTINGS_KEY = "tic-tac-toe-settings-v1";
 
 export const DEFAULT_MARKER_COLORS = {
-  circle: "#2196f3",
-  cross: "#f44336",
+  circle: "#4f46e5",
+  cross: "#ec4899",
 } satisfies MarkerColors;
 
-export const DEFAULT_PLAYER_NAMES = {
-  circle: "player 1",
-  cross: "player 2",
-} satisfies Record<Player, string>;
+export const DEFAULT_PLAYER_NAMES_BY_MODE = {
+  "user-user": {
+    circle: "player 1",
+    cross: "player 2",
+  },
+  "user-ai": {
+    circle: "player 1",
+    cross: "ai 1",
+  },
+  "ai-ai": {
+    circle: "ai 1",
+    cross: "ai 2",
+  },
+} satisfies PlayerNamesByMode;
+
+export const DEFAULT_PLAYER_NAMES = DEFAULT_PLAYER_NAMES_BY_MODE["user-user"];
 
 export const WINS = [
   [0, 1, 2],

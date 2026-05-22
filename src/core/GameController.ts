@@ -2,9 +2,10 @@ import {
   AI_MOVE_DELAY,
   DEFAULT_MARKER_COLORS,
   DEFAULT_PLAYER_NAMES,
+  DEFAULT_PLAYER_NAMES_BY_MODE,
   PLAYERS,
 } from "./constants";
-import type { AiDifficulty, GameMode, GameState, Player, Starter } from "./types";
+import type { AiDifficulty, GameMode, GameState, Player, PlayerNames, Starter } from "./types";
 import { AiPlayer } from "../game/AiPlayer";
 import { GameEngine } from "../game/GameEngine";
 import { AppConfigService } from "../services/AppConfigService";
@@ -37,6 +38,8 @@ export class GameController {
 
   private aiMoveTimer: number | null = null;
   private isStarting = false;
+  private defaultPlayers = DEFAULT_PLAYER_NAMES_BY_MODE;
+  private playerNamesByMode: Partial<Record<GameMode, Partial<PlayerNames>>> = {};
 
   constructor(
     private view: GameView,
@@ -51,8 +54,9 @@ export class GameController {
 
     this.view.renderAppTitle(config.appName);
     this.view.renderFooter(config);
-    this.applyDefaultPlayers(config.defaultPlayers);
+    this.defaultPlayers = config.defaultPlayers;
     this.loadSettings();
+    this.applyPlayerNamesForMode(this.state.gameMode);
     this.audio.setMuted(this.state.muted);
     this.bindEvents();
     this.setupPlayerNameEditors();
@@ -139,7 +143,7 @@ export class GameController {
         element: this.view.playerNameElements[player],
         getName: () => this.state.playerNames[player],
         onCommit: (name) => {
-          this.state.playerNames[player] = name;
+          this.setPlayerName(player, name);
           this.saveSettings();
           this.render();
         },
@@ -164,6 +168,7 @@ export class GameController {
   private startGame(mode: GameMode) {
     this.cancelAiMove();
     this.state.gameMode = mode;
+    this.applyPlayerNamesForMode(mode);
     this.state.current = GameEngine.getNextStarter(this.state.starter);
     this.state.roundStarter = this.state.current;
     this.state.gameStarted = true;
@@ -240,6 +245,7 @@ export class GameController {
     this.state.current = GameEngine.getNextStarter(this.state.starter);
     this.state.roundStarter = this.state.current;
     this.state.gameMode = "user-user";
+    this.applyPlayerNamesForMode(this.state.gameMode);
     this.state.gameOver = false;
     this.state.gameStarted = false;
     this.state.roundWinner = null;
@@ -323,6 +329,12 @@ export class GameController {
     this.state.markerColors[player] = color;
   }
 
+  private setPlayerName(player: Player, name: string) {
+    this.state.playerNames[player] = name;
+    this.playerNamesByMode[this.state.gameMode] ||= {};
+    this.playerNamesByMode[this.state.gameMode]![player] = name;
+  }
+
   private recordRound(winner: Player | "draw") {
     this.state.history.unshift({
       round: this.state.history.length + 1,
@@ -336,14 +348,14 @@ export class GameController {
   private loadSettings() {
     const settings = this.storage.load();
 
-    if (settings.playerNames) {
-      PLAYERS.forEach((player) => {
-        const savedName = settings.playerNames?.[player];
-        if (!savedName) return;
+    if (settings.playerNamesByMode) {
+      Object.entries(settings.playerNamesByMode).forEach(([mode, playerNames]) => {
+        if (!SettingsStorage.isGameMode(mode)) return;
 
-        this.state.playerNames[player] =
-          PlayerNameEditor.normalize(savedName) || this.state.playerNames[player];
+        this.playerNamesByMode[mode] = this.normalizePlayerNames(playerNames);
       });
+    } else if (settings.playerNames) {
+      this.playerNamesByMode["user-user"] = this.normalizePlayerNames(settings.playerNames);
     }
 
     if (settings.markerColors) {
@@ -365,7 +377,7 @@ export class GameController {
 
   private saveSettings() {
     this.storage.save({
-      playerNames: this.state.playerNames,
+      playerNamesByMode: this.playerNamesByMode,
       markerColors: this.state.markerColors,
       gameMode: this.state.gameMode,
       aiDifficulty: this.state.aiDifficulty,
@@ -374,14 +386,29 @@ export class GameController {
     });
   }
 
-  private applyDefaultPlayers(defaultPlayers: Partial<Record<Player, string>>) {
+  private applyPlayerNamesForMode(mode: GameMode) {
+    const defaultPlayers = this.defaultPlayers[mode] || DEFAULT_PLAYER_NAMES_BY_MODE[mode];
+    const customPlayers = this.playerNamesByMode[mode] || {};
+
     PLAYERS.forEach((player) => {
-      const defaultName = defaultPlayers[player];
-      if (!defaultName) return;
+      const nextName = customPlayers[player] || defaultPlayers[player] || DEFAULT_PLAYER_NAMES[player];
 
       this.state.playerNames[player] =
-        PlayerNameEditor.normalize(defaultName) || this.state.playerNames[player];
+        PlayerNameEditor.normalize(nextName) || DEFAULT_PLAYER_NAMES[player];
     });
+  }
+
+  private normalizePlayerNames(playerNames: Partial<PlayerNames> | undefined) {
+    const normalizedNames: Partial<PlayerNames> = {};
+
+    PLAYERS.forEach((player) => {
+      const name = playerNames?.[player];
+      if (!name) return;
+
+      normalizedNames[player] = PlayerNameEditor.normalize(name);
+    });
+
+    return normalizedNames;
   }
 
   private render() {

@@ -6,6 +6,7 @@ export type Starter = Player | "random";
 
 export type Score = Record<Player, number>;
 export type PlayerNames = Record<Player, string>;
+export type PlayerNamesByMode = Record<GameMode, PlayerNames>;
 export type MarkerColors = Record<Player, string>;
 
 export type RoundRecord = {
@@ -25,7 +26,7 @@ export type AppConfig = {
     release: string;
     codename: string;
   };
-  defaultPlayers: Partial<Record<Player, string>>;
+  defaultPlayers: PlayerNamesByMode;
 };
 
 export type GameState = {
@@ -48,6 +49,7 @@ export type GameState = {
 
 export type SettingsSnapshot = Partial<{
   playerNames: Partial<PlayerNames>;
+  playerNamesByMode: Partial<Record<GameMode, Partial<PlayerNames>>>;
   markerColors: Partial<MarkerColors>;
   gameMode: GameMode;
   aiDifficulty: AiDifficulty;

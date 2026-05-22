@@ -5,7 +5,7 @@
   "codename_policy": {
     "theme": "alphabetical desserts",
     "format": "Title Case",
-    "next_codename_letter": "E",
+    "next_codename_letter": "F",
     "patch_releases_keep_parent_codename": true
   },
   "releases": [
@@ -99,7 +99,7 @@
       },
       "codename": "Donut",
       "codename_letter": "D",
-      "status": "current",
+      "status": "previous",
       "notes": [
         "Refactored the app into controller, view, game, AI and service modules.",
         "Replaced environment variable config with typed src/app.config.ts metadata.",
@@ -107,18 +107,31 @@
         "Added the configured app name above the start menu with player-color glow.",
         "Removed unused marker SVG assets after switching O and X rendering to CSS."
       ]
+    },
+    {
+      "version": {
+        "major": 2,
+        "minor": 1,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Eclair",
+      "codename_letter": "E",
+      "status": "current",
+      "notes": [
+        "Added game-mode-specific default player names for player and AI modes.",
+        "Renamed the full reset action to main menu for clearer intent.",
+        "Split CSS into focused style modules and expanded native CSS nesting.",
+        "Moved style sizes, timings, shadows and spacing into global CSS tokens.",
+        "Changed default marker colors to indigo and pink."
+      ]
     }
   ],
   "planned_codenames": [
     {
-      "letter": "E",
-      "codename": "Eclair",
-      "status": "next"
-    },
-    {
       "letter": "F",
       "codename": "Fudge",
-      "status": "reserved"
+      "status": "next"
     },
     {
       "letter": "G",

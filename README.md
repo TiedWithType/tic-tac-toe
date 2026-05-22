@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.2.0.0 beta "Donut"**
+Aktualna wersja: **v.2.1.0 beta "Eclair"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -23,6 +23,7 @@ Autor: **TiedWithType**
 - 💾 Zapisywanie ustawień w `localStorage`.
 - 📱 Mobilne menu ustawień w modalu.
 - ✏️ Zmiana nazw graczy przez **PPM** albo **long press** na mobile.
+- 🏷️ Domyślne nazwy graczy zależne od trybu gry.
 - 🧩 Kod podzielony na moduły: controller, view, game engine, AI i serwisy.
 
 ## 🕹️ Jak grać?
@@ -36,7 +37,7 @@ Autor: **TiedWithType**
    - `Start game (ai vs ai)`
 5. W trybie gracza klikaj wolne pola na planszy.
 6. Po zakończonej rundzie użyj `new round`, żeby wyczyścić planszę i zachować wynik.
-7. Użyj `reset game`, żeby wyzerować wynik, historię i wrócić do ekranu startowego.
+7. Użyj `main menu`, żeby wyzerować wynik, historię i wrócić do ekranu startowego.
 
 ## 🎮 Tryby gry
 
@@ -108,7 +109,7 @@ Statystyki obejmują:
 - ❌ wygrane X
 - 📈 win rate dla obu graczy
 
-Historia działa dla aktualnej sesji i jest czyszczona przez `reset game`.
+Historia działa dla aktualnej sesji i jest czyszczona przez `main menu`.
 
 ## 🔊 Dźwięki
 
@@ -125,6 +126,7 @@ Gra używa Web Audio API. Efekty są generowane w kodzie, bez zewnętrznych plik
 Ustawienia są zapisywane w `localStorage`, więc po odświeżeniu strony gra pamięta:
 
 - nazwy graczy
+- nazwy graczy osobno dla każdego trybu gry
 - kolory markerów
 - tryb gry
 - poziom AI
@@ -157,6 +159,15 @@ src/
   ui/
     GameView.ts
     PlayerNameEditor.ts
+
+  styles/
+    base.css
+    game-layout.css
+    board.css
+    controls.css
+    start-overlay.css
+    shell.css
+    mobile.css
 ```
 
 ### 🧠 `GameController`
@@ -205,6 +216,18 @@ Zapis i odczyt ustawień z `localStorage`.
 
 Czyta konfigurację aplikacji z `src/app.config.ts`.
 
+### 🎨 `styles/*`
+
+Style są podzielone na moduły CSS importowane przez `src/style.css`:
+
+- `base.css` - tokeny, reset i globalne style strony
+- `game-layout.css` - layout gry, status rundy i scoreboard
+- `board.css` - plansza, O/X rysowane w CSS, zwycięska linia i animacje
+- `controls.css` - przyciski, menu opcji, kolory graczy i modal ustawień
+- `start-overlay.css` - ekran startowy, difficulty, starter i przyciski startu
+- `shell.css` - footer oraz panel historii
+- `mobile.css` - układ mobilny i modal bottom-sheet
+
 ## 🏷️ Konfiguracja aplikacji
 
 Główna konfiguracja znajduje się w:
@@ -220,14 +243,24 @@ export const appConfig = {
   appName: "Tic Tac Toe",
   version: {
     major: 2,
-    minor: 0,
+    minor: 1,
     patch: 0,
     release: "beta",
-    codename: "Donut",
+    codename: "Eclair",
   },
   defaultPlayers: {
-    circle: "player 1",
-    cross: "player 2",
+    "user-user": {
+      circle: "player 1",
+      cross: "player 2",
+    },
+    "user-ai": {
+      circle: "player 1",
+      cross: "ai 1",
+    },
+    "ai-ai": {
+      circle: "ai 1",
+      cross: "ai 2",
+    },
   },
 };
 ```
@@ -252,6 +285,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🍫 `1.2.0 beta "Brownie"`
 - 🍰 `1.3.0 beta "Cheesecake"`
 - 🍩 `2.0.0 beta "Donut"`
+- ⚡ `2.1.0 beta "Eclair"`
 
 ## 🚀 Uruchamianie lokalnie
 
@@ -300,7 +334,7 @@ Przed releasem warto sprawdzić:
 - ✅ `Start game (ai vs ai)` uruchamia symulację AI
 - ✅ difficulty wpływa na decyzje AI
 - ✅ `new round` czyści planszę i zachowuje wynik
-- ✅ `reset game` czyści planszę, wynik i historię
+- ✅ `main menu` czyści planszę, wynik i historię
 - ✅ kolory O/X zmieniają markery, start button i glow tytułu
 - ✅ PPM zmienia nazwę gracza na desktopie
 - ✅ long press zmienia nazwę gracza na mobile
