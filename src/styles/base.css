@@ -87,6 +87,8 @@
   --player-card-width: 8.5rem;
   --player-name-edit-width: 6.25rem;
   --round-status-height: 1.4rem;
+  --round-status-padding-block: 0.5rem;
+  --round-status-padding-inline: 0.85rem;
   --controls-height: 5.8rem;
   --color-input-size: 2rem;
   --settings-size: 2.75rem;
@@ -129,9 +131,11 @@
   --duration-game: 0.25s;
   --duration-marker: 0.35s;
   --duration-win-line: 0.42s;
+  --duration-winner-status: 0.52s;
   --duration-name: 0.5s;
 
   --ease-spring: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-status-color: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 *,

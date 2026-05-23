@@ -241,6 +241,11 @@ export class GameView {
   }
 
   private renderStatus(state: GameState) {
+    this.roundStatus.classList.toggle(
+      "winner",
+      Boolean(state.roundWinner && state.roundWinner !== "draw"),
+    );
+
     if (!state.gameStarted) {
       this.roundStatus.textContent = "Start game";
       return;
@@ -332,6 +337,11 @@ export class GameView {
     this.muteToggleBtn.textContent = state.muted ? "sound off" : "sound on";
     this.circleColorInput.value = state.markerColors.circle;
     this.crossColorInput.value = state.markerColors.cross;
+    this.circleColorInput.parentElement?.style.setProperty(
+      "--swatch-color",
+      state.markerColors.circle,
+    );
+    this.crossColorInput.parentElement?.style.setProperty("--swatch-color", state.markerColors.cross);
     document.documentElement.style.setProperty("--circle-color", state.markerColors.circle);
     document.documentElement.style.setProperty("--cross-color", state.markerColors.cross);
   }

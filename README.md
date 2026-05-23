@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.2.1.0 beta "Eclair"**
+Aktualna wersja: **v.2.1.1 beta "Eclair"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -244,7 +244,7 @@ export const appConfig = {
   version: {
     major: 2,
     minor: 1,
-    patch: 0,
+    patch: 1,
     release: "beta",
     codename: "Eclair",
   },
@@ -286,6 +286,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🍰 `1.3.0 beta "Cheesecake"`
 - 🍩 `2.0.0 beta "Donut"`
 - ⚡ `2.1.0 beta "Eclair"`
+- ⚡ `2.1.1 beta "Eclair"`
 
 ## 🚀 Uruchamianie lokalnie
 

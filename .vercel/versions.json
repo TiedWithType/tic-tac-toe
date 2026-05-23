@@ -117,13 +117,30 @@
       },
       "codename": "Eclair",
       "codename_letter": "E",
-      "status": "current",
+      "status": "previous",
       "notes": [
         "Added game-mode-specific default player names for player and AI modes.",
         "Renamed the full reset action to main menu for clearer intent.",
         "Split CSS into focused style modules and expanded native CSS nesting.",
         "Moved style sizes, timings, shadows and spacing into global CSS tokens.",
         "Changed default marker colors to indigo and pink."
+      ]
+    },
+    {
+      "version": {
+        "major": 2,
+        "minor": 1,
+        "patch": 1,
+        "release": "beta"
+      },
+      "codename": "Eclair",
+      "codename_letter": "E",
+      "status": "current",
+      "notes": [
+        "Polished color picker swatches to remove native browser borders.",
+        "Added a winner status badge with player-colored animated background.",
+        "Kept winner status layout stable while animating its background.",
+        "Adjusted winner status spacing and border radius for visual consistency."
       ]
     }
   ],

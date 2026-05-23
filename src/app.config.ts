@@ -5,7 +5,7 @@ export const appConfig = {
   version: {
     major: 2,
     minor: 1,
-    patch: 0,
+    patch: 1,
     release: "beta",
     codename: "Eclair",
   },
