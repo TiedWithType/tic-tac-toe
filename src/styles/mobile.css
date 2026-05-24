@@ -11,7 +11,7 @@
     display: grid;
     grid-template-columns: 1fr;
     inline-size: 100%;
-    min-block-size: auto;
+    min-block-size: 100%;
     justify-content: center;
 
     button {
@@ -26,9 +26,19 @@
   }
 
   #mobile_reset {
+    position: fixed;
+    inset-block-end: var(--fixed-action-inset);
+    inset-inline-start: var(--mobile-action-start);
+    z-index: 25;
     display: block;
-    inline-size: var(--control-width);
+    inline-size: var(--mobile-reset-width);
+    max-inline-size: calc(
+      var(--viewport-inline) - var(--settings-size) - var(--space-lg) - max(var(--space-sm), env(safe-area-inset-left)) -
+        max(var(--space-sm), env(safe-area-inset-right))
+    );
     min-block-size: var(--settings-size);
+    background: rgba(30, 30, 36, 0.94);
+    box-shadow: 0 var(--shadow-settings-y) var(--shadow-settings-blur) rgba(0, 0, 0, 0.28);
 
     &.show {
       opacity: 1;
@@ -45,6 +55,23 @@
 
   #settings_toggle:not([hidden]) {
     display: grid;
+    inset-block: auto var(--fixed-action-inset);
+    inset-inline-end: var(--mobile-action-start);
+  }
+
+  #app_footer {
+    display: none;
+  }
+
+  #options_version {
+    display: block;
+    grid-column: 1 / -1;
+    margin-block-start: auto;
+    color: var(--text-muted);
+    font-size: var(--font-xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-sm);
+    text-align: center;
   }
 
   #options_close {

@@ -86,17 +86,27 @@
   --font-history-title: 0.82rem;
   --player-card-width: 8.5rem;
   --player-name-edit-width: 6.25rem;
-  --round-status-height: 1.4rem;
   --round-status-padding-block: 0.5rem;
   --round-status-padding-inline: 0.85rem;
+  --round-status-height: calc(1.4rem + (var(--round-status-padding-block) * 2));
   --controls-height: 5.8rem;
   --color-input-size: 2rem;
   --settings-size: 2.75rem;
+  --mobile-action-gap: var(--space-sm);
+  --mobile-action-width: var(--control-width);
+  --mobile-reset-width: calc(
+    var(--mobile-action-width) - var(--mobile-action-gap) - var(--settings-size)
+  );
+  --mobile-action-start: max(
+    var(--space-sm),
+    calc((var(--viewport-inline) - var(--mobile-action-width)) / 2)
+  );
   --start-stripe-width: 0.35rem;
   --start-button-padding-block: 1rem;
   --start-button-padding-inline: 1.2rem;
   --start-primary-padding-block: 0.85rem;
   --start-primary-padding-inline: 1.75rem;
+  --fixed-action-inset: max(var(--space-sm), env(safe-area-inset-bottom));
   --footer-bottom: 0.125rem;
   --history-bottom-offset: 3rem;
   --history-list-padding-end: 0.2rem;

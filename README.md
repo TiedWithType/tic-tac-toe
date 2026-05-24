@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.2.1.1 beta "Eclair"**
+Aktualna wersja: **v.2.2.0 beta "Fudge"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -24,6 +24,7 @@ Autor: **TiedWithType**
 - 📱 Mobilne menu ustawień w modalu.
 - ✏️ Zmiana nazw graczy przez **PPM** albo **long press** na mobile.
 - 🏷️ Domyślne nazwy graczy zależne od trybu gry.
+- ⚡ Dynamiczne ładowanie runtime gry dopiero po wyborze trybu.
 - 🧩 Kod podzielony na moduły: controller, view, game engine, AI i serwisy.
 
 ## 🕹️ Jak grać?
@@ -142,6 +143,9 @@ src/
   app.ts
   app.config.ts
 
+  bootstrap/
+    StartMenu.ts
+
   core/
     GameController.ts
     constants.ts
@@ -243,10 +247,10 @@ export const appConfig = {
   appName: "Tic Tac Toe",
   version: {
     major: 2,
-    minor: 1,
-    patch: 1,
+    minor: 2,
+    patch: 0,
     release: "beta",
-    codename: "Eclair",
+    codename: "Fudge",
   },
   defaultPlayers: {
     "user-user": {
@@ -287,6 +291,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🍩 `2.0.0 beta "Donut"`
 - ⚡ `2.1.0 beta "Eclair"`
 - ⚡ `2.1.1 beta "Eclair"`
+- 🍫 `2.2.0 beta "Fudge"`
 
 ## 🚀 Uruchamianie lokalnie
 
@@ -319,6 +324,7 @@ bun run vite:preview
 ```json
 {
   "dev": "vite ./src --host",
+  "m:dev": "bunx vite ./src",
   "vite:build": "vite build ./src --emptyOutDir --outDir ../dist",
   "vite:preview": "vite preview"
 }

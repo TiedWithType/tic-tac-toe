@@ -5,7 +5,7 @@ export const PLAYERS = ["circle", "cross"] as const satisfies readonly Player[];
 export const MAX_PLAYER_NAME_LENGTH = 8;
 export const AI_MOVE_DELAY = 450;
 export const LONG_PRESS_DELAY = 550;
-export const SETTINGS_KEY = "tic-tac-toe-settings-v1";
+export const SETTINGS_KEY = "2ba29fe8-c4fa-4487-a79b-13db4c6d5f79";
 
 export const DEFAULT_MARKER_COLORS = {
   circle: "#4f46e5",

@@ -10,6 +10,10 @@ export class AudioService {
   private muted = false;
   private audioWindow = window as AudioWindow;
 
+  constructor(audioContext: AudioContext | null = null) {
+    this.audioContext = audioContext;
+  }
+
   setMuted(nextMuted: boolean) {
     this.muted = nextMuted;
 

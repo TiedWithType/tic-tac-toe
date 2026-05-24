@@ -17,6 +17,8 @@
 }
 #round_status {
   position: relative;
+  display: grid;
+  place-items: center;
   inline-size: var(--control-width);
   min-block-size: var(--round-status-height);
   color: var(--text);
@@ -26,7 +28,7 @@
   line-height: 1.2;
   max-inline-size: var(--control-width);
   overflow-wrap: anywhere;
-  padding: 0;
+  padding: var(--round-status-padding-block) var(--round-status-padding-inline);
   border-radius: var(--radius-sm);
   isolation: isolate;
   text-align: center;
@@ -45,7 +47,6 @@
   }
 
   &.winner {
-    padding: var(--round-status-padding-block) var(--round-status-padding-inline);
     color: #fff;
 
     &::before {

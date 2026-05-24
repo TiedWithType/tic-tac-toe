@@ -3,7 +3,8 @@
   "scripts": {
     "vite:preview": "vite preview",
     "vite:build": "vite build ./src --emptyOutDir --outDir ../dist",
-    "dev": "vite ./src --host"
+    "dev": "vite ./src --host",
+    "m:dev": "bunx vite ./src"
   },
   "dependencies": {
     "vite": "^8.0.13"

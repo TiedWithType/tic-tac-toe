@@ -29,6 +29,7 @@ export class GameView {
   private desktopOptionsMount = document.querySelector<HTMLElement>("#desktop_options_mount")!;
   private optionsModal = document.querySelector<HTMLDialogElement>("#options_modal")!;
   private optionsCloseBtn = document.querySelector<HTMLButtonElement>("#options_close")!;
+  private optionsVersion = document.querySelector<HTMLElement>("#options_version")!;
   private settingsToggle = document.querySelector<HTMLButtonElement>("#settings_toggle")!;
   private startBtn = document.querySelector<HTMLButtonElement>("#start_game")!;
   private startButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-mode]")];
@@ -157,7 +158,10 @@ export class GameView {
     const version = `${major}.${minor}.${patch}`;
     const codenameLabel = codename ? ` "${codename}"` : "";
 
-    this.appFooter.textContent = `v.${version}${codenameLabel} by TiedWithType`;
+    const versionText = `v.${version}${codenameLabel} by TiedWithType`;
+
+    this.appFooter.textContent = versionText;
+    this.optionsVersion.textContent = versionText;
   }
 
   renderAppTitle(appName: string) {

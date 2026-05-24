@@ -1,7 +1,7 @@
 #app_footer {
   position: fixed;
   inset-inline: 0;
-  inset-block-end: var(--space-md);
+  inset-block-end: var(--footer-bottom);
   z-index: 20;
   color: var(--text-muted);
   font-size: var(--font-xs);
@@ -11,7 +11,6 @@
   padding-inline: var(--space-lg);
   pointer-events: none;
   text-align: center;
-  bottom: var(--footer-bottom);
 }
 
 #history_panel {

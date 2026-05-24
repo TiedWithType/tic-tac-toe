@@ -5,7 +5,7 @@
   "codename_policy": {
     "theme": "alphabetical desserts",
     "format": "Title Case",
-    "next_codename_letter": "F",
+    "next_codename_letter": "G",
     "patch_releases_keep_parent_codename": true
   },
   "releases": [
@@ -135,24 +135,42 @@
       },
       "codename": "Eclair",
       "codename_letter": "E",
-      "status": "current",
+      "status": "previous",
       "notes": [
         "Polished color picker swatches to remove native browser borders.",
         "Added a winner status badge with player-colored animated background.",
         "Kept winner status layout stable while animating its background.",
         "Adjusted winner status spacing and border radius for visual consistency."
       ]
+    },
+    {
+      "version": {
+        "major": 2,
+        "minor": 2,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Fudge",
+      "codename_letter": "F",
+      "status": "current",
+      "notes": [
+        "Added a lightweight start menu bootstrap so the game runtime loads only after choosing a mode.",
+        "Split GameController, GameView, AI, audio and game engine code into dynamic production chunks.",
+        "Preserved intro audio by creating the AudioContext during the initial start click.",
+        "Moved the mobile version label into the options modal and aligned mobile action controls.",
+        "Reserved stable space for the winner status badge to avoid mobile layout shifts."
+      ]
     }
   ],
   "planned_codenames": [
     {
-      "letter": "F",
-      "codename": "Fudge",
+      "letter": "G",
+      "codename": "Gelato",
       "status": "next"
     },
     {
-      "letter": "G",
-      "codename": "Gelato",
+      "letter": "H",
+      "codename": "Honeycomb",
       "status": "reserved"
     }
   ],

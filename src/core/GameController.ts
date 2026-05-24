@@ -6,13 +6,17 @@ import {
   PLAYERS,
 } from "./constants";
 import type { AiDifficulty, GameMode, GameState, Player, PlayerNames, Starter } from "./types";
-import { AiPlayer } from "../game/AiPlayer";
+import type { AiPlayer } from "../game/AiPlayer";
 import { GameEngine } from "../game/GameEngine";
-import { AppConfigService } from "../services/AppConfigService";
-import { AudioService } from "../services/AudioService";
+import type { AppConfigService } from "../services/AppConfigService";
+import type { AudioService } from "../services/AudioService";
 import { SettingsStorage } from "../services/SettingsStorage";
-import { GameView } from "../ui/GameView";
+import type { GameView } from "../ui/GameView";
 import { PlayerNameEditor } from "../ui/PlayerNameEditor";
+
+type GameControllerInitOptions = {
+  autoStartMode?: GameMode;
+};
 
 export class GameController {
   private state: GameState = {
@@ -49,7 +53,7 @@ export class GameController {
     private configService: AppConfigService,
   ) {}
 
-  init() {
+  init(options: GameControllerInitOptions = {}) {
     const config = this.configService.getConfig();
 
     this.view.renderAppTitle(config.appName);
@@ -62,6 +66,10 @@ export class GameController {
     this.setupPlayerNameEditors();
     this.view.syncOptionsPlacement();
     this.render();
+
+    if (options.autoStartMode) {
+      void this.startGameWithIntro(options.autoStartMode);
+    }
   }
 
   private bindEvents() {
