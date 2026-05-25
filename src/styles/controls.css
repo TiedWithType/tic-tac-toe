@@ -16,6 +16,9 @@
 }
 
 button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   font-size: var(--font-button);
   letter-spacing: var(--tracking-md);
   text-transform: lowercase;
@@ -30,7 +33,6 @@ button {
     color var(--duration-fast),
     border-color var(--duration-fast),
     background var(--duration-fast),
-    transform var(--duration-fast),
     visibility var(--duration-fast);
 
   &:hover {
@@ -42,6 +44,29 @@ button {
   &:disabled {
     cursor: wait;
     opacity: 0.62;
+  }
+}
+
+.button-ripple {
+  position: absolute;
+  border-radius: var(--radius-round);
+  background: color-mix(in srgb, var(--text), transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  transform-origin: center;
+  animation: button-ripple var(--duration-ripple) var(--ease-status-color);
+}
+
+@keyframes button-ripple {
+  0% {
+    opacity: 0.36;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
@@ -214,7 +239,7 @@ button {
 
   &.show:hover,
   &.show:focus-visible {
-    transform: translateY(var(--hover-lift)) scale(1);
+    transform: scale(1);
   }
 }
 

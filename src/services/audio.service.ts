@@ -16,17 +16,11 @@ export class AudioService {
 
   setMuted(nextMuted: boolean) {
     this.muted = nextMuted;
-
-    if (!this.muted) this.resume();
+    !this.muted && this.resume();
   }
 
   playPlayerMove(player: Player) {
-    if (player === "circle") {
-      this.playCircleMove();
-      return;
-    }
-
-    this.playCrossMove();
+    (player === "circle" ? this.playCircleMove : this.playCrossMove).call(this);
   }
 
   playDraw() {
@@ -54,9 +48,7 @@ export class AudioService {
     if (!AudioContextConstructor) return null;
 
     this.audioContext ||= new AudioContextConstructor();
-    if (this.audioContext.state === "suspended") {
-      void this.audioContext.resume();
-    }
+    this.audioContext.state === "suspended" && void this.audioContext.resume();
 
     return this.audioContext;
   }

@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.2.2.0 beta "Fudge"**
+Aktualna wersja: **v.2.3.0 beta "Gelato"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -144,25 +144,24 @@ src/
   app.config.ts
 
   bootstrap/
-    StartMenu.ts
+    start.menu.ts
 
   core/
-    GameController.ts
+    game.controller.ts
     constants.ts
     types.ts
 
   game/
-    AiPlayer.ts
-    GameEngine.ts
+    ai.player.ts
+    game.engine.ts
 
   services/
-    AppConfigService.ts
-    AudioService.ts
-    SettingsStorage.ts
+    audio.service.ts
+    settings.service.ts
 
   ui/
-    GameView.ts
-    PlayerNameEditor.ts
+    game.view.ts
+    player.name.editor.ts
 
   styles/
     base.css
@@ -205,20 +204,14 @@ Warstwa DOM i renderowania UI:
 - historia
 - status rundy
 - modal ustawień
-- footer
-- tytuł startowy
 
 ### 🔊 `AudioService`
 
 Dźwięki generowane przez Web Audio API.
 
-### 💾 `SettingsStorage`
+### 💾 `SettingsService`
 
 Zapis i odczyt ustawień z `localStorage`.
-
-### 🏷️ `AppConfigService`
-
-Czyta konfigurację aplikacji z `src/app.config.ts`.
 
 ### 🎨 `styles/*`
 
@@ -247,10 +240,10 @@ export const appConfig = {
   appName: "Tic Tac Toe",
   version: {
     major: 2,
-    minor: 2,
+    minor: 3,
     patch: 0,
     release: "beta",
-    codename: "Fudge",
+    codename: "Gelato",
   },
   defaultPlayers: {
     "user-user": {
@@ -292,6 +285,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - ⚡ `2.1.0 beta "Eclair"`
 - ⚡ `2.1.1 beta "Eclair"`
 - 🍫 `2.2.0 beta "Fudge"`
+- 🍨 `2.3.0 beta "Gelato"`
 
 ## 🚀 Uruchamianie lokalnie
 

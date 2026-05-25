@@ -17,7 +17,7 @@
   --viewport-inline: 100dvw;
   --board-size: 18.75rem;
   --control-width: 18.75rem;
-  --panel-width: 21.25rem;
+  --panel-width: 22.5rem;
   --history-panel-width: 20.625rem;
   --options-modal-width: 22.5rem;
 
@@ -78,9 +78,9 @@
   --font-2xl: 1.25rem;
   --font-3xl: 1.45rem;
   --font-score: 2.5rem;
-  --font-title-min: 2.6rem;
-  --font-title-fluid: 13vw;
-  --font-title-max: 4rem;
+  --font-title-min: 2.4rem;
+  --font-title-fluid: 12vw;
+  --font-title-max: 3.6rem;
   --font-button: 0.85rem;
   --font-color-label: 0.78rem;
   --font-history-title: 0.82rem;
@@ -143,6 +143,7 @@
   --duration-win-line: 0.42s;
   --duration-winner-status: 0.52s;
   --duration-name: 0.5s;
+  --duration-ripple: 0.62s;
 
   --ease-spring: cubic-bezier(0.19, 1, 0.22, 1);
   --ease-status-color: cubic-bezier(0.22, 1, 0.36, 1);

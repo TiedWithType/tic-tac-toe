@@ -5,14 +5,14 @@ import {
   DEFAULT_PLAYER_NAMES_BY_MODE,
   PLAYERS,
 } from "./constants";
+import { appConfig } from "../app.config";
 import type { AiDifficulty, GameMode, GameState, Player, PlayerNames, Starter } from "./types";
-import type { AiPlayer } from "../game/AiPlayer";
-import { GameEngine } from "../game/GameEngine";
-import type { AppConfigService } from "../services/AppConfigService";
-import type { AudioService } from "../services/AudioService";
-import { SettingsStorage } from "../services/SettingsStorage";
-import type { GameView } from "../ui/GameView";
-import { PlayerNameEditor } from "../ui/PlayerNameEditor";
+import type { AiPlayer } from "../game/ai.player";
+import { GameEngine } from "../game/game.engine";
+import type { AudioService } from "../services/audio.service";
+import { SettingsService } from "../services/settings.service";
+import type { GameView } from "../ui/game.view";
+import { PlayerNameEditor } from "../ui/player.name.editor";
 
 type GameControllerInitOptions = {
   autoStartMode?: GameMode;
@@ -49,16 +49,11 @@ export class GameController {
     private view: GameView,
     private aiPlayer: AiPlayer,
     private audio: AudioService,
-    private storage: SettingsStorage,
-    private configService: AppConfigService,
+    private storage: SettingsService,
   ) {}
 
   init(options: GameControllerInitOptions = {}) {
-    const config = this.configService.getConfig();
-
-    this.view.renderAppTitle(config.appName);
-    this.view.renderFooter(config);
-    this.defaultPlayers = config.defaultPlayers;
+    this.defaultPlayers = appConfig.defaultPlayers;
     this.loadSettings();
     this.applyPlayerNamesForMode(this.state.gameMode);
     this.audio.setMuted(this.state.muted);
@@ -67,9 +62,7 @@ export class GameController {
     this.view.syncOptionsPlacement();
     this.render();
 
-    if (options.autoStartMode) {
-      void this.startGameWithIntro(options.autoStartMode);
-    }
+    options.autoStartMode && void this.startGameWithIntro(options.autoStartMode);
   }
 
   private bindEvents() {
@@ -282,9 +275,12 @@ export class GameController {
   }
 
   private isAiTurn() {
-    if (!this.state.gameStarted || this.state.gameOver) return false;
-    if (this.state.gameMode === "ai-ai") return true;
-    return this.state.gameMode === "user-ai" && this.state.current === "cross";
+    return (
+      this.state.gameStarted &&
+      !this.state.gameOver &&
+      (this.state.gameMode === "ai-ai" ||
+        (this.state.gameMode === "user-ai" && this.state.current === "cross"))
+    );
   }
 
   private scheduleAiMove() {
@@ -332,7 +328,7 @@ export class GameController {
   }
 
   private setMarkerColor(player: Player, color: string) {
-    if (!SettingsStorage.isHexColor(color)) return;
+    if (!SettingsService.isHexColor(color)) return;
 
     this.state.markerColors[player] = color;
   }
@@ -356,31 +352,25 @@ export class GameController {
   private loadSettings() {
     const settings = this.storage.load();
 
-    if (settings.playerNamesByMode) {
-      Object.entries(settings.playerNamesByMode).forEach(([mode, playerNames]) => {
-        if (!SettingsStorage.isGameMode(mode)) return;
+    settings.playerNamesByMode
+      ? Object.entries(settings.playerNamesByMode).forEach(([mode, playerNames]) => {
+          SettingsService.isGameMode(mode) &&
+            (this.playerNamesByMode[mode] = this.normalizePlayerNames(playerNames));
+        })
+      : settings.playerNames &&
+        (this.playerNamesByMode["user-user"] = this.normalizePlayerNames(settings.playerNames));
 
-        this.playerNamesByMode[mode] = this.normalizePlayerNames(playerNames);
-      });
-    } else if (settings.playerNames) {
-      this.playerNamesByMode["user-user"] = this.normalizePlayerNames(settings.playerNames);
-    }
+    PLAYERS.forEach((player) => {
+      const savedColor = settings.markerColors?.[player];
 
-    if (settings.markerColors) {
-      PLAYERS.forEach((player) => {
-        const savedColor = settings.markerColors?.[player];
-        if (!SettingsStorage.isHexColor(savedColor)) return;
+      SettingsService.isHexColor(savedColor) && (this.state.markerColors[player] = savedColor);
+    });
 
-        this.state.markerColors[player] = savedColor;
-      });
-    }
-
-    if (SettingsStorage.isGameMode(settings.gameMode)) this.state.gameMode = settings.gameMode;
-    if (SettingsStorage.isDifficulty(settings.aiDifficulty)) {
-      this.state.aiDifficulty = settings.aiDifficulty;
-    }
-    if (SettingsStorage.isStarter(settings.starter)) this.state.starter = settings.starter;
-    if (typeof settings.muted === "boolean") this.state.muted = settings.muted;
+    SettingsService.isGameMode(settings.gameMode) && (this.state.gameMode = settings.gameMode);
+    SettingsService.isDifficulty(settings.aiDifficulty) &&
+      (this.state.aiDifficulty = settings.aiDifficulty);
+    SettingsService.isStarter(settings.starter) && (this.state.starter = settings.starter);
+    typeof settings.muted === "boolean" && (this.state.muted = settings.muted);
   }
 
   private saveSettings() {
@@ -399,7 +389,7 @@ export class GameController {
     const customPlayers = this.playerNamesByMode[mode] || {};
 
     PLAYERS.forEach((player) => {
-      const nextName = customPlayers[player] || defaultPlayers[player] || DEFAULT_PLAYER_NAMES[player];
+      const nextName = customPlayers[player] ?? defaultPlayers[player] ?? DEFAULT_PLAYER_NAMES[player];
 
       this.state.playerNames[player] =
         PlayerNameEditor.normalize(nextName) || DEFAULT_PLAYER_NAMES[player];

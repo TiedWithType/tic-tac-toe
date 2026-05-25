@@ -7,6 +7,6 @@
     "m:dev": "bunx vite ./src"
   },
   "dependencies": {
-    "vite": "^8.0.13"
+    "vite": "^8.0.14"
   }
 }

@@ -1,34 +1,26 @@
-import type { AiDifficulty, AppConfig, GameMode, Starter } from "../core/types";
-import { AppConfigService } from "../services/AppConfigService";
-import { SettingsStorage } from "../services/SettingsStorage";
+import type { AiDifficulty, GameMode, Starter } from "../core/types";
+import { SettingsService } from "../services/settings.service";
 
 type StartMenuOptions = {
   onStart: (mode: GameMode) => void;
 };
 
 export class StartMenu {
-  private appTitle = document.querySelector<HTMLHeadingElement>("#app_title")!;
-  private appFooter = document.querySelector<HTMLElement>("#app_footer")!;
   private startButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-mode]")];
   private difficultyButtons = [
     ...document.querySelectorAll<HTMLButtonElement>("[data-difficulty]"),
   ];
   private starterButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-starter]")];
   private abortController = new AbortController();
-  private config: AppConfig;
   private aiDifficulty: AiDifficulty = "normal";
   private starter: Starter = "circle";
 
   constructor(
     private options: StartMenuOptions,
-    configService = new AppConfigService(),
-    private storage = new SettingsStorage(),
-  ) {
-    this.config = configService.getConfig();
-  }
+    private storage = new SettingsService(),
+  ) {}
 
   init() {
-    this.renderConfig();
     this.loadSettings();
     this.bindEvents();
     this.render();
@@ -85,36 +77,19 @@ export class StartMenu {
     });
   }
 
-  private renderConfig() {
-    const { major, minor, patch, codename } = this.config.version;
-    const codenameLabel = codename ? ` "${codename}"` : "";
-
-    this.appTitle.textContent = this.config.appName;
-    this.appFooter.textContent = `v.${major}.${minor}.${patch}${codenameLabel} by TiedWithType`;
-  }
-
   private loadSettings() {
     const settings = this.storage.load();
 
-    if (SettingsStorage.isDifficulty(settings.aiDifficulty)) {
-      this.aiDifficulty = settings.aiDifficulty;
-    }
+    SettingsService.isDifficulty(settings.aiDifficulty) &&
+      (this.aiDifficulty = settings.aiDifficulty);
+    SettingsService.isStarter(settings.starter) && (this.starter = settings.starter);
 
-    if (SettingsStorage.isStarter(settings.starter)) {
-      this.starter = settings.starter;
-    }
+    const { circle, cross } = settings.markerColors ?? {};
 
-    if (settings.markerColors) {
-      const { circle, cross } = settings.markerColors;
-
-      if (SettingsStorage.isHexColor(circle)) {
-        document.documentElement.style.setProperty("--circle-color", circle);
-      }
-
-      if (SettingsStorage.isHexColor(cross)) {
-        document.documentElement.style.setProperty("--cross-color", cross);
-      }
-    }
+    SettingsService.isHexColor(circle) &&
+      document.documentElement.style.setProperty("--circle-color", circle);
+    SettingsService.isHexColor(cross) &&
+      document.documentElement.style.setProperty("--cross-color", cross);
   }
 
   private saveSettings(gameMode?: GameMode) {
@@ -123,11 +98,8 @@ export class StartMenu {
       ...currentSettings,
       aiDifficulty: this.aiDifficulty,
       starter: this.starter,
+      ...(gameMode ? { gameMode } : {}),
     };
-
-    if (gameMode) {
-      nextSettings.gameMode = gameMode;
-    }
 
     this.storage.save(nextSettings);
   }

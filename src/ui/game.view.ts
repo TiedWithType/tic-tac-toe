@@ -1,6 +1,6 @@
 import { PLAYERS, WINS } from "../core/constants";
-import type { AiDifficulty, AppConfig, GameMode, GameState, Player, Starter } from "../core/types";
-import { GameEngine } from "../game/GameEngine";
+import type { AiDifficulty, GameMode, GameState, Player, Starter } from "../core/types";
+import { GameEngine } from "../game/game.engine";
 
 export class GameView {
   readonly tiles = [...document.querySelectorAll<HTMLElement>("[data-tile]")];
@@ -29,7 +29,6 @@ export class GameView {
   private desktopOptionsMount = document.querySelector<HTMLElement>("#desktop_options_mount")!;
   private optionsModal = document.querySelector<HTMLDialogElement>("#options_modal")!;
   private optionsCloseBtn = document.querySelector<HTMLButtonElement>("#options_close")!;
-  private optionsVersion = document.querySelector<HTMLElement>("#options_version")!;
   private settingsToggle = document.querySelector<HTMLButtonElement>("#settings_toggle")!;
   private startBtn = document.querySelector<HTMLButtonElement>("#start_game")!;
   private startButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-mode]")];
@@ -46,8 +45,6 @@ export class GameView {
   private statCrossWins = document.querySelector<HTMLElement>("#stat_cross_wins")!;
   private statCircleRate = document.querySelector<HTMLElement>("#stat_circle_rate")!;
   private statCrossRate = document.querySelector<HTMLElement>("#stat_cross_rate")!;
-  private appTitle = document.querySelector<HTMLHeadingElement>("#app_title")!;
-  private appFooter = this.getOrCreateAppFooter();
   private mobileOptionsQuery = window.matchMedia("(max-width: 640px)");
 
   onTileClick(handler: (index: number) => void) {
@@ -110,17 +107,16 @@ export class GameView {
 
   onDocumentDismiss(handler: () => void) {
     document.addEventListener("click", (event) => {
-      if (!this.optionsModal.open) return;
-      if (!(event.target instanceof Node)) return;
-      if (this.optionsMenu.contains(event.target)) return;
+      const shouldDismiss =
+        this.optionsModal.open &&
+        event.target instanceof Node &&
+        !this.optionsMenu.contains(event.target);
 
-      handler();
+      shouldDismiss && handler();
     });
 
     document.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape") return;
-
-      handler();
+      event.key === "Escape" && handler();
     });
 
     this.optionsCloseBtn.addEventListener("click", handler);
@@ -140,7 +136,7 @@ export class GameView {
     document.body.dataset.aiDifficulty = state.aiDifficulty;
     (this.game as HTMLElement & { inert: boolean }).inert = !state.gameStarted;
 
-    if (!state.gameStarted) this.closeOptionsModal();
+    !state.gameStarted && this.closeOptionsModal();
 
     this.renderBoard(state);
     this.renderScore(state);
@@ -153,46 +149,21 @@ export class GameView {
     this.updateSettingsToggle(state.gameStarted);
   }
 
-  renderFooter(config: AppConfig) {
-    const { major, minor, patch, codename } = config.version;
-    const version = `${major}.${minor}.${patch}`;
-    const codenameLabel = codename ? ` "${codename}"` : "";
-
-    const versionText = `v.${version}${codenameLabel} by TiedWithType`;
-
-    this.appFooter.textContent = versionText;
-    this.optionsVersion.textContent = versionText;
-  }
-
-  renderAppTitle(appName: string) {
-    this.appTitle.textContent = appName;
-  }
-
   syncOptionsPlacement() {
-    if (this.mobileOptionsQuery.matches) {
-      if (this.optionsMenu.parentElement !== this.optionsModal) {
-        this.optionsModal.append(this.optionsMenu);
-      }
-      return;
-    }
+    const targetMount = this.mobileOptionsQuery.matches
+      ? this.optionsModal
+      : this.desktopOptionsMount;
 
-    this.closeOptionsModal();
-    if (this.optionsMenu.parentElement !== this.desktopOptionsMount) {
-      this.desktopOptionsMount.append(this.optionsMenu);
-    }
+    !this.mobileOptionsQuery.matches && this.closeOptionsModal();
+    this.optionsMenu.parentElement !== targetMount && targetMount.append(this.optionsMenu);
   }
 
   openOptionsModal() {
-    if (!this.mobileOptionsQuery.matches) return;
-    if (this.optionsModal.open) return;
-
-    this.optionsModal.showModal();
+    this.mobileOptionsQuery.matches && !this.optionsModal.open && this.optionsModal.showModal();
   }
 
   closeOptionsModal() {
-    if (!this.optionsModal.open) return;
-
-    this.optionsModal.close();
+    this.optionsModal.open && this.optionsModal.close();
   }
 
   isHistoryOpen() {
@@ -219,13 +190,9 @@ export class GameView {
       const value = state.board[index];
       const isWinner = state.winningCombination?.includes(index) || false;
 
-      if (value) {
-        tile.dataset.value = value;
-        tile.setAttribute("aria-label", value);
-      } else {
-        delete tile.dataset.value;
-        tile.removeAttribute("aria-label");
-      }
+      value
+        ? (tile.dataset.value = value, tile.setAttribute("aria-label", value))
+        : (delete tile.dataset.value, tile.removeAttribute("aria-label"));
 
       tile.classList.toggle("filled", Boolean(value));
       tile.classList.toggle("circle", value === "circle");
@@ -250,40 +217,25 @@ export class GameView {
       Boolean(state.roundWinner && state.roundWinner !== "draw"),
     );
 
-    if (!state.gameStarted) {
-      this.roundStatus.textContent = "Start game";
-      return;
-    }
-
-    if (state.roundWinner === "draw") {
-      this.roundStatus.textContent = "draw";
-      return;
-    }
-
-    if (state.roundWinner) {
-      this.roundStatus.textContent = `${state.playerNames[state.roundWinner]} wins`;
-      return;
-    }
-
-    if (this.isAiTurn(state)) {
-      this.roundStatus.textContent = `${state.playerNames[state.current]} is thinking`;
-      return;
-    }
-
-    this.roundStatus.textContent = `${state.playerNames[state.current]}'s turn`;
+    this.roundStatus.textContent = !state.gameStarted
+      ? "Start game"
+      : state.roundWinner === "draw"
+        ? "draw"
+        : state.roundWinner
+          ? `${state.playerNames[state.roundWinner]} wins`
+          : this.isAiTurn(state)
+            ? `${state.playerNames[state.current]} is thinking`
+            : `${state.playerNames[state.current]}'s turn`;
   }
 
   private renderMeta(state: GameState) {
-    if (!state.gameStarted) {
-      this.roundMeta.textContent = "";
-      return;
-    }
-
     const mode = GameEngine.getModeLabel(state.gameMode);
     const difficulty = state.gameMode === "user-user" ? "no AI" : state.aiDifficulty;
     const starterName = state.playerNames[state.roundStarter];
 
-    this.roundMeta.textContent = `${mode} | ${difficulty} | started: ${starterName}`;
+    this.roundMeta.textContent = state.gameStarted
+      ? `${mode} | ${difficulty} | started: ${starterName}`
+      : "";
   }
 
   private renderActivePlayer(state: GameState) {
@@ -383,26 +335,15 @@ export class GameView {
   }
 
   private isAiTurn(state: GameState) {
-    if (!state.gameStarted || state.gameOver) return false;
-    if (state.gameMode === "ai-ai") return true;
-    return state.gameMode === "user-ai" && state.current === "cross";
+    return (
+      state.gameStarted &&
+      !state.gameOver &&
+      (state.gameMode === "ai-ai" || (state.gameMode === "user-ai" && state.current === "cross"))
+    );
   }
 
   private getWinRate(wins: number, rounds: number) {
-    if (rounds === 0) return 0;
-    return Math.round((wins / rounds) * 100);
-  }
-
-  private getOrCreateAppFooter() {
-    const existingFooter = document.querySelector<HTMLElement>("#app_footer");
-    if (existingFooter) return existingFooter;
-
-    const footer = document.createElement("footer");
-    footer.id = "app_footer";
-    footer.textContent = 'Tic Tac Toe v1.0.0 alpha "First Move" by TiedWithType';
-    document.body.append(footer);
-
-    return footer;
+    return rounds === 0 ? 0 : Math.round((wins / rounds) * 100);
   }
 
   private escapeHtml(value: string) {

@@ -24,6 +24,18 @@ Rules:
 - `PATCH` changes for bug fixes, copy tweaks, visual polish, and small compatibility fixes.
 - `RELEASE` must be one of: `alpha`, `beta`, `rc`, `stable`.
 - `src/app.config.ts` and `.vercel/versions.json` must be updated together for every release.
+- When footer or menu version text is rendered statically in HTML, update `src/index.html` in the same release commit.
+
+## Source Naming Rules
+
+Class-based TypeScript modules must use lowercase dot-separated filenames matching the class role:
+
+- `GameView` -> `game.view.ts`
+- `GameController` -> `game.controller.ts`
+- `AudioService` -> `audio.service.ts`
+- `SettingsService` -> `settings.service.ts`
+
+Keep service classes in `src/services`, UI classes in `src/ui`, game logic in `src/game`, and orchestration/controller code in `src/core` unless a feature clearly needs a new boundary.
 
 ## Codename Rules
 
@@ -59,6 +71,7 @@ Before tagging or deploying a release:
 
 - Update `src/app.config.ts` version fields.
 - Update `.vercel/versions.json`.
+- Update static version text in `src/index.html` when present.
 - Confirm the footer shows the expected app name, version, release, codename, and author.
 - Run the production build.
 - Use the same version in commit message, tag, and deployment notes.

@@ -4,10 +4,10 @@ export const appConfig = {
   appName: "Tic Tac Toe",
   version: {
     major: 2,
-    minor: 2,
+    minor: 3,
     patch: 0,
     release: "beta",
-    codename: "Fudge",
+    codename: "Gelato",
   },
   defaultPlayers: {
     "user-user": {

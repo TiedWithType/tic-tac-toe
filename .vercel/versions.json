@@ -152,7 +152,7 @@
       },
       "codename": "Fudge",
       "codename_letter": "F",
-      "status": "current",
+      "status": "previous",
       "notes": [
         "Added a lightweight start menu bootstrap so the game runtime loads only after choosing a mode.",
         "Split GameController, GameView, AI, audio and game engine code into dynamic production chunks.",
@@ -160,17 +160,37 @@
         "Moved the mobile version label into the options modal and aligned mobile action controls.",
         "Reserved stable space for the winner status badge to avoid mobile layout shifts."
       ]
+    },
+    {
+      "version": {
+        "major": 2,
+        "minor": 3,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Gelato",
+      "codename_letter": "G",
+      "status": "current",
+      "notes": [
+        "Renamed class modules to lowercase dot-separated filenames.",
+        "Replaced SettingsStorage with SettingsService naming.",
+        "Removed the AppConfigService wrapper and read typed app config directly where needed.",
+        "Made footer and menu version labels static in HTML to avoid version flash.",
+        "Added pointer-origin ripple feedback across buttons.",
+        "Added favicon and meta description for production pages.",
+        "Polished start menu title sizing and menu width."
+      ]
     }
   ],
   "planned_codenames": [
     {
-      "letter": "G",
-      "codename": "Gelato",
+      "letter": "H",
+      "codename": "Honeycomb",
       "status": "next"
     },
     {
-      "letter": "H",
-      "codename": "Honeycomb",
+      "letter": "I",
+      "codename": "Ice Cream",
       "status": "reserved"
     }
   ],

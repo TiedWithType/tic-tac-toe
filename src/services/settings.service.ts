@@ -1,13 +1,12 @@
 import { SETTINGS_KEY } from "../core/constants";
 import type { AiDifficulty, GameMode, SettingsSnapshot, Starter } from "../core/types";
 
-export class SettingsStorage {
+export class SettingsService {
   load() {
     try {
       const rawSettings = localStorage.getItem(SETTINGS_KEY);
-      if (!rawSettings) return {};
 
-      return JSON.parse(rawSettings) as SettingsSnapshot;
+      return rawSettings ? (JSON.parse(rawSettings) as SettingsSnapshot) : {};
     } catch {
       localStorage.removeItem(SETTINGS_KEY);
       return {};

@@ -40,16 +40,18 @@ export class PlayerNameEditor {
   }
 
   private handleKeydown(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      this.options.element.blur();
-      return;
-    }
+    const keyActions: Record<string, () => void> = {
+      Enter: () => this.options.element.blur(),
+      Escape: () => {
+        this.options.element.textContent = this.options.getName();
+        this.options.element.blur();
+      },
+    };
+    const keyAction = keyActions[event.key];
 
-    if (event.key === "Escape") {
+    if (keyAction) {
       event.preventDefault();
-      this.options.element.textContent = this.options.getName();
-      this.options.element.blur();
+      keyAction();
       return;
     }
 

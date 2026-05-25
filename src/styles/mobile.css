@@ -48,7 +48,7 @@
 
       &:hover,
       &:focus-visible {
-        transform: translateY(var(--hover-lift)) scale(1);
+        transform: scale(1);
       }
     }
   }

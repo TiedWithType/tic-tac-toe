@@ -1,6 +1,12 @@
 import { WINS } from "../core/constants";
 import type { BoardValue, GameMode, Player, Starter } from "../core/types";
 
+const MODE_LABELS = {
+  "user-user": "player vs player",
+  "user-ai": "user vs ai",
+  "ai-ai": "ai vs ai",
+} satisfies Record<GameMode, string>;
+
 export class GameEngine {
   static getWinner(board: BoardValue[]) {
     for (const combination of WINS) {
@@ -18,7 +24,7 @@ export class GameEngine {
   }
 
   static getBoardWinner(board: BoardValue[]) {
-    return GameEngine.getWinner(board)?.winner || null;
+    return GameEngine.getWinner(board)?.winner ?? null;
   }
 
   static getAvailableMoves(board: BoardValue[]) {
@@ -36,16 +42,10 @@ export class GameEngine {
   }
 
   static getNextStarter(starter: Starter): Player {
-    if (starter === "random") {
-      return Math.random() < 0.5 ? "circle" : "cross";
-    }
-
-    return starter;
+    return starter === "random" ? (Math.random() < 0.5 ? "circle" : "cross") : starter;
   }
 
   static getModeLabel(mode: GameMode) {
-    if (mode === "user-ai") return "user vs ai";
-    if (mode === "ai-ai") return "ai vs ai";
-    return "player vs player";
+    return MODE_LABELS[mode];
   }
 }

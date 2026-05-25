@@ -1,7 +1,6 @@
-import { StartMenu } from "./bootstrap/StartMenu";
+import { StartMenu } from "./bootstrap/start.menu";
 import type { GameMode } from "./core/types";
-import { AppConfigService } from "./services/AppConfigService";
-import { SettingsStorage } from "./services/SettingsStorage";
+import { SettingsService } from "./services/settings.service";
 
 type AudioWindow = Window &
   typeof globalThis & {
@@ -9,6 +8,8 @@ type AudioWindow = Window &
   };
 
 let isRuntimeLoading = false;
+
+installButtonRipples();
 
 const startMenu = new StartMenu({
   onStart: (mode) => {
@@ -27,10 +28,10 @@ async function loadGameRuntime(mode: GameMode) {
   try {
     const audioContext = createAudioContext();
     const [{ GameController }, { AiPlayer }, { AudioService }, { GameView }] = await Promise.all([
-      import("./core/GameController"),
-      import("./game/AiPlayer"),
-      import("./services/AudioService"),
-      import("./ui/GameView"),
+      import("./core/game.controller"),
+      import("./game/ai.player"),
+      import("./services/audio.service"),
+      import("./ui/game.view"),
     ]);
 
     startMenu.destroy();
@@ -39,8 +40,7 @@ async function loadGameRuntime(mode: GameMode) {
       new GameView(),
       new AiPlayer(),
       new AudioService(audioContext),
-      new SettingsStorage(),
-      new AppConfigService(),
+      new SettingsService(),
     );
 
     controller.init({ autoStartMode: mode });
@@ -57,9 +57,29 @@ function createAudioContext() {
   if (!AudioContextConstructor) return null;
 
   const audioContext = new AudioContextConstructor();
-  if (audioContext.state === "suspended") {
-    void audioContext.resume();
-  }
+  audioContext.state === "suspended" && void audioContext.resume();
 
   return audioContext;
+}
+
+function installButtonRipples() {
+  document.addEventListener("pointerdown", (event) => {
+    if (!(event.target instanceof Element)) return;
+
+    const button = event.target.closest("button");
+    if (!button || button.disabled) return;
+
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 2;
+    const ripple = document.createElement("span");
+
+    ripple.className = "button-ripple";
+    ripple.style.inlineSize = `${size}px`;
+    ripple.style.blockSize = `${size}px`;
+    ripple.style.insetInlineStart = `${event.clientX - rect.left}px`;
+    ripple.style.insetBlockStart = `${event.clientY - rect.top}px`;
+
+    button.append(ripple);
+    ripple.addEventListener("animationend", () => ripple.remove(), { once: true });
+  });
 }

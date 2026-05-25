@@ -1,24 +1,25 @@
 import type { AiDifficulty, BoardValue, Player } from "../core/types";
-import { GameEngine } from "./GameEngine";
+import { GameEngine } from "./game.engine";
 
 export class AiPlayer {
   getMove(board: BoardValue[], aiPlayer: Player, difficulty: AiDifficulty) {
     const nextBoard = [...board];
+    const strategies: Record<AiDifficulty, () => number | null> = {
+      easy: () =>
+        Math.random() < 0.3
+          ? this.getTacticalMove(nextBoard, aiPlayer)
+          : this.getRandomMove(nextBoard),
+      normal: () => {
+        const tacticalMove = this.getTacticalMove(nextBoard, aiPlayer);
 
-    if (difficulty === "easy") {
-      const shouldThink = Math.random() < 0.3;
-      return shouldThink ? this.getTacticalMove(nextBoard, aiPlayer) : this.getRandomMove(nextBoard);
-    }
+        return tacticalMove ?? (Math.random() < 0.55
+          ? this.getBestMove(nextBoard, aiPlayer)
+          : this.getRandomMove(nextBoard));
+      },
+      hard: () => this.getBestMove(nextBoard, aiPlayer),
+    };
 
-    if (difficulty === "normal") {
-      const tacticalMove = this.getTacticalMove(nextBoard, aiPlayer);
-      if (tacticalMove !== null) return tacticalMove;
-
-      const shouldPlayBest = Math.random() < 0.55;
-      return shouldPlayBest ? this.getBestMove(nextBoard, aiPlayer) : this.getRandomMove(nextBoard);
-    }
-
-    return this.getBestMove(nextBoard, aiPlayer);
+    return strategies[difficulty]();
   }
 
   private getBestMove(board: BoardValue[], aiPlayer: Player) {
@@ -43,19 +44,14 @@ export class AiPlayer {
       }
     });
 
-    if (bestMoves.length === 0) return null;
-
-    return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+    return bestMoves.length ? bestMoves[Math.floor(Math.random() * bestMoves.length)] : null;
   }
 
   private getTacticalMove(board: BoardValue[], aiPlayer: Player) {
     const winningMove = this.findImmediateMove(board, aiPlayer);
-    if (winningMove !== null) return winningMove;
-
     const blockingMove = this.findImmediateMove(board, GameEngine.getOpponent(aiPlayer));
-    if (blockingMove !== null) return blockingMove;
 
-    return this.getRandomMove(board);
+    return winningMove ?? blockingMove ?? this.getRandomMove(board);
   }
 
   private findImmediateMove(board: BoardValue[], player: Player) {
@@ -73,9 +69,9 @@ export class AiPlayer {
   private getRandomMove(board: BoardValue[]) {
     const availableMoves = GameEngine.getAvailableMoves(board);
 
-    if (availableMoves.length === 0) return null;
-
-    return availableMoves[Math.floor(Math.random() * availableMoves.length)];
+    return availableMoves.length
+      ? availableMoves[Math.floor(Math.random() * availableMoves.length)]
+      : null;
   }
 
   private minimax(
@@ -91,26 +87,16 @@ export class AiPlayer {
     if (winner === opponent) return depth - 10;
     if (GameEngine.getAvailableMoves(board).length === 0) return 0;
 
-    if (isMaximizing) {
-      let bestScore = -Infinity;
+    const currentPlayer = isMaximizing ? aiPlayer : opponent;
+    const nextIsMaximizing = !isMaximizing;
+    const initialScore = isMaximizing ? -Infinity : Infinity;
 
-      GameEngine.getAvailableMoves(board).forEach((move) => {
-        board[move] = aiPlayer;
-        bestScore = Math.max(bestScore, this.minimax(board, false, aiPlayer, opponent, depth + 1));
-        board[move] = null;
-      });
-
-      return bestScore;
-    }
-
-    let bestScore = Infinity;
-
-    GameEngine.getAvailableMoves(board).forEach((move) => {
-      board[move] = opponent;
-      bestScore = Math.min(bestScore, this.minimax(board, true, aiPlayer, opponent, depth + 1));
+    return GameEngine.getAvailableMoves(board).reduce((bestScore, move) => {
+      board[move] = currentPlayer;
+      const score = this.minimax(board, nextIsMaximizing, aiPlayer, opponent, depth + 1);
       board[move] = null;
-    });
 
-    return bestScore;
+      return isMaximizing ? Math.max(bestScore, score) : Math.min(bestScore, score);
+    }, initialScore);
   }
 }
