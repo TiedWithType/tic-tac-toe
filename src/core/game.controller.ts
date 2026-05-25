@@ -5,12 +5,12 @@ import {
   DEFAULT_PLAYER_NAMES_BY_MODE,
   PLAYERS,
 } from "./constants";
-import { appConfig } from "../app.config";
 import type {
   AiDifficulty,
   GameMode,
   GameState,
-  MatchTarget,
+  MatchMode,
+  MatchState,
   Player,
   PlayerNames,
   Starter,
@@ -38,8 +38,8 @@ export class GameController {
     gameMode: "user-user",
     aiDifficulty: "normal",
     starter: "circle",
-    matchTarget: 1,
-    matchWinner: null,
+    matchMode: "casual",
+    match: { status: "playing" },
     muted: false,
     markerColors: { ...DEFAULT_MARKER_COLORS },
     score: {
@@ -52,7 +52,6 @@ export class GameController {
 
   private aiMoveTimer: number | null = null;
   private isStarting = false;
-  private defaultPlayers = DEFAULT_PLAYER_NAMES_BY_MODE;
   private playerNamesByMode: Partial<Record<GameMode, Partial<PlayerNames>>> = {};
 
   constructor(
@@ -63,7 +62,6 @@ export class GameController {
   ) {}
 
   init(options: GameControllerInitOptions = {}) {
-    this.defaultPlayers = appConfig.defaultPlayers;
     this.loadSettings();
     this.applyPlayerNamesForMode(this.state.gameMode);
     this.audio.setMuted(this.state.muted);
@@ -106,15 +104,10 @@ export class GameController {
       this.render();
     });
 
-    this.view.onMatchTargetChange((matchTarget) => {
-      this.setMatchTarget(matchTarget);
+    this.view.onMatchModeChange((matchMode) => {
+      this.setMatchMode(matchMode);
       this.saveSettings();
       this.render();
-    });
-
-    this.view.onChangeMode(() => {
-      this.openModeSelector();
-      this.view.closeOptionsModal();
     });
 
     this.view.onHistoryToggle(() => {
@@ -200,7 +193,7 @@ export class GameController {
     this.state.gameStarted = true;
     this.state.gameOver = false;
     this.state.roundWinner = null;
-    this.state.matchWinner = null;
+    this.state.match = { status: "playing" };
     this.state.winningCombination = null;
     this.audio.resume();
     this.saveSettings();
@@ -222,6 +215,7 @@ export class GameController {
       this.state.gameOver = true;
       this.state.roundWinner = "draw";
       this.recordRound("draw");
+      this.state.match = this.getMatchState();
       this.audio.playDraw();
       this.render();
       return;
@@ -245,7 +239,7 @@ export class GameController {
 
     this.state.score[result.winner]++;
     this.recordRound(result.winner);
-    this.state.matchWinner = this.getMatchWinner();
+    this.state.match = this.getMatchState();
     this.audio.playWin();
     this.render();
     return true;
@@ -259,7 +253,6 @@ export class GameController {
     this.state.roundStarter = this.state.current;
     this.state.gameOver = false;
     this.state.roundWinner = null;
-    this.state.matchWinner = null;
     this.render();
     this.scheduleAiMove();
     this.view.closeOptionsModal();
@@ -278,7 +271,7 @@ export class GameController {
     this.state.gameOver = false;
     this.state.gameStarted = false;
     this.state.roundWinner = null;
-    this.state.matchWinner = null;
+    this.state.match = { status: "playing" };
     this.state.history.length = 0;
 
     this.saveSettings();
@@ -290,18 +283,6 @@ export class GameController {
   private clearBoard() {
     this.state.board = Array(9).fill(null);
     this.state.winningCombination = null;
-  }
-
-  private openModeSelector() {
-    this.cancelAiMove();
-    this.clearBoard();
-    this.state.gameStarted = false;
-    this.state.gameOver = false;
-    this.state.roundWinner = null;
-    this.state.matchWinner = null;
-    this.state.current = GameEngine.getNextStarter(this.state.starter);
-    this.state.roundStarter = this.state.current;
-    this.render();
   }
 
   private isAiTurn() {
@@ -357,8 +338,8 @@ export class GameController {
     this.state.starter = starter;
   }
 
-  private setMatchTarget(matchTarget: MatchTarget) {
-    this.state.matchTarget = matchTarget;
+  private setMatchMode(matchMode: MatchMode) {
+    this.state.matchMode = matchMode;
   }
 
   private setMuted(nextMuted: boolean) {
@@ -384,7 +365,7 @@ export class GameController {
       mode: this.state.gameMode,
       difficulty: this.state.aiDifficulty,
       starter: this.state.roundStarter,
-      matchTarget: this.state.matchTarget,
+      matchMode: this.state.matchMode,
       winner,
     });
   }
@@ -410,8 +391,7 @@ export class GameController {
     SettingsService.isDifficulty(settings.aiDifficulty) &&
       (this.state.aiDifficulty = settings.aiDifficulty);
     SettingsService.isStarter(settings.starter) && (this.state.starter = settings.starter);
-    SettingsService.isMatchTarget(settings.matchTarget) &&
-      (this.state.matchTarget = settings.matchTarget);
+    SettingsService.isMatchMode(settings.matchMode) && (this.state.matchMode = settings.matchMode);
     typeof settings.muted === "boolean" && (this.state.muted = settings.muted);
   }
 
@@ -422,13 +402,13 @@ export class GameController {
       gameMode: this.state.gameMode,
       aiDifficulty: this.state.aiDifficulty,
       starter: this.state.starter,
-      matchTarget: this.state.matchTarget,
+      matchMode: this.state.matchMode,
       muted: this.state.muted,
     });
   }
 
   private applyPlayerNamesForMode(mode: GameMode) {
-    const defaultPlayers = this.defaultPlayers[mode] || DEFAULT_PLAYER_NAMES_BY_MODE[mode];
+    const defaultPlayers = DEFAULT_PLAYER_NAMES_BY_MODE[mode];
     const customPlayers = this.playerNamesByMode[mode] || {};
 
     PLAYERS.forEach((player) => {
@@ -456,9 +436,24 @@ export class GameController {
     this.view.render(this.state);
   }
 
-  private getMatchWinner() {
-    const winsNeeded = Math.ceil(this.state.matchTarget / 2);
+  private getMatchState(): MatchState {
+    if (this.state.matchMode === "casual") return { status: "playing" };
+    if (this.state.matchMode === "first-to-5") {
+      const winner = PLAYERS.find((player) => this.state.score[player] >= 5);
 
-    return PLAYERS.find((player) => this.state.score[player] >= winsNeeded) ?? null;
+      return winner ? { status: "complete", winner } : { status: "playing" };
+    }
+
+    const leadingWinner = PLAYERS.find((player) => this.state.score[player] >= 3);
+    if (leadingWinner) return { status: "complete", winner: leadingWinner };
+    if (this.state.history.length < 5) return { status: "playing" };
+    if (this.state.score.circle === this.state.score.cross) {
+      return { status: "complete", winner: "draw" };
+    }
+
+    return {
+      status: "complete",
+      winner: this.state.score.circle > this.state.score.cross ? "circle" : "cross",
+    };
   }
 }

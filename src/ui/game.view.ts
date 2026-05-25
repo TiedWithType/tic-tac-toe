@@ -1,133 +1,154 @@
 import { PLAYERS, WINS } from "../core/constants";
-import type { AiDifficulty, GameMode, GameState, MatchTarget, Player, Starter } from "../core/types";
+import type {
+  AiDifficulty,
+  GameMode,
+  GameState,
+  MatchMode,
+  MatchWinner,
+  Player,
+  Starter,
+} from "../core/types";
 import { GameEngine } from "../game/game.engine";
 import { SettingsService } from "../services/settings.service";
+import { $, $$ } from "./dom";
 
 export class GameView {
-  readonly tiles = [...document.querySelectorAll<HTMLElement>("[data-tile]")];
-  readonly playerNameElements = {
-    circle: document.querySelector<HTMLElement>("#player_1 .player-name")!,
-    cross: document.querySelector<HTMLElement>("#player_2 .player-name")!,
+  private board = {
+    tiles: $$<HTMLElement>("[data-tile]"),
+    winLine: $<HTMLElement>("#win_line"),
   };
-
-  private game = document.querySelector<HTMLElement>("#game")!;
-  private roundStatus = document.querySelector<HTMLElement>("#round_status")!;
-  private roundMeta = document.querySelector<HTMLElement>("#round_meta")!;
-  private player1 = document.querySelector<HTMLElement>("#player_1")!;
-  private player2 = document.querySelector<HTMLElement>("#player_2")!;
-  private player1Result = document.querySelector<HTMLElement>("#player_1 .result")!;
-  private player2Result = document.querySelector<HTMLElement>("#player_2 .result")!;
-  private resetBtn = document.querySelector<HTMLButtonElement>("#reset")!;
-  private mobileResetBtn = document.querySelector<HTMLButtonElement>("#mobile_reset")!;
-  private resetGameBtn = document.querySelector<HTMLButtonElement>("#reset_game")!;
-  private circleColorInput = document.querySelector<HTMLInputElement>("#circle_color")!;
-  private crossColorInput = document.querySelector<HTMLInputElement>("#cross_color")!;
-  private changeModeBtn = document.querySelector<HTMLButtonElement>("#change_mode")!;
-  private historyToggleBtn = document.querySelector<HTMLButtonElement>("#history_toggle")!;
-  private historyCloseBtn = document.querySelector<HTMLButtonElement>("#history_close")!;
-  private muteToggleBtn = document.querySelector<HTMLButtonElement>("#mute_toggle")!;
-  private optionsMenu = document.querySelector<HTMLElement>("#options_menu")!;
-  private desktopOptionsMount = document.querySelector<HTMLElement>("#desktop_options_mount")!;
-  private optionsModal = document.querySelector<HTMLDialogElement>("#options_modal")!;
-  private optionsCloseBtn = document.querySelector<HTMLButtonElement>("#options_close")!;
-  private settingsToggle = document.querySelector<HTMLButtonElement>("#settings_toggle")!;
-  private startBtn = document.querySelector<HTMLButtonElement>("#start_game")!;
-  private modeButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-mode-option]")];
-  private difficultyButtons = [
-    ...document.querySelectorAll<HTMLButtonElement>("[data-difficulty]"),
-  ];
-  private starterButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-starter]")];
-  private matchButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-match-target]")];
-  private winLine = document.querySelector<HTMLElement>("#win_line")!;
-  private historyPanel = document.querySelector<HTMLElement>("#history_panel")!;
-  private historyList = document.querySelector<HTMLOListElement>("#history_list")!;
-  private statRounds = document.querySelector<HTMLElement>("#stat_rounds")!;
-  private statDraws = document.querySelector<HTMLElement>("#stat_draws")!;
-  private statCircleWins = document.querySelector<HTMLElement>("#stat_circle_wins")!;
-  private statCrossWins = document.querySelector<HTMLElement>("#stat_cross_wins")!;
-  private statCircleRate = document.querySelector<HTMLElement>("#stat_circle_rate")!;
-  private statCrossRate = document.querySelector<HTMLElement>("#stat_cross_rate")!;
-  private mobileOptionsQuery = window.matchMedia("(max-width: 640px)");
+  private controls = {
+    muteToggle: $<HTMLButtonElement>("#mute_toggle"),
+    reset: $<HTMLButtonElement>("#reset"),
+    resetGame: $<HTMLButtonElement>("#reset_game"),
+    mobileReset: $<HTMLButtonElement>("#mobile_reset"),
+    settingsToggle: $<HTMLButtonElement>("#settings_toggle"),
+  };
+  private history = {
+    panel: $<HTMLElement>("#history_panel"),
+    list: $<HTMLOListElement>("#history_list"),
+    toggle: $<HTMLButtonElement>("#history_toggle"),
+    close: $<HTMLButtonElement>("#history_close"),
+  };
+  private options = {
+    menu: $<HTMLElement>("#options_menu"),
+    modal: $<HTMLDialogElement>("#options_modal"),
+    close: $<HTMLButtonElement>("#options_close"),
+    markerColors: {
+      circle: $<HTMLInputElement>("#circle_color"),
+      cross: $<HTMLInputElement>("#cross_color"),
+    },
+  };
+  private players = {
+    circle: this.getPlayerRefs("#player_1"),
+    cross: this.getPlayerRefs("#player_2"),
+  };
+  readonly playerNameElements = {
+    circle: this.players.circle.name,
+    cross: this.players.cross.name,
+  };
+  private round = {
+    game: $<HTMLElement>("#game"),
+    meta: $<HTMLElement>("#round_meta"),
+    status: $<HTMLElement>("#round_status"),
+  };
+  private start = {
+    button: $<HTMLButtonElement>("#start_game"),
+    modeButtons: $$<HTMLButtonElement>("[data-mode-option]"),
+    difficultyButtons: $$<HTMLButtonElement>("[data-difficulty]"),
+    starterButtons: $$<HTMLButtonElement>("[data-starter]"),
+    matchButtons: $$<HTMLButtonElement>("[data-match-mode]"),
+  };
+  private stats = {
+    rounds: $<HTMLElement>("#stat_rounds"),
+    draws: $<HTMLElement>("#stat_draws"),
+    circleWins: $<HTMLElement>("#stat_circle_wins"),
+    crossWins: $<HTMLElement>("#stat_cross_wins"),
+    circleRate: $<HTMLElement>("#stat_circle_rate"),
+    crossRate: $<HTMLElement>("#stat_cross_rate"),
+  };
+  private queries = {
+    mobileOptions: window.matchMedia("(max-width: 640px)"),
+  };
+  private matchComplete = false;
 
   onTileClick(handler: (index: number) => void) {
-    this.tiles.forEach((tile, index) => {
+    this.board.tiles.forEach((tile, index) => {
       tile.addEventListener("click", () => handler(index));
       tile.addEventListener("keydown", (event) => this.handleTileKeydown(event, index, handler));
     });
   }
 
   onStartGame(handler: () => void) {
-    this.startBtn.addEventListener("click", handler);
+    this.start.button.addEventListener("click", handler);
   }
 
   onGameModeChange(handler: (mode: GameMode) => void) {
-    this.modeButtons.forEach((button) => {
+    this.start.modeButtons.forEach((button) => {
       button.addEventListener("click", () => handler(button.dataset.modeOption as GameMode));
     });
   }
 
   onDifficultyChange(handler: (difficulty: AiDifficulty) => void) {
-    this.difficultyButtons.forEach((button) => {
+    this.start.difficultyButtons.forEach((button) => {
       button.addEventListener("click", () => handler(button.dataset.difficulty as AiDifficulty));
     });
   }
 
   onStarterChange(handler: (starter: Starter) => void) {
-    this.starterButtons.forEach((button) => {
+    this.start.starterButtons.forEach((button) => {
       button.addEventListener("click", () => handler(button.dataset.starter as Starter));
     });
   }
 
-  onMatchTargetChange(handler: (matchTarget: MatchTarget) => void) {
-    this.matchButtons.forEach((button) => {
+  onMatchModeChange(handler: (matchMode: MatchMode) => void) {
+    this.start.matchButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        const matchTarget = Number(button.dataset.matchTarget);
+        const matchMode = button.dataset.matchMode;
 
-        SettingsService.isMatchTarget(matchTarget) && handler(matchTarget);
+        SettingsService.isMatchMode(matchMode) && handler(matchMode);
       });
     });
   }
 
-  onChangeMode(handler: () => void) {
-    this.changeModeBtn.addEventListener("click", handler);
-  }
-
   onHistoryToggle(handler: () => void) {
-    this.historyToggleBtn.addEventListener("click", handler);
+    this.history.toggle.addEventListener("click", handler);
   }
 
   onHistoryClose(handler: () => void) {
-    this.historyCloseBtn.addEventListener("click", handler);
+    this.history.close.addEventListener("click", handler);
   }
 
   onMuteToggle(handler: () => void) {
-    this.muteToggleBtn.addEventListener("click", handler);
+    this.controls.muteToggle.addEventListener("click", handler);
   }
 
   onMarkerColorChange(handler: (player: Player, color: string) => void) {
-    this.circleColorInput.addEventListener("input", () =>
-      handler("circle", this.circleColorInput.value),
+    this.options.markerColors.circle.addEventListener("input", () =>
+      handler("circle", this.options.markerColors.circle.value),
     );
-    this.crossColorInput.addEventListener("input", () => handler("cross", this.crossColorInput.value));
+    this.options.markerColors.cross.addEventListener("input", () =>
+      handler("cross", this.options.markerColors.cross.value),
+    );
   }
 
   onSettingsToggle(handler: () => void) {
-    this.settingsToggle.addEventListener("click", (event) => {
+    this.controls.settingsToggle.addEventListener("click", (event) => {
       event.stopPropagation();
       handler();
     });
   }
 
   onMobileOptionsChange(handler: () => void) {
-    this.mobileOptionsQuery.addEventListener("change", handler);
+    this.queries.mobileOptions.addEventListener("change", handler);
   }
 
   onDocumentDismiss(handler: () => void) {
     document.addEventListener("click", (event) => {
       const shouldDismiss =
-        this.optionsModal.open &&
+        this.options.modal.open &&
         event.target instanceof Node &&
-        !this.optionsMenu.contains(event.target);
+        !this.options.menu.contains(event.target);
 
       shouldDismiss && handler();
     });
@@ -136,23 +157,24 @@ export class GameView {
       event.key === "Escape" && handler();
     });
 
-    this.optionsCloseBtn.addEventListener("click", handler);
+    this.options.close.addEventListener("click", handler);
   }
 
   onRoundReset(handler: () => void) {
-    this.resetBtn.addEventListener("click", handler);
-    this.mobileResetBtn.addEventListener("click", handler);
+    this.controls.reset.addEventListener("click", handler);
+    this.controls.mobileReset.addEventListener("click", () => !this.matchComplete && handler());
   }
 
   onFullReset(handler: () => void) {
-    this.resetGameBtn.addEventListener("click", handler);
+    this.controls.resetGame.addEventListener("click", handler);
+    this.controls.mobileReset.addEventListener("click", () => this.matchComplete && handler());
   }
 
   render(state: GameState) {
     document.body.classList.toggle("game-started", state.gameStarted);
     document.body.dataset.aiDifficulty = state.aiDifficulty;
     document.body.dataset.gameMode = state.gameMode;
-    (this.game as HTMLElement & { inert: boolean }).inert = !state.gameStarted;
+    (this.round.game as HTMLElement & { inert: boolean }).inert = !state.gameStarted;
 
     !state.gameStarted && this.closeOptionsModal();
 
@@ -163,48 +185,43 @@ export class GameView {
     this.renderActivePlayer(state);
     this.renderHistory(state);
     this.renderOptions(state);
-    this.setNewRoundVisible(state.gameStarted && state.gameOver && !state.matchWinner);
+    this.renderPrimaryAction(state);
     this.updateSettingsToggle(state.gameStarted);
   }
 
   syncOptionsPlacement() {
-    const targetMount = this.mobileOptionsQuery.matches
-      ? this.optionsModal
-      : this.desktopOptionsMount;
-
-    !this.mobileOptionsQuery.matches && this.closeOptionsModal();
-    this.optionsMenu.parentElement !== targetMount && targetMount.append(this.optionsMenu);
+    this.options.menu.parentElement !== this.options.modal && this.options.modal.append(this.options.menu);
   }
 
   openOptionsModal() {
-    this.mobileOptionsQuery.matches && !this.optionsModal.open && this.optionsModal.showModal();
+    !this.options.modal.open && this.options.modal.showModal();
   }
 
   closeOptionsModal() {
-    this.optionsModal.open && this.optionsModal.close();
+    this.options.modal.open && this.options.modal.close();
   }
 
   isHistoryOpen() {
-    return this.historyPanel.classList.contains("show");
+    return this.history.panel.classList.contains("show");
   }
 
   setHistoryPanelOpen(isOpen: boolean) {
-    this.historyPanel.classList.toggle("show", isOpen);
-    this.historyPanel.setAttribute("aria-hidden", String(!isOpen));
+    this.history.panel.classList.toggle("show", isOpen);
+    this.history.panel.setAttribute("aria-hidden", String(!isOpen));
   }
 
   setStartButtonsDisabled(isDisabled: boolean) {
-    [this.startBtn, ...this.modeButtons].forEach((button) => {
+    [this.start.button, ...this.start.modeButtons].forEach((button) => {
       button.disabled = isDisabled;
     });
   }
 
   focusStartButton() {
-    this.startBtn.focus();
+    this.start.button.focus();
   }
 
   private renderBoard(state: GameState) {
-    this.tiles.forEach((tile, index) => {
+    this.board.tiles.forEach((tile, index) => {
       const value = state.board[index];
       const isWinner = state.winningCombination?.includes(index) || false;
 
@@ -224,22 +241,22 @@ export class GameView {
   }
 
   private renderScore(state: GameState) {
-    this.player1Result.textContent = String(state.score.circle);
-    this.player2Result.textContent = String(state.score.cross);
-    this.playerNameElements.circle.textContent = state.playerNames.circle;
-    this.playerNameElements.cross.textContent = state.playerNames.cross;
+    this.players.circle.result.textContent = String(state.score.circle);
+    this.players.cross.result.textContent = String(state.score.cross);
+    this.players.circle.name.textContent = state.playerNames.circle;
+    this.players.cross.name.textContent = state.playerNames.cross;
   }
 
   private renderStatus(state: GameState) {
-    this.roundStatus.classList.toggle(
+    this.round.status.classList.toggle(
       "winner",
       Boolean(state.roundWinner && state.roundWinner !== "draw"),
     );
 
-    this.roundStatus.textContent = !state.gameStarted
+    this.round.status.textContent = !state.gameStarted
       ? "Start game"
-      : state.matchWinner
-        ? `${state.playerNames[state.matchWinner]} wins match`
+      : state.match.status === "complete"
+        ? this.getMatchWinnerLabel(state.match.winner, state)
       : state.roundWinner === "draw"
         ? "draw"
         : state.roundWinner
@@ -253,20 +270,20 @@ export class GameView {
     const mode = GameEngine.getModeLabel(state.gameMode);
     const difficulty = state.gameMode === "user-user" ? "no AI" : state.aiDifficulty;
     const starterName = state.playerNames[state.roundStarter];
-    const matchLabel = state.matchTarget === 1 ? "single game" : `best of ${state.matchTarget}`;
+    const matchLabel = this.getMatchLabel(state);
     const matchPoint = this.isMatchPoint(state) ? " | match point" : "";
 
-    this.roundMeta.textContent = state.gameStarted
+    this.round.meta.textContent = state.gameStarted
       ? `${mode} | ${difficulty} | ${matchLabel} | started: ${starterName}${matchPoint}`
       : "";
   }
 
   private renderActivePlayer(state: GameState) {
-    this.player1.classList.toggle(
+    this.players.circle.element.classList.toggle(
       "active",
       state.current === "circle" && !state.gameOver && state.gameStarted,
     );
-    this.player2.classList.toggle(
+    this.players.cross.element.classList.toggle(
       "active",
       state.current === "cross" && !state.gameOver && state.gameStarted,
     );
@@ -278,13 +295,13 @@ export class GameView {
     const circleWins = state.history.filter((round) => round.winner === "circle").length;
     const crossWins = state.history.filter((round) => round.winner === "cross").length;
 
-    this.statRounds.textContent = `${rounds} ${rounds === 1 ? "round" : "rounds"}`;
-    this.statDraws.textContent = `${draws} ${draws === 1 ? "draw" : "draws"}`;
-    this.statCircleWins.textContent = `O ${circleWins} ${circleWins === 1 ? "win" : "wins"}`;
-    this.statCrossWins.textContent = `X ${crossWins} ${crossWins === 1 ? "win" : "wins"}`;
-    this.statCircleRate.textContent = `O ${this.getWinRate(circleWins, rounds)}%`;
-    this.statCrossRate.textContent = `X ${this.getWinRate(crossWins, rounds)}%`;
-    this.historyList.innerHTML = state.history
+    this.stats.rounds.textContent = `${rounds} ${rounds === 1 ? "round" : "rounds"}`;
+    this.stats.draws.textContent = `${draws} ${draws === 1 ? "draw" : "draws"}`;
+    this.stats.circleWins.textContent = `O ${circleWins} ${circleWins === 1 ? "win" : "wins"}`;
+    this.stats.crossWins.textContent = `X ${crossWins} ${crossWins === 1 ? "win" : "wins"}`;
+    this.stats.circleRate.textContent = `O ${this.getWinRate(circleWins, rounds)}%`;
+    this.stats.crossRate.textContent = `X ${this.getWinRate(crossWins, rounds)}%`;
+    this.history.list.innerHTML = state.history
       .map((round) => {
         const winner =
           round.winner === "draw"
@@ -297,7 +314,7 @@ export class GameView {
             <strong>${winner}</strong>
             <small>${GameEngine.getModeLabel(round.mode)} | ${round.difficulty} | ${this.escapeHtml(
               state.playerNames[round.starter],
-            )} started | best of ${round.matchTarget}</small>
+            )} started | ${this.getRoundMatchLabel(round.matchMode)}</small>
           </li>
         `;
       })
@@ -305,51 +322,68 @@ export class GameView {
   }
 
   private renderOptions(state: GameState) {
-    this.modeButtons.forEach((button) => {
+    this.start.modeButtons.forEach((button) => {
       button.classList.toggle("active", button.dataset.modeOption === state.gameMode);
     });
 
-    this.difficultyButtons.forEach((button) => {
+    this.start.difficultyButtons.forEach((button) => {
       button.classList.toggle("active", button.dataset.difficulty === state.aiDifficulty);
     });
 
-    this.starterButtons.forEach((button) => {
+    this.start.starterButtons.forEach((button) => {
       button.classList.toggle("active", button.dataset.starter === state.starter);
     });
-    this.matchButtons.forEach((button) => {
-      button.classList.toggle("active", Number(button.dataset.matchTarget) === state.matchTarget);
+    this.start.matchButtons.forEach((button) => {
+      button.classList.toggle("active", button.dataset.matchMode === state.matchMode);
+    });
+    this.start.difficultyButtons.forEach((button) => {
+      button.disabled = state.gameMode === "user-user";
     });
 
-    this.muteToggleBtn.textContent = state.muted ? "sound off" : "sound on";
-    this.circleColorInput.value = state.markerColors.circle;
-    this.crossColorInput.value = state.markerColors.cross;
-    this.circleColorInput.parentElement?.style.setProperty(
+    this.setIconButton(
+      this.controls.muteToggle,
+      state.muted ? "volume_off" : "volume_up",
+      "sound",
+    );
+    this.options.markerColors.circle.value = state.markerColors.circle;
+    this.options.markerColors.cross.value = state.markerColors.cross;
+    this.options.markerColors.circle.parentElement?.style.setProperty(
       "--swatch-color",
       state.markerColors.circle,
     );
-    this.crossColorInput.parentElement?.style.setProperty("--swatch-color", state.markerColors.cross);
+    this.options.markerColors.cross.parentElement?.style.setProperty(
+      "--swatch-color",
+      state.markerColors.cross,
+    );
     document.documentElement.style.setProperty("--circle-color", state.markerColors.circle);
     document.documentElement.style.setProperty("--cross-color", state.markerColors.cross);
   }
 
-  private setNewRoundVisible(isVisible: boolean) {
-    this.resetBtn.classList.toggle("show", isVisible);
-    this.mobileResetBtn.classList.toggle("show", isVisible);
+  private renderPrimaryAction(state: GameState) {
+    const matchComplete = state.match.status === "complete";
+    const desktopVisible = state.gameStarted && state.gameOver && !matchComplete;
+    const mobileVisible = state.gameStarted && state.gameOver;
+    this.matchComplete = matchComplete;
+
+    this.setIconButton(this.controls.reset, "restart_alt", "new round");
+    this.controls.mobileReset.textContent = this.matchComplete ? "main menu" : "new round";
+    this.controls.reset.classList.toggle("show", desktopVisible);
+    this.controls.mobileReset.classList.toggle("show", mobileVisible);
   }
 
   private updateSettingsToggle(gameStarted: boolean) {
-    this.settingsToggle.hidden = !gameStarted || !this.mobileOptionsQuery.matches;
+    this.controls.settingsToggle.hidden = !gameStarted;
   }
 
   private setWinningLine(combination: number[] | null) {
-    this.winLine.className = "";
+    this.board.winLine.className = "";
 
     if (!combination) return;
 
     const index = WINS.findIndex((win) => win.every((tile, i) => tile === combination[i]));
     if (index < 0) return;
 
-    this.winLine.classList.add("show", `line-${index}`);
+    this.board.winLine.classList.add("show", `line-${index}`);
   }
 
   private setWinnerColor(state: GameState) {
@@ -401,19 +435,66 @@ export class GameView {
     }
 
     const nextIndex = nextIndexByKey[event.key];
-    if (nextIndex === undefined || nextIndex < 0 || nextIndex >= this.tiles.length) return;
+    if (nextIndex === undefined || nextIndex < 0 || nextIndex >= this.board.tiles.length) return;
     if (event.key === "ArrowLeft" && index % 3 === 0) return;
     if (event.key === "ArrowRight" && index % 3 === 2) return;
 
     event.preventDefault();
-    this.tiles[nextIndex].focus();
+    this.board.tiles[nextIndex].focus();
   }
 
   private isMatchPoint(state: GameState) {
-    if (state.matchTarget === 1 || state.roundWinner) return false;
+    if (state.matchMode === "casual" || state.roundWinner) return false;
 
-    const winsNeeded = Math.ceil(state.matchTarget / 2);
+    if (state.matchMode === "first-to-5") {
+      return PLAYERS.some((player) => state.score[player] === 4);
+    }
 
-    return PLAYERS.some((player) => state.score[player] === winsNeeded - 1);
+    return this.getBestOfRound(state) === 5 || PLAYERS.some((player) => state.score[player] === 2);
+  }
+
+  private getMatchWinnerLabel(winner: MatchWinner, state: GameState) {
+    return winner === "draw"
+      ? "match draw"
+      : `${state.playerNames[winner]} wins match`;
+  }
+
+  private getMatchLabel(state: GameState) {
+    if (state.matchMode === "casual") return "casual";
+    if (state.matchMode === "first-to-5") return "race to 5";
+
+    return `best of 5 | round ${this.getBestOfRound(state)}/5`;
+  }
+
+  private getRoundMatchLabel(matchMode: MatchMode) {
+    return matchMode === "casual"
+      ? "casual"
+      : matchMode === "first-to-5"
+        ? "race to 5"
+        : "best of 5";
+  }
+
+  private getBestOfRound(state: GameState) {
+    const playedRounds = state.history.length;
+
+    return Math.min(state.gameOver ? playedRounds : playedRounds + 1, 5);
+  }
+
+  private getPlayerRefs(selector: string) {
+    const element = $<HTMLElement>(selector);
+
+    return {
+      element,
+      name: $<HTMLElement>(".player-name", element),
+      result: $<HTMLElement>(".result", element),
+    };
+  }
+
+  private setIconButton(button: HTMLButtonElement, icon: string, label: string) {
+    const iconElement = $<HTMLElement>(".material-symbols-rounded", button);
+    const labelElement = $<HTMLElement>("span:last-child", button);
+
+    iconElement.textContent = icon;
+    labelElement.textContent = label;
   }
 }

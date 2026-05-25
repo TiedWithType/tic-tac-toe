@@ -5,7 +5,7 @@
   "codename_policy": {
     "theme": "alphabetical desserts",
     "format": "Title Case",
-    "next_codename_letter": "I",
+    "next_codename_letter": "J",
     "patch_releases_keep_parent_codename": true
   },
   "releases": [
@@ -190,7 +190,7 @@
       },
       "codename": "Honeycomb",
       "codename_letter": "H",
-      "status": "current",
+      "status": "previous",
       "scope": "major",
       "summary": "Productize the game flow with versioned settings, a pre-game setup screen, match-based play, accessibility upgrades and a lightweight PWA shell.",
       "breaking_changes": [
@@ -201,27 +201,44 @@
       "migration_notes": [
         "settingsSchemaVersion is added when settings are saved.",
         "Existing names, colors, mode, difficulty, starter and mute settings are preserved when possible.",
-        "Missing match settings migrate to a single-game match."
+        "Missing match settings migrate to casual match mode."
       ],
       "notes": [
         "Introduced versioned settings storage with migration support.",
-        "Added a pre-game setup flow for mode, AI difficulty, starter and match length.",
-        "Added match-based gameplay with single game, best-of-3 and best-of-5 presets.",
+        "Added a pre-game setup flow for mode, AI difficulty, starter and match mode.",
+        "Added match-based gameplay with casual, best-of-5 and race-to-5 modes.",
         "Improved board accessibility with keyboard navigation and ARIA states.",
-        "Prepared a lightweight PWA shell with manifest and app icons."
+        "Prepared a lightweight PWA shell with manifest and app icons.",
+        "Removed the redundant app.config.ts file and kept configuration close to its usage."
+      ]
+    },
+    {
+      "version": {
+        "major": 3,
+        "minor": 1,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Ice Cream",
+      "codename_letter": "I",
+      "status": "current",
+      "scope": "minor",
+      "summary": "Unify the game action menu across desktop and mobile while polishing iconography, marker color controls and static release labels.",
+      "notes": [
+        "Unified settings access into a shared modal on desktop and mobile.",
+        "Moved quick actions under the board so settings and new round share the same layout across viewports.",
+        "Removed the in-game change mode action in favor of returning to the main menu.",
+        "Added Material Symbols icons for menu actions and marker-shaped icons for player color controls.",
+        "Kept static version labels in HTML aligned with the release registry.",
+        "Refined match modes, AI difficulty disabling for PvP and menu copy."
       ]
     }
   ],
   "planned_codenames": [
     {
-      "letter": "I",
-      "codename": "Ice Cream",
-      "status": "next"
-    },
-    {
       "letter": "J",
       "codename": "Jelly Roll",
-      "status": "reserved"
+      "status": "next"
     }
   ],
   "planned_releases": []

@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.3.0.0 beta "Honeycomb"**
+Aktualna wersja: **v.3.1.0 beta "Ice Cream"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -21,7 +21,7 @@ Autor: **TiedWithType**
 - 🔊 Dźwięki ruchu, remisu, wygranej oraz intro przed startem gry.
 - 🔇 Toggle mute.
 - 💾 Zapisywanie ustawień w `localStorage`.
-- 📱 Mobilne menu ustawień w modalu.
+- 📱 Jednolite menu ustawień w modalu na mobile i desktopie.
 - ✏️ Zmiana nazw graczy przez **PPM** albo **long press** na mobile.
 - 🏷️ Domyślne nazwy graczy zależne od trybu gry.
 - ⚡ Dynamiczne ładowanie runtime gry dopiero po wyborze trybu.
@@ -32,10 +32,7 @@ Autor: **TiedWithType**
 1. Otwórz aplikację.
 2. Wybierz poziom trudności AI, jeśli planujesz grać z AI albo oglądać AI vs AI.
 3. Wybierz, kto zaczyna rundę: **O**, **X** albo **random**.
-4. Kliknij jeden z przycisków startu:
-   - `Start game`
-   - `Start game (user vs ai)`
-   - `Start game (ai vs ai)`
+4. Kliknij `Start game`.
 5. W trybie gracza klikaj wolne pola na planszy.
 6. Po zakończonej rundzie użyj `new round`, żeby wyczyścić planszę i zachować wynik.
 7. Użyj `main menu`, żeby wyzerować wynik, historię i wrócić do ekranu startowego.
@@ -75,13 +72,12 @@ W menu ustawień możesz zmienić:
 - 🎨 kolor gracza **O**
 - 🎨 kolor gracza **X**
 - 🔄 rozpocząć nową rundę
-- 🧭 zmienić tryb gry bez reloadu strony
+- 🧭 wrócić do menu głównego i wybrać inny tryb gry
 - 📜 otworzyć historię sesji
 - 🔊 włączyć lub wyłączyć dźwięki
 - 🧹 wykonać pełny reset gry
 
-Na desktopie ustawienia są widoczne pod planszą.
-Na mobile pojawiają się pod ikoną ustawień w prawym górnym rogu.
+Na desktopie i mobile akcje gry są pod planszą, a ustawienia otwierają się w tym samym modalu.
 
 ## ✏️ Zmiana nazw graczy
 
@@ -141,7 +137,6 @@ Kod aplikacji jest podzielony na mniejsze moduły:
 ```txt
 src/
   app.ts
-  app.config.ts
 
   bootstrap/
     start.menu.ts
@@ -220,47 +215,18 @@ Style są podzielone na moduły CSS importowane przez `src/style.css`:
 - `base.css` - tokeny, reset i globalne style strony
 - `game-layout.css` - layout gry, status rundy i scoreboard
 - `board.css` - plansza, O/X rysowane w CSS, zwycięska linia i animacje
-- `controls.css` - przyciski, menu opcji, kolory graczy i modal ustawień
+- `controls.css` - przyciski, quick actions, menu opcji, kolory graczy i modal ustawień
 - `start-overlay.css` - ekran startowy, difficulty, starter i przyciski startu
 - `shell.css` - footer oraz panel historii
-- `mobile.css` - układ mobilny i modal bottom-sheet
+- `mobile.css` - mobilne dopasowania historii
 
 ## 🏷️ Konfiguracja aplikacji
 
-Główna konfiguracja znajduje się w:
+Konfiguracja jest trzymana blisko miejsca użycia:
 
-```txt
-src/app.config.ts
-```
-
-Przykład:
-
-```ts
-export const appConfig = {
-  appName: "Tic Tac Toe",
-  version: {
-    major: 3,
-    minor: 0,
-    patch: 0,
-    release: "beta",
-    codename: "Honeycomb",
-  },
-  defaultPlayers: {
-    "user-user": {
-      circle: "player 1",
-      cross: "player 2",
-    },
-    "user-ai": {
-      circle: "player 1",
-      cross: "ai 1",
-    },
-    "ai-ai": {
-      circle: "ai 1",
-      cross: "ai 2",
-    },
-  },
-};
-```
+- wersja publiczna: `src/index.html` oraz `.vercel/versions.json`
+- domyślne nazwy graczy: `src/core/constants.ts`
+- ustawienia użytkownika i migracje storage: `src/services/settings.service.ts`
 
 ## 🍩 Wersjonowanie
 
@@ -287,6 +253,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🍫 `2.2.0 beta "Fudge"`
 - 🍨 `2.3.0 beta "Gelato"`
 - 🍯 `3.0.0 beta "Honeycomb"`
+- 🍦 `3.1.0 beta "Ice Cream"`
 
 ## 🚀 Uruchamianie lokalnie
 
@@ -332,15 +299,15 @@ Przed releasem warto sprawdzić:
 - ✅ ekran startowy pokazuje tytuł gry z glow
 - ✅ intro gra przed startem
 - ✅ `Start game` uruchamia player vs player
-- ✅ `Start game (user vs ai)` uruchamia grę przeciw AI
-- ✅ `Start game (ai vs ai)` uruchamia symulację AI
+- ✅ wybór `user vs ai` uruchamia grę przeciw AI
+- ✅ wybór `ai vs ai` uruchamia symulację AI
 - ✅ difficulty wpływa na decyzje AI
 - ✅ `new round` czyści planszę i zachowuje wynik
 - ✅ `main menu` czyści planszę, wynik i historię
 - ✅ kolory O/X zmieniają markery, start button i glow tytułu
 - ✅ PPM zmienia nazwę gracza na desktopie
 - ✅ long press zmienia nazwę gracza na mobile
-- ✅ mobile settings otwierają się w modalu
+- ✅ settings otwierają się w tym samym modalu na desktopie i mobile
 - ✅ historia sesji aktualizuje statystyki
 - ✅ mute wyłącza dźwięki
 - ✅ `bun run vite:build` przechodzi bez błędów

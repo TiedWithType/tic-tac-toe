@@ -14,7 +14,7 @@
       rel="stylesheet"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0,0&icon_names=settings"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0,0&icon_names=cancel,history,home,info,restart_alt,settings,volume_off,volume_up"
       rel="stylesheet"
     />
     <link rel="icon" type="image/webp" href="/icon.webp" />
@@ -58,33 +58,51 @@
         <figure data-tile="tile_9" role="button" tabindex="0"></figure>
         <span id="win_line" aria-hidden="true"></span>
       </section>
-      <div id="desktop_options_mount">
-        <section id="options_menu" class="controls" aria-label="Game options">
-          <button id="options_close" type="button">close</button>
-          <section class="color-options" aria-label="Marker colors">
-            <label>
-              <span>O</span>
-              <input id="circle_color" type="color" />
-            </label>
-            <label>
-              <span>X</span>
-              <input id="cross_color" type="color" />
-            </label>
-          </section>
-          <button id="reset">new round</button>
-          <button id="change_mode">change mode</button>
-          <button id="history_toggle">history</button>
-          <button id="mute_toggle">sound on</button>
-          <button id="reset_game">main menu</button>
-          <p id="options_version">v.3.0.0 "Honeycomb" by TiedWithType</p>
-        </section>
+      <div id="quick_actions" aria-label="Game actions">
+        <button id="mobile_reset" type="button">new round</button>
+        <button id="settings_toggle" type="button" aria-label="Open game settings" hidden>
+          <span class="material-symbols-rounded" aria-hidden="true">settings</span>
+        </button>
       </div>
     </main>
-    <button id="mobile_reset" type="button">new round</button>
-    <button id="settings_toggle" type="button" aria-label="Open game settings" hidden>
-      <span class="material-symbols-rounded" aria-hidden="true">settings</span>
-    </button>
-    <dialog id="options_modal" aria-label="Game options"></dialog>
+    <dialog id="options_modal" aria-label="Game options">
+      <section id="options_menu" class="controls" aria-label="Game options">
+        <button id="options_close" type="button">
+          <span class="material-symbols-rounded" aria-hidden="true">cancel</span>
+          <span>close</span>
+        </button>
+        <section class="color-options" aria-label="Marker colors">
+          <label aria-label="Circle marker color">
+            <span class="marker-icon marker-icon-circle" aria-hidden="true"></span>
+            <input id="circle_color" type="color" />
+          </label>
+          <label aria-label="Cross marker color">
+            <span class="marker-icon marker-icon-cross" aria-hidden="true"></span>
+            <input id="cross_color" type="color" />
+          </label>
+        </section>
+        <button id="reset">
+          <span class="material-symbols-rounded" aria-hidden="true">restart_alt</span>
+          <span>new round</span>
+        </button>
+        <button id="history_toggle">
+          <span class="material-symbols-rounded" aria-hidden="true">history</span>
+          <span>history</span>
+        </button>
+        <button id="mute_toggle">
+          <span class="material-symbols-rounded" aria-hidden="true">volume_up</span>
+          <span>sound</span>
+        </button>
+        <button id="reset_game">
+          <span class="material-symbols-rounded" aria-hidden="true">home</span>
+          <span>menu</span>
+        </button>
+        <p id="options_version">
+          <span class="material-symbols-rounded" aria-hidden="true">info</span>
+          <span>v.3.1.0 "Ice Cream" by TiedWithType</span>
+        </p>
+      </section>
+    </dialog>
     <section id="start_overlay" aria-label="Start game">
       <h1 id="app_title">Tic Tac Toe</h1>
       <section class="mode-panel" aria-label="Game mode">
@@ -114,9 +132,9 @@
       <section class="match-panel" aria-label="Match length">
         <span>match</span>
         <div class="match-options">
-          <button data-match-target="1" type="button">single</button>
-          <button data-match-target="3" type="button">best of 3</button>
-          <button data-match-target="5" type="button">best of 5</button>
+          <button data-match-mode="casual" type="button">casual</button>
+          <button data-match-mode="best-of-5" type="button">best of 5</button>
+          <button data-match-mode="first-to-5" type="button">race to 5</button>
         </div>
       </section>
       <div class="start-actions">
@@ -138,6 +156,6 @@
       </section>
       <ol id="history_list"></ol>
     </aside>
-    <footer id="app_footer">v.3.0.0 "Honeycomb" by TiedWithType</footer>
+    <footer id="app_footer">v.3.1.0 "Ice Cream" by TiedWithType</footer>
   </body>
 </html>

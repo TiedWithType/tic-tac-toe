@@ -57,6 +57,8 @@
   --hover-lift: -0.125rem;
   --line-thickness: 0.38rem;
   --marker-stroke: 0.72rem;
+  --marker-icon-size: 1rem;
+  --marker-icon-stroke: 0.16rem;
   --marker-size-circle: 58%;
   --marker-size-cross: 64%;
   --win-line-length: 88%;

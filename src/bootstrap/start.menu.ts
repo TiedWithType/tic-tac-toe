@@ -1,23 +1,22 @@
-import type { AiDifficulty, GameMode, MatchTarget, Starter } from "../core/types";
+import type { AiDifficulty, GameMode, MatchMode, Starter } from "../core/types";
 import { SettingsService } from "../services/settings.service";
+import { $, $$ } from "../ui/dom";
 
 type StartMenuOptions = {
   onStart: (mode: GameMode) => void;
 };
 
 export class StartMenu {
-  private startBtn = document.querySelector<HTMLButtonElement>("#start_game")!;
-  private modeButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-mode-option]")];
-  private difficultyButtons = [
-    ...document.querySelectorAll<HTMLButtonElement>("[data-difficulty]"),
-  ];
-  private starterButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-starter]")];
-  private matchButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-match-target]")];
+  private startBtn = $<HTMLButtonElement>("#start_game");
+  private modeButtons = $$<HTMLButtonElement>("[data-mode-option]");
+  private difficultyButtons = $$<HTMLButtonElement>("[data-difficulty]");
+  private starterButtons = $$<HTMLButtonElement>("[data-starter]");
+  private matchButtons = $$<HTMLButtonElement>("[data-match-mode]");
   private abortController = new AbortController();
   private gameMode: GameMode = "user-user";
   private aiDifficulty: AiDifficulty = "normal";
   private starter: Starter = "circle";
-  private matchTarget: MatchTarget = 1;
+  private matchMode: MatchMode = "casual";
 
   constructor(
     private options: StartMenuOptions,
@@ -92,9 +91,9 @@ export class StartMenu {
       button.addEventListener(
         "click",
         () => {
-          const matchTarget = Number(button.dataset.matchTarget);
+          const matchMode = button.dataset.matchMode;
 
-          SettingsService.isMatchTarget(matchTarget) && (this.matchTarget = matchTarget);
+          SettingsService.isMatchMode(matchMode) && (this.matchMode = matchMode);
           this.saveSettings();
           this.render();
         },
@@ -110,7 +109,7 @@ export class StartMenu {
       (this.aiDifficulty = settings.aiDifficulty);
     SettingsService.isGameMode(settings.gameMode) && (this.gameMode = settings.gameMode);
     SettingsService.isStarter(settings.starter) && (this.starter = settings.starter);
-    SettingsService.isMatchTarget(settings.matchTarget) && (this.matchTarget = settings.matchTarget);
+    SettingsService.isMatchMode(settings.matchMode) && (this.matchMode = settings.matchMode);
 
     const { circle, cross } = settings.markerColors ?? {};
 
@@ -127,7 +126,7 @@ export class StartMenu {
       gameMode: this.gameMode,
       aiDifficulty: this.aiDifficulty,
       starter: this.starter,
-      matchTarget: this.matchTarget,
+      matchMode: this.matchMode,
     };
 
     this.storage.save(nextSettings);
@@ -141,6 +140,7 @@ export class StartMenu {
       button.classList.toggle("active", button.dataset.modeOption === this.gameMode);
     });
     this.difficultyButtons.forEach((button) => {
+      button.disabled = this.gameMode === "user-user";
       button.classList.toggle("active", button.dataset.difficulty === this.aiDifficulty);
     });
 
@@ -148,7 +148,7 @@ export class StartMenu {
       button.classList.toggle("active", button.dataset.starter === this.starter);
     });
     this.matchButtons.forEach((button) => {
-      button.classList.toggle("active", Number(button.dataset.matchTarget) === this.matchTarget);
+      button.classList.toggle("active", button.dataset.matchMode === this.matchMode);
     });
   }
 }

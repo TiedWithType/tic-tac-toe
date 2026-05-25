@@ -3,7 +3,16 @@ export type GameMode = "user-user" | "user-ai" | "ai-ai";
 export type AiDifficulty = "easy" | "normal" | "hard";
 export type BoardValue = Player | null;
 export type Starter = Player | "random";
-export type MatchTarget = 1 | 3 | 5;
+export type MatchMode = "casual" | "best-of-5" | "first-to-5";
+export type MatchWinner = Player | "draw";
+export type MatchState =
+  | {
+      status: "playing";
+    }
+  | {
+      status: "complete";
+      winner: MatchWinner;
+    };
 
 export type Score = Record<Player, number>;
 export type PlayerNames = Record<Player, string>;
@@ -15,20 +24,8 @@ export type RoundRecord = {
   mode: GameMode;
   difficulty: AiDifficulty;
   starter: Player;
-  matchTarget: MatchTarget;
+  matchMode: MatchMode;
   winner: Player | "draw";
-};
-
-export type AppConfig = {
-  appName: string;
-  version: {
-    major: number;
-    minor: number;
-    patch: number;
-    release: string;
-    codename: string;
-  };
-  defaultPlayers: PlayerNamesByMode;
 };
 
 export type GameState = {
@@ -42,8 +39,8 @@ export type GameState = {
   gameMode: GameMode;
   aiDifficulty: AiDifficulty;
   starter: Starter;
-  matchTarget: MatchTarget;
-  matchWinner: Player | null;
+  matchMode: MatchMode;
+  match: MatchState;
   muted: boolean;
   markerColors: MarkerColors;
   score: Score;
@@ -59,6 +56,7 @@ export type SettingsSnapshot = Partial<{
   gameMode: GameMode;
   aiDifficulty: AiDifficulty;
   starter: Starter;
-  matchTarget: MatchTarget;
+  matchMode: MatchMode;
+  matchTarget: 1 | 3 | 5;
   muted: boolean;
 }>;

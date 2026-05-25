@@ -1,5 +1,5 @@
 import { SETTINGS_KEY, SETTINGS_SCHEMA_VERSION } from "../core/constants";
-import type { AiDifficulty, GameMode, MatchTarget, SettingsSnapshot, Starter } from "../core/types";
+import type { AiDifficulty, GameMode, MatchMode, SettingsSnapshot, Starter } from "../core/types";
 
 export class SettingsService {
   load() {
@@ -39,8 +39,8 @@ export class SettingsService {
     return value === "circle" || value === "cross" || value === "random";
   }
 
-  static isMatchTarget(value: unknown): value is MatchTarget {
-    return value === 1 || value === 3 || value === 5;
+  static isMatchMode(value: unknown): value is MatchMode {
+    return value === "casual" || value === "best-of-5" || value === "first-to-5";
   }
 
   static isHexColor(value: unknown): value is string {
@@ -51,9 +51,12 @@ export class SettingsService {
     const nextSettings = { ...settings };
 
     nextSettings.settingsSchemaVersion ||= SETTINGS_SCHEMA_VERSION;
-    nextSettings.matchTarget = SettingsService.isMatchTarget(settings.matchTarget)
-      ? settings.matchTarget
-      : 1;
+    nextSettings.matchMode = SettingsService.isMatchMode(settings.matchMode)
+      ? settings.matchMode
+      : settings.matchTarget === 5
+        ? "first-to-5"
+        : "casual";
+    delete nextSettings.matchTarget;
 
     return nextSettings;
   }

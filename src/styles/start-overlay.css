@@ -195,6 +195,10 @@
   padding: var(--start-primary-padding-block) var(--start-primary-padding-inline);
   text-transform: none;
 
+  &::before {
+    display: none;
+  }
+
   &::after {
     content: "";
     position: absolute;
@@ -204,6 +208,10 @@
   }
 
   &:hover {
+    border-color: transparent;
+    background:
+      linear-gradient(var(--surface), var(--surface)) padding-box,
+      linear-gradient(var(--angle-right), var(--circle-color), var(--cross-color)) border-box;
     filter: brightness(1.08);
     box-shadow: 0 var(--shadow-start-hover-y) var(--shadow-start-hover-blur) rgba(0, 0, 0, 0.42);
   }
