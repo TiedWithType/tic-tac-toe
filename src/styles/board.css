@@ -25,6 +25,11 @@
       background: #24242c;
     }
 
+    &:focus-visible {
+      outline: calc(var(--border-width) * 2) solid var(--text);
+      outline-offset: var(--space-xs);
+    }
+
     &.winner {
       border-color: color-mix(in srgb, var(--winner-color), transparent 28%);
       background:

@@ -18,6 +18,9 @@
       rel="stylesheet"
     />
     <link rel="icon" type="image/webp" href="/icon.webp" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#16161a" />
+    <meta name="apple-mobile-web-app-title" content="Tic Tac Toe" />
     <link rel="stylesheet" href="style.css" />
     <script type="module" src="./app.ts"></script>
     <title>Tic Tac Toe</title>
@@ -43,16 +46,16 @@
           <span class="result">0</span>
         </section>
       </header>
-      <section id="board">
-        <figure data-tile="tile_1"></figure>
-        <figure data-tile="tile_2"></figure>
-        <figure data-tile="tile_3"></figure>
-        <figure data-tile="tile_4"></figure>
-        <figure data-tile="tile_5"></figure>
-        <figure data-tile="tile_6"></figure>
-        <figure data-tile="tile_7"></figure>
-        <figure data-tile="tile_8"></figure>
-        <figure data-tile="tile_9"></figure>
+      <section id="board" role="grid" aria-label="Tic Tac Toe board">
+        <figure data-tile="tile_1" role="button" tabindex="0"></figure>
+        <figure data-tile="tile_2" role="button" tabindex="0"></figure>
+        <figure data-tile="tile_3" role="button" tabindex="0"></figure>
+        <figure data-tile="tile_4" role="button" tabindex="0"></figure>
+        <figure data-tile="tile_5" role="button" tabindex="0"></figure>
+        <figure data-tile="tile_6" role="button" tabindex="0"></figure>
+        <figure data-tile="tile_7" role="button" tabindex="0"></figure>
+        <figure data-tile="tile_8" role="button" tabindex="0"></figure>
+        <figure data-tile="tile_9" role="button" tabindex="0"></figure>
         <span id="win_line" aria-hidden="true"></span>
       </section>
       <div id="desktop_options_mount">
@@ -73,7 +76,7 @@
           <button id="history_toggle">history</button>
           <button id="mute_toggle">sound on</button>
           <button id="reset_game">main menu</button>
-          <p id="options_version">v.2.3.0 "Gelato" by TiedWithType</p>
+          <p id="options_version">v.3.0.0 "Honeycomb" by TiedWithType</p>
         </section>
       </div>
     </main>
@@ -84,6 +87,14 @@
     <dialog id="options_modal" aria-label="Game options"></dialog>
     <section id="start_overlay" aria-label="Start game">
       <h1 id="app_title">Tic Tac Toe</h1>
+      <section class="mode-panel" aria-label="Game mode">
+        <span>mode</span>
+        <div class="mode-options">
+          <button data-mode-option="user-user" type="button">player vs player</button>
+          <button data-mode-option="user-ai" type="button">user vs ai</button>
+          <button data-mode-option="ai-ai" type="button">ai vs ai</button>
+        </div>
+      </section>
       <section class="difficulty-panel" aria-label="AI difficulty">
         <span>AI difficulty</span>
         <div class="difficulty-options">
@@ -100,10 +111,16 @@
           <button data-starter="random" type="button">random</button>
         </div>
       </section>
+      <section class="match-panel" aria-label="Match length">
+        <span>match</span>
+        <div class="match-options">
+          <button data-match-target="1" type="button">single</button>
+          <button data-match-target="3" type="button">best of 3</button>
+          <button data-match-target="5" type="button">best of 5</button>
+        </div>
+      </section>
       <div class="start-actions">
-        <button id="start_game" data-mode="user-user">Start game</button>
-        <button data-mode="user-ai">Start game (user vs ai)</button>
-        <button data-mode="ai-ai">Start game (ai vs ai)</button>
+        <button id="start_game" type="button">Start game</button>
       </div>
     </section>
     <aside id="history_panel" aria-label="Session history" aria-hidden="true">
@@ -121,6 +138,6 @@
       </section>
       <ol id="history_list"></ol>
     </aside>
-    <footer id="app_footer">v.2.3.0 "Gelato" by TiedWithType</footer>
+    <footer id="app_footer">v.3.0.0 "Honeycomb" by TiedWithType</footer>
   </body>
 </html>

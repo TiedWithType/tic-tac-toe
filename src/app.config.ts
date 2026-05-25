@@ -3,11 +3,11 @@ import type { AppConfig } from "./core/types";
 export const appConfig = {
   appName: "Tic Tac Toe",
   version: {
-    major: 2,
-    minor: 3,
+    major: 3,
+    minor: 0,
     patch: 0,
     release: "beta",
-    codename: "Gelato",
+    codename: "Honeycomb",
   },
   defaultPlayers: {
     "user-user": {

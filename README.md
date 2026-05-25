@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.2.3.0 beta "Gelato"**
+Aktualna wersja: **v.3.0.0 beta "Honeycomb"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -239,11 +239,11 @@ Przykład:
 export const appConfig = {
   appName: "Tic Tac Toe",
   version: {
-    major: 2,
-    minor: 3,
+    major: 3,
+    minor: 0,
     patch: 0,
     release: "beta",
-    codename: "Gelato",
+    codename: "Honeycomb",
   },
   defaultPlayers: {
     "user-user": {
@@ -286,6 +286,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - ⚡ `2.1.1 beta "Eclair"`
 - 🍫 `2.2.0 beta "Fudge"`
 - 🍨 `2.3.0 beta "Gelato"`
+- 🍯 `3.0.0 beta "Honeycomb"`
 
 ## 🚀 Uruchamianie lokalnie
 

@@ -1,6 +1,7 @@
 import { PLAYERS, WINS } from "../core/constants";
-import type { AiDifficulty, GameMode, GameState, Player, Starter } from "../core/types";
+import type { AiDifficulty, GameMode, GameState, MatchTarget, Player, Starter } from "../core/types";
 import { GameEngine } from "../game/game.engine";
+import { SettingsService } from "../services/settings.service";
 
 export class GameView {
   readonly tiles = [...document.querySelectorAll<HTMLElement>("[data-tile]")];
@@ -31,11 +32,12 @@ export class GameView {
   private optionsCloseBtn = document.querySelector<HTMLButtonElement>("#options_close")!;
   private settingsToggle = document.querySelector<HTMLButtonElement>("#settings_toggle")!;
   private startBtn = document.querySelector<HTMLButtonElement>("#start_game")!;
-  private startButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-mode]")];
+  private modeButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-mode-option]")];
   private difficultyButtons = [
     ...document.querySelectorAll<HTMLButtonElement>("[data-difficulty]"),
   ];
   private starterButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-starter]")];
+  private matchButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-match-target]")];
   private winLine = document.querySelector<HTMLElement>("#win_line")!;
   private historyPanel = document.querySelector<HTMLElement>("#history_panel")!;
   private historyList = document.querySelector<HTMLOListElement>("#history_list")!;
@@ -50,12 +52,17 @@ export class GameView {
   onTileClick(handler: (index: number) => void) {
     this.tiles.forEach((tile, index) => {
       tile.addEventListener("click", () => handler(index));
+      tile.addEventListener("keydown", (event) => this.handleTileKeydown(event, index, handler));
     });
   }
 
-  onStartGame(handler: (mode: GameMode) => void) {
-    this.startButtons.forEach((button) => {
-      button.addEventListener("click", () => handler(button.dataset.mode as GameMode));
+  onStartGame(handler: () => void) {
+    this.startBtn.addEventListener("click", handler);
+  }
+
+  onGameModeChange(handler: (mode: GameMode) => void) {
+    this.modeButtons.forEach((button) => {
+      button.addEventListener("click", () => handler(button.dataset.modeOption as GameMode));
     });
   }
 
@@ -68,6 +75,16 @@ export class GameView {
   onStarterChange(handler: (starter: Starter) => void) {
     this.starterButtons.forEach((button) => {
       button.addEventListener("click", () => handler(button.dataset.starter as Starter));
+    });
+  }
+
+  onMatchTargetChange(handler: (matchTarget: MatchTarget) => void) {
+    this.matchButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const matchTarget = Number(button.dataset.matchTarget);
+
+        SettingsService.isMatchTarget(matchTarget) && handler(matchTarget);
+      });
     });
   }
 
@@ -134,6 +151,7 @@ export class GameView {
   render(state: GameState) {
     document.body.classList.toggle("game-started", state.gameStarted);
     document.body.dataset.aiDifficulty = state.aiDifficulty;
+    document.body.dataset.gameMode = state.gameMode;
     (this.game as HTMLElement & { inert: boolean }).inert = !state.gameStarted;
 
     !state.gameStarted && this.closeOptionsModal();
@@ -145,7 +163,7 @@ export class GameView {
     this.renderActivePlayer(state);
     this.renderHistory(state);
     this.renderOptions(state);
-    this.setNewRoundVisible(state.gameStarted && state.gameOver);
+    this.setNewRoundVisible(state.gameStarted && state.gameOver && !state.matchWinner);
     this.updateSettingsToggle(state.gameStarted);
   }
 
@@ -176,7 +194,7 @@ export class GameView {
   }
 
   setStartButtonsDisabled(isDisabled: boolean) {
-    this.startButtons.forEach((button) => {
+    [this.startBtn, ...this.modeButtons].forEach((button) => {
       button.disabled = isDisabled;
     });
   }
@@ -192,12 +210,13 @@ export class GameView {
 
       value
         ? (tile.dataset.value = value, tile.setAttribute("aria-label", value))
-        : (delete tile.dataset.value, tile.removeAttribute("aria-label"));
+        : (delete tile.dataset.value, tile.setAttribute("aria-label", `empty tile ${index + 1}`));
 
       tile.classList.toggle("filled", Boolean(value));
       tile.classList.toggle("circle", value === "circle");
       tile.classList.toggle("cross", value === "cross");
       tile.classList.toggle("winner", isWinner);
+      tile.setAttribute("aria-disabled", String(state.gameOver || Boolean(value)));
     });
 
     this.setWinnerColor(state);
@@ -219,6 +238,8 @@ export class GameView {
 
     this.roundStatus.textContent = !state.gameStarted
       ? "Start game"
+      : state.matchWinner
+        ? `${state.playerNames[state.matchWinner]} wins match`
       : state.roundWinner === "draw"
         ? "draw"
         : state.roundWinner
@@ -232,9 +253,11 @@ export class GameView {
     const mode = GameEngine.getModeLabel(state.gameMode);
     const difficulty = state.gameMode === "user-user" ? "no AI" : state.aiDifficulty;
     const starterName = state.playerNames[state.roundStarter];
+    const matchLabel = state.matchTarget === 1 ? "single game" : `best of ${state.matchTarget}`;
+    const matchPoint = this.isMatchPoint(state) ? " | match point" : "";
 
     this.roundMeta.textContent = state.gameStarted
-      ? `${mode} | ${difficulty} | started: ${starterName}`
+      ? `${mode} | ${difficulty} | ${matchLabel} | started: ${starterName}${matchPoint}`
       : "";
   }
 
@@ -274,7 +297,7 @@ export class GameView {
             <strong>${winner}</strong>
             <small>${GameEngine.getModeLabel(round.mode)} | ${round.difficulty} | ${this.escapeHtml(
               state.playerNames[round.starter],
-            )} started</small>
+            )} started | best of ${round.matchTarget}</small>
           </li>
         `;
       })
@@ -282,12 +305,19 @@ export class GameView {
   }
 
   private renderOptions(state: GameState) {
+    this.modeButtons.forEach((button) => {
+      button.classList.toggle("active", button.dataset.modeOption === state.gameMode);
+    });
+
     this.difficultyButtons.forEach((button) => {
       button.classList.toggle("active", button.dataset.difficulty === state.aiDifficulty);
     });
 
     this.starterButtons.forEach((button) => {
       button.classList.toggle("active", button.dataset.starter === state.starter);
+    });
+    this.matchButtons.forEach((button) => {
+      button.classList.toggle("active", Number(button.dataset.matchTarget) === state.matchTarget);
     });
 
     this.muteToggleBtn.textContent = state.muted ? "sound off" : "sound on";
@@ -350,5 +380,40 @@ export class GameView {
     const element = document.createElement("span");
     element.textContent = value;
     return element.innerHTML;
+  }
+
+  private handleTileKeydown(
+    event: KeyboardEvent,
+    index: number,
+    handler: (index: number) => void,
+  ) {
+    const nextIndexByKey: Partial<Record<string, number>> = {
+      ArrowUp: index - 3,
+      ArrowDown: index + 3,
+      ArrowLeft: index - 1,
+      ArrowRight: index + 1,
+    };
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handler(index);
+      return;
+    }
+
+    const nextIndex = nextIndexByKey[event.key];
+    if (nextIndex === undefined || nextIndex < 0 || nextIndex >= this.tiles.length) return;
+    if (event.key === "ArrowLeft" && index % 3 === 0) return;
+    if (event.key === "ArrowRight" && index % 3 === 2) return;
+
+    event.preventDefault();
+    this.tiles[nextIndex].focus();
+  }
+
+  private isMatchPoint(state: GameState) {
+    if (state.matchTarget === 1 || state.roundWinner) return false;
+
+    const winsNeeded = Math.ceil(state.matchTarget / 2);
+
+    return PLAYERS.some((player) => state.score[player] === winsNeeded - 1);
   }
 }

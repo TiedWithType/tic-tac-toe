@@ -37,6 +37,33 @@ Class-based TypeScript modules must use lowercase dot-separated filenames matchi
 
 Keep service classes in `src/services`, UI classes in `src/ui`, game logic in `src/game`, and orchestration/controller code in `src/core` unless a feature clearly needs a new boundary.
 
+## Major Release Rules
+
+A `MAJOR` release must include at least one meaningful breaking or structural change, such as:
+
+- storage schema changes,
+- gameplay flow changes,
+- app shell or deployment changes,
+- config structure changes,
+- module boundary changes.
+
+For every major release:
+
+- document breaking changes in `.vercel/versions.json`,
+- add migration notes if localStorage or config changes,
+- update static version labels in `src/index.html`,
+- run the production build before commit,
+- keep the next codename alphabetical.
+
+## Storage Migration Rules
+
+If localStorage structure changes:
+
+- add a schema version,
+- migrate previous settings when reasonable,
+- clear incompatible data only intentionally,
+- describe migration behavior in release notes.
+
 ## Codename Rules
 
 Codename theme: alphabetical desserts.

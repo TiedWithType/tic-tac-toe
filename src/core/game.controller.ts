@@ -6,7 +6,15 @@ import {
   PLAYERS,
 } from "./constants";
 import { appConfig } from "../app.config";
-import type { AiDifficulty, GameMode, GameState, Player, PlayerNames, Starter } from "./types";
+import type {
+  AiDifficulty,
+  GameMode,
+  GameState,
+  MatchTarget,
+  Player,
+  PlayerNames,
+  Starter,
+} from "./types";
 import type { AiPlayer } from "../game/ai.player";
 import { GameEngine } from "../game/game.engine";
 import type { AudioService } from "../services/audio.service";
@@ -30,6 +38,8 @@ export class GameController {
     gameMode: "user-user",
     aiDifficulty: "normal",
     starter: "circle",
+    matchTarget: 1,
+    matchWinner: null,
     muted: false,
     markerColors: { ...DEFAULT_MARKER_COLORS },
     score: {
@@ -74,8 +84,14 @@ export class GameController {
       this.makeMove(index, this.state.current);
     });
 
-    this.view.onStartGame((mode) => {
-      void this.startGameWithIntro(mode);
+    this.view.onStartGame(() => {
+      void this.startGameWithIntro();
+    });
+
+    this.view.onGameModeChange((mode) => {
+      this.setGameMode(mode);
+      this.saveSettings();
+      this.render();
     });
 
     this.view.onDifficultyChange((difficulty) => {
@@ -86,6 +102,12 @@ export class GameController {
 
     this.view.onStarterChange((starter) => {
       this.setStarter(starter);
+      this.saveSettings();
+      this.render();
+    });
+
+    this.view.onMatchTargetChange((matchTarget) => {
+      this.setMatchTarget(matchTarget);
       this.saveSettings();
       this.render();
     });
@@ -152,7 +174,7 @@ export class GameController {
     });
   }
 
-  private async startGameWithIntro(mode: GameMode) {
+  private async startGameWithIntro(mode = this.state.gameMode) {
     if (this.isStarting) return;
 
     this.isStarting = true;
@@ -168,13 +190,17 @@ export class GameController {
 
   private startGame(mode: GameMode) {
     this.cancelAiMove();
+    this.clearBoard();
     this.state.gameMode = mode;
     this.applyPlayerNamesForMode(mode);
+    this.state.score.circle = 0;
+    this.state.score.cross = 0;
     this.state.current = GameEngine.getNextStarter(this.state.starter);
     this.state.roundStarter = this.state.current;
     this.state.gameStarted = true;
     this.state.gameOver = false;
     this.state.roundWinner = null;
+    this.state.matchWinner = null;
     this.state.winningCombination = null;
     this.audio.resume();
     this.saveSettings();
@@ -219,6 +245,7 @@ export class GameController {
 
     this.state.score[result.winner]++;
     this.recordRound(result.winner);
+    this.state.matchWinner = this.getMatchWinner();
     this.audio.playWin();
     this.render();
     return true;
@@ -232,6 +259,7 @@ export class GameController {
     this.state.roundStarter = this.state.current;
     this.state.gameOver = false;
     this.state.roundWinner = null;
+    this.state.matchWinner = null;
     this.render();
     this.scheduleAiMove();
     this.view.closeOptionsModal();
@@ -250,6 +278,7 @@ export class GameController {
     this.state.gameOver = false;
     this.state.gameStarted = false;
     this.state.roundWinner = null;
+    this.state.matchWinner = null;
     this.state.history.length = 0;
 
     this.saveSettings();
@@ -269,6 +298,7 @@ export class GameController {
     this.state.gameStarted = false;
     this.state.gameOver = false;
     this.state.roundWinner = null;
+    this.state.matchWinner = null;
     this.state.current = GameEngine.getNextStarter(this.state.starter);
     this.state.roundStarter = this.state.current;
     this.render();
@@ -318,8 +348,17 @@ export class GameController {
     this.state.aiDifficulty = difficulty;
   }
 
+  private setGameMode(mode: GameMode) {
+    this.state.gameMode = mode;
+    this.applyPlayerNamesForMode(mode);
+  }
+
   private setStarter(starter: Starter) {
     this.state.starter = starter;
+  }
+
+  private setMatchTarget(matchTarget: MatchTarget) {
+    this.state.matchTarget = matchTarget;
   }
 
   private setMuted(nextMuted: boolean) {
@@ -345,6 +384,7 @@ export class GameController {
       mode: this.state.gameMode,
       difficulty: this.state.aiDifficulty,
       starter: this.state.roundStarter,
+      matchTarget: this.state.matchTarget,
       winner,
     });
   }
@@ -370,6 +410,8 @@ export class GameController {
     SettingsService.isDifficulty(settings.aiDifficulty) &&
       (this.state.aiDifficulty = settings.aiDifficulty);
     SettingsService.isStarter(settings.starter) && (this.state.starter = settings.starter);
+    SettingsService.isMatchTarget(settings.matchTarget) &&
+      (this.state.matchTarget = settings.matchTarget);
     typeof settings.muted === "boolean" && (this.state.muted = settings.muted);
   }
 
@@ -380,6 +422,7 @@ export class GameController {
       gameMode: this.state.gameMode,
       aiDifficulty: this.state.aiDifficulty,
       starter: this.state.starter,
+      matchTarget: this.state.matchTarget,
       muted: this.state.muted,
     });
   }
@@ -411,5 +454,11 @@ export class GameController {
 
   private render() {
     this.view.render(this.state);
+  }
+
+  private getMatchWinner() {
+    const winsNeeded = Math.ceil(this.state.matchTarget / 2);
+
+    return PLAYERS.find((player) => this.state.score[player] >= winsNeeded) ?? null;
   }
 }

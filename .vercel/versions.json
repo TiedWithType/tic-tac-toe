@@ -5,7 +5,7 @@
   "codename_policy": {
     "theme": "alphabetical desserts",
     "format": "Title Case",
-    "next_codename_letter": "G",
+    "next_codename_letter": "I",
     "patch_releases_keep_parent_codename": true
   },
   "releases": [
@@ -170,7 +170,7 @@
       },
       "codename": "Gelato",
       "codename_letter": "G",
-      "status": "current",
+      "status": "previous",
       "notes": [
         "Renamed class modules to lowercase dot-separated filenames.",
         "Replaced SettingsStorage with SettingsService naming.",
@@ -180,17 +180,47 @@
         "Added favicon and meta description for production pages.",
         "Polished start menu title sizing and menu width."
       ]
+    },
+    {
+      "version": {
+        "major": 3,
+        "minor": 0,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Honeycomb",
+      "codename_letter": "H",
+      "status": "current",
+      "scope": "major",
+      "summary": "Productize the game flow with versioned settings, a pre-game setup screen, match-based play, accessibility upgrades and a lightweight PWA shell.",
+      "breaking_changes": [
+        "Settings storage moved to a versioned schema.",
+        "The start flow changed from direct mode buttons to a setup-first flow.",
+        "Game state boundaries changed to support match-level play."
+      ],
+      "migration_notes": [
+        "settingsSchemaVersion is added when settings are saved.",
+        "Existing names, colors, mode, difficulty, starter and mute settings are preserved when possible.",
+        "Missing match settings migrate to a single-game match."
+      ],
+      "notes": [
+        "Introduced versioned settings storage with migration support.",
+        "Added a pre-game setup flow for mode, AI difficulty, starter and match length.",
+        "Added match-based gameplay with single game, best-of-3 and best-of-5 presets.",
+        "Improved board accessibility with keyboard navigation and ARIA states.",
+        "Prepared a lightweight PWA shell with manifest and app icons."
+      ]
     }
   ],
   "planned_codenames": [
     {
-      "letter": "H",
-      "codename": "Honeycomb",
+      "letter": "I",
+      "codename": "Ice Cream",
       "status": "next"
     },
     {
-      "letter": "I",
-      "codename": "Ice Cream",
+      "letter": "J",
+      "codename": "Jelly Roll",
       "status": "reserved"
     }
   ],

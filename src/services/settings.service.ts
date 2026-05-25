@@ -1,12 +1,12 @@
-import { SETTINGS_KEY } from "../core/constants";
-import type { AiDifficulty, GameMode, SettingsSnapshot, Starter } from "../core/types";
+import { SETTINGS_KEY, SETTINGS_SCHEMA_VERSION } from "../core/constants";
+import type { AiDifficulty, GameMode, MatchTarget, SettingsSnapshot, Starter } from "../core/types";
 
 export class SettingsService {
   load() {
     try {
       const rawSettings = localStorage.getItem(SETTINGS_KEY);
 
-      return rawSettings ? (JSON.parse(rawSettings) as SettingsSnapshot) : {};
+      return rawSettings ? this.migrate(JSON.parse(rawSettings) as SettingsSnapshot) : {};
     } catch {
       localStorage.removeItem(SETTINGS_KEY);
       return {};
@@ -14,7 +14,17 @@ export class SettingsService {
   }
 
   save(settings: SettingsSnapshot) {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    localStorage.setItem(
+      SETTINGS_KEY,
+      JSON.stringify({
+        ...settings,
+        settingsSchemaVersion: SETTINGS_SCHEMA_VERSION,
+      }),
+    );
+  }
+
+  reset() {
+    localStorage.removeItem(SETTINGS_KEY);
   }
 
   static isGameMode(value: unknown): value is GameMode {
@@ -29,7 +39,22 @@ export class SettingsService {
     return value === "circle" || value === "cross" || value === "random";
   }
 
+  static isMatchTarget(value: unknown): value is MatchTarget {
+    return value === 1 || value === 3 || value === 5;
+  }
+
   static isHexColor(value: unknown): value is string {
     return typeof value === "string" && /^#[\da-f]{6}$/i.test(value);
+  }
+
+  private migrate(settings: SettingsSnapshot) {
+    const nextSettings = { ...settings };
+
+    nextSettings.settingsSchemaVersion ||= SETTINGS_SCHEMA_VERSION;
+    nextSettings.matchTarget = SettingsService.isMatchTarget(settings.matchTarget)
+      ? settings.matchTarget
+      : 1;
+
+    return nextSettings;
   }
 }
