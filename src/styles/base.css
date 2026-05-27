@@ -73,9 +73,7 @@
   --control-width: 18.75rem;
   --panel-width: 22.5rem;
   --history-panel-width: 20.625rem;
-  --options-modal-width: 22.5rem;
 
-  --space-2xs: 0.2rem;
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 0.75rem;
@@ -100,7 +98,6 @@
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 0.875rem;
-  --radius-xl: 1.125rem;
   --radius-pill: 62.4375rem;
   --radius-round: 50%;
 
@@ -108,11 +105,8 @@
   --blur-game: 0.5rem;
   --blur-overlay: 0.25rem;
   --blur-backdrop: 0.125rem;
-  --hover-lift: -0.125rem;
   --line-thickness: 0.38rem;
   --marker-stroke: 0.72rem;
-  --marker-icon-size: 1rem;
-  --marker-icon-stroke: 0.16rem;
   --marker-size-circle: 58%;
   --marker-size-cross: 64%;
   --win-line-length: 88%;
@@ -128,7 +122,6 @@
   --font-2xs: 0.68rem;
   --font-xs: 0.72rem;
   --font-sm: 0.75rem;
-  --font-md: 0.85rem;
   --font-lg: 0.95rem;
   --font-xl: 1rem;
   --font-2xl: 1.25rem;
@@ -145,7 +138,6 @@
   --round-status-padding-block: 0.5rem;
   --round-status-padding-inline: 0.85rem;
   --round-status-height: calc(1.4rem + (var(--round-status-padding-block) * 2));
-  --controls-height: 5.8rem;
   --color-input-size: 2rem;
   --settings-size: 2.75rem;
   --mobile-action-gap: var(--space-sm);
@@ -153,24 +145,16 @@
   --mobile-reset-width: calc(
     var(--mobile-action-width) - var(--mobile-action-gap) - var(--settings-size)
   );
-  --mobile-action-start: max(
-    var(--space-sm),
-    calc((var(--viewport-inline) - var(--mobile-action-width)) / 2)
-  );
   --start-stripe-width: 0.35rem;
   --start-button-padding-block: 1rem;
   --start-button-padding-inline: 1.2rem;
   --start-primary-padding-block: 0.85rem;
   --start-primary-padding-inline: 1.75rem;
-  --fixed-action-inset: max(var(--space-sm), env(safe-area-inset-bottom));
   --footer-bottom: 0.125rem;
   --history-bottom-offset: 3rem;
   --history-list-padding-end: 0.2rem;
   --history-item-gap-row: 0.2rem;
   --history-item-gap-column: 0.7rem;
-  --history-mobile-max-block: 70dvh;
-  --history-mobile-max-size: 32rem;
-  --mobile-breakpoint: 40rem;
   --shadow-settings-y: 0.8rem;
   --shadow-settings-blur: 2rem;
   --shadow-modal-y: 1.5rem;
@@ -212,8 +196,6 @@
   margin: 0;
   padding: 0;
   font-family: "Quicksand", sans-serif;
-  will-change: contents;
-  contain: content;
   -webkit-tap-highlight-color: transparent;
 }
 

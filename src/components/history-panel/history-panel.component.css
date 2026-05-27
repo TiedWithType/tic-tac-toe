@@ -1,44 +1,5 @@
 :host {
-  contain: none;
   display: contents;
-}
-
-button {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  font-size: var(--font-button);
-  letter-spacing: var(--tracking-md);
-  text-transform: lowercase;
-  color: var(--text-muted);
-  background: transparent;
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-button-block) var(--space-button-inline);
-  cursor: pointer;
-  touch-action: manipulation;
-  transition:
-    color var(--duration-fast),
-    border-color var(--duration-fast),
-    background var(--duration-fast),
-    visibility var(--duration-fast);
-}
-
-button:hover {
-  color: var(--text);
-  border-color: var(--border-hover);
-  background: var(--surface);
-}
-
-.button-ripple {
-  position: absolute;
-  border-radius: var(--radius-round);
-  background: color-mix(in srgb, var(--text), transparent 72%);
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, -50%) scale(0);
-  transform-origin: center;
-  animation: button-ripple var(--duration-ripple) var(--ease-status-color);
 }
 
 #history_panel {
@@ -181,14 +142,3 @@ button:hover {
   }
 }
 
-@keyframes button-ripple {
-  0% {
-    opacity: 0.36;
-    transform: translate(-50%, -50%) scale(0);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}

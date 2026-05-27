@@ -45,6 +45,7 @@ export type GameState = {
   markerColors: MarkerColors;
   score: Score;
   playerNames: PlayerNames;
+  playerNamesByMode: Partial<Record<GameMode, Partial<PlayerNames>>>;
   history: RoundRecord[];
 };
 

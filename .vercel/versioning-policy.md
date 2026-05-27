@@ -89,6 +89,7 @@ G: Gelato
 H: Honeycomb
 I: Ice Cream
 J: Jelly Roll
+K: Key Lime Pie
 ```
 
 ## Release Checklist

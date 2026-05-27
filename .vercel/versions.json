@@ -5,7 +5,7 @@
   "codename_policy": {
     "theme": "alphabetical desserts",
     "format": "Title Case",
-    "next_codename_letter": "K",
+    "next_codename_letter": "L",
     "patch_releases_keep_parent_codename": true
   },
   "releases": [
@@ -272,7 +272,7 @@
       },
       "codename": "Jelly Roll",
       "codename_letter": "J",
-      "status": "current",
+      "status": "previous",
       "scope": "patch",
       "summary": "Serve fonts locally to reduce render flashes and remove Google Fonts from the initial page.",
       "notes": [
@@ -282,12 +282,41 @@
         "Deferred the local icon font preload and @font-face registration until the game runtime starts.",
         "Removed runtime dependencies on fonts.googleapis.com and fonts.gstatic.com."
       ]
+    },
+    {
+      "version": {
+        "major": 4,
+        "minor": 1,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Key Lime Pie",
+      "codename_letter": "K",
+      "status": "current",
+      "scope": "minor",
+      "summary": "Move game state into a reducer store and let Web Components own their render work while keeping the first load lighter.",
+      "migration_notes": [
+        "No localStorage schema changes were introduced.",
+        "Returning to the main menu no longer overwrites the saved game mode.",
+        "Existing saved player names, colors, mode, difficulty, starter, match mode and mute settings remain compatible."
+      ],
+      "notes": [
+        "Added a reducer-backed GameStore for board state, match progress, player settings and history.",
+        "Slimmed GameController down to orchestration, AI scheduling, audio effects and persistence.",
+        "Moved board, shell, scoreboard, actions, options and history rendering into their Web Components.",
+        "Shared repeated Shadow DOM button styles through the component render utility.",
+        "Removed expensive global CSS containment and will-change rules from the reset.",
+        "Kept the initial start screen lighter by lazy-registering game-only components with the runtime.",
+        "Preloaded the game runtime during idle time to reduce perceived start delay.",
+        "Prevented intro audio from overlapping gameplay sounds.",
+        "Preserved the original version 4 marker animations while avoiding unnecessary tile attribute resets."
+      ]
     }
   ],
   "planned_codenames": [
     {
-      "letter": "K",
-      "codename": "Key Lime Pie",
+      "letter": "L",
+      "codename": "Lemon Tart",
       "status": "next"
     }
   ],

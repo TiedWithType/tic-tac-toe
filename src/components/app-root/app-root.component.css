@@ -1,12 +1,10 @@
 :host {
-  contain: none;
   display: block;
 }
 
 tic-start-menu,
 tic-options-menu,
 tic-history-panel {
-  contain: none;
   inset: 0;
   pointer-events: none;
   position: fixed;

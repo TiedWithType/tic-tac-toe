@@ -1,6 +1,8 @@
 import html from "./start-menu.component.html?raw";
 import css from "./start-menu.component.css?raw";
 import { defineComponent, renderComponent } from "../component.utils";
+import type { AiDifficulty, GameMode, GameState, MatchMode, Starter } from "../../core/types";
+import { SettingsService } from "../../services/settings.service";
 
 export class StartMenuComponent extends HTMLElement {
   readonly root = this.attachShadow({ mode: "open" });
@@ -9,6 +11,98 @@ export class StartMenuComponent extends HTMLElement {
     if (this.root.childElementCount) return;
 
     renderComponent(this.root, html, css);
+  }
+
+  onStart(handler: () => void, signal?: AbortSignal) {
+    this.startButton.addEventListener("click", handler, { signal });
+  }
+
+  onGameModeChange(handler: (mode: GameMode) => void, signal?: AbortSignal) {
+    this.modeButtons.forEach((button) => {
+      button.addEventListener(
+        "click",
+        () => handler(button.dataset.modeOption as GameMode),
+        { signal },
+      );
+    });
+  }
+
+  onDifficultyChange(handler: (difficulty: AiDifficulty) => void, signal?: AbortSignal) {
+    this.difficultyButtons.forEach((button) => {
+      button.addEventListener(
+        "click",
+        () => handler(button.dataset.difficulty as AiDifficulty),
+        { signal },
+      );
+    });
+  }
+
+  onStarterChange(handler: (starter: Starter) => void, signal?: AbortSignal) {
+    this.starterButtons.forEach((button) => {
+      button.addEventListener("click", () => handler(button.dataset.starter as Starter), {
+        signal,
+      });
+    });
+  }
+
+  onMatchModeChange(handler: (matchMode: MatchMode) => void, signal?: AbortSignal) {
+    this.matchButtons.forEach((button) => {
+      button.addEventListener(
+        "click",
+        () => {
+          const matchMode = button.dataset.matchMode;
+
+          SettingsService.isMatchMode(matchMode) && handler(matchMode);
+        },
+        { signal },
+      );
+    });
+  }
+
+  setLoading(isLoading: boolean) {
+    [this.startButton, ...this.modeButtons].forEach((button) => {
+      button.disabled = isLoading;
+    });
+  }
+
+  focusStartButton() {
+    this.startButton.focus();
+  }
+
+  render(state: Pick<GameState, "aiDifficulty" | "gameMode" | "matchMode" | "starter">) {
+    this.modeButtons.forEach((button) => {
+      button.classList.toggle("active", button.dataset.modeOption === state.gameMode);
+    });
+    this.difficultyButtons.forEach((button) => {
+      button.disabled = state.gameMode === "user-user";
+      button.classList.toggle("active", button.dataset.difficulty === state.aiDifficulty);
+    });
+    this.starterButtons.forEach((button) => {
+      button.classList.toggle("active", button.dataset.starter === state.starter);
+    });
+    this.matchButtons.forEach((button) => {
+      button.classList.toggle("active", button.dataset.matchMode === state.matchMode);
+    });
+  }
+
+  private get startButton() {
+    return this.root.querySelector<HTMLButtonElement>("#start_game")!;
+  }
+
+  private get modeButtons() {
+    return [...this.root.querySelectorAll<HTMLButtonElement>("[data-mode-option]")];
+  }
+
+  private get difficultyButtons() {
+    return [...this.root.querySelectorAll<HTMLButtonElement>("[data-difficulty]")];
+  }
+
+  private get starterButtons() {
+    return [...this.root.querySelectorAll<HTMLButtonElement>("[data-starter]")];
+  }
+
+  private get matchButtons() {
+    return [...this.root.querySelectorAll<HTMLButtonElement>("[data-match-mode]")];
   }
 }
 

@@ -9,6 +9,7 @@ type AudioWindow = Window &
   };
 
 let isRuntimeLoading = false;
+let runtimePreload: ReturnType<typeof loadRuntimeModules> | null = null;
 
 installButtonRipples();
 
@@ -19,6 +20,7 @@ const startMenu = new StartMenu({
 });
 
 startMenu.init();
+preloadRuntime();
 
 async function loadGameRuntime(mode: GameMode) {
   if (isRuntimeLoading) return;
@@ -28,12 +30,8 @@ async function loadGameRuntime(mode: GameMode) {
 
   try {
     const audioContext = createAudioContext();
-    const [{ GameController }, { AiPlayer }, { AudioService }, { GameView }] = await Promise.all([
-      import("./core/game.controller"),
-      import("./game/ai.player"),
-      import("./services/audio.service"),
-      import("./ui/game.view"),
-    ]);
+    const [{ GameController }, { GameStore }, { AiPlayer }, { AudioService }, { GameView }] =
+      await (runtimePreload || loadRuntimeModules());
 
     startMenu.destroy();
 
@@ -42,6 +40,7 @@ async function loadGameRuntime(mode: GameMode) {
       new AiPlayer(),
       new AudioService(audioContext),
       new SettingsService(),
+      new GameStore(),
     );
 
     controller.init({ autoStartMode: mode });
@@ -50,6 +49,28 @@ async function loadGameRuntime(mode: GameMode) {
     isRuntimeLoading = false;
     startMenu.setLoading(false);
   }
+}
+
+function loadRuntimeModules() {
+  return Promise.all([
+    import("./core/game.controller"),
+    import("./core/game.store"),
+    import("./game/ai.player"),
+    import("./services/audio.service"),
+    import("./ui/game.view"),
+  ]);
+}
+
+function preloadRuntime() {
+  const schedulePreload = () => {
+    runtimePreload ||= loadRuntimeModules();
+  };
+  const idleCallback = window.requestIdleCallback || ((callback: IdleRequestCallback) => {
+    window.setTimeout(() => callback({ didTimeout: false, timeRemaining: () => 0 }), 1);
+    return 0;
+  });
+
+  idleCallback(schedulePreload, { timeout: 1200 });
 }
 
 function createAudioContext() {

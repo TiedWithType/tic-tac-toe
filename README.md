@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.4.0.1 beta "Jelly Roll"**
+Aktualna wersja: **v.4.1.0 beta "Key Lime Pie"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -18,15 +18,15 @@ Autor: **TiedWithType**
 - 🏆 Podświetlenie zwycięskich pól oraz animowana linia wygranej.
 - 📊 Historia wyników aktualnej sesji.
 - 📈 Statystyki rund, remisów, wygranych i win rate.
-- 🔊 Dźwięki ruchu, remisu, wygranej oraz intro przed startem gry.
+- 🔊 Dźwięki ruchu, remisu, wygranej oraz intro przy starcie gry.
 - 🔇 Toggle mute.
 - 💾 Zapisywanie ustawień w `localStorage`.
 - 📱 Jednolite menu ustawień w modalu na mobile i desktopie.
 - ✏️ Zmiana nazw graczy przez **PPM** albo **long press** na mobile.
 - 🏷️ Domyślne nazwy graczy zależne od trybu gry.
-- ⚡ Dynamiczne ładowanie runtime gry dopiero po wyborze trybu.
+- ⚡ Lekki ekran startowy z dynamicznym runtime gry i idle preloadem.
 - 🔤 Lokalne fonty tekstu i ikon ograniczające FOUT/FOIT oraz zewnętrzne requesty.
-- 🧩 Kod podzielony na moduły: controller, view, game engine, AI i serwisy.
+- 🧩 Kod podzielony na moduły: reducer/store, controller, Web Components, game engine, AI i serwisy.
 
 ## 🕹️ Jak grać?
 
@@ -144,6 +144,7 @@ src/
 
   core/
     game.controller.ts
+    game.store.ts
     constants.ts
     types.ts
 
@@ -178,9 +179,18 @@ src/
     icons/
 ```
 
-### 🧠 `GameController`
+### 🧠 `GameStore`
 
-Główny koordynator aplikacji. Zarządza stanem gry, startem, resetem, rundami, AI, zapisem ustawień i renderowaniem widoku.
+Reducer-backed store dla stanu aplikacji. Odpowiada za:
+
+- planszę i aktualnego gracza
+- wynik, historię i status meczu
+- tryb gry, poziom AI, startującego i ustawienia graczy
+- snapshot ustawień zapisywany w `localStorage`
+
+### 🧭 `GameController`
+
+Koordynator efektów ubocznych. Obsługuje start gry, reset rundy, AI, audio, zapis ustawień i reakcje na akcje widoku, ale nie mutuje bezpośrednio stanu gry.
 
 ### 🎲 `GameEngine`
 
@@ -202,7 +212,7 @@ Logika AI:
 
 ### 🖼️ `GameView`
 
-Warstwa DOM i renderowania UI:
+Lekki adapter między kontrolerem a komponentami. Deleguje renderowanie i zdarzenia do Web Components:
 
 - plansza
 - wyniki
@@ -212,7 +222,7 @@ Warstwa DOM i renderowania UI:
 
 ### 🧩 `components/*`
 
-Komponenty Web Components z własnymi template'ami i stylami Shadow DOM:
+Komponenty Web Components z własnymi template'ami, stylami Shadow DOM i lokalną logiką renderowania:
 
 - `app-root` - główny shell aplikacji
 - `game-shell` - układ rundy, planszy i akcji
@@ -226,7 +236,7 @@ Komponenty Web Components z własnymi template'ami i stylami Shadow DOM:
 
 ### 🔊 `AudioService`
 
-Dźwięki generowane przez Web Audio API.
+Dźwięki generowane przez Web Audio API. Intro jest anulowane przed efektami rozgrywki, żeby start i pierwszy ruch nie nakładały się na siebie.
 
 ### 💾 `SettingsService`
 
@@ -279,6 +289,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🍦 `3.1.0 beta "Ice Cream"`
 - 🍥 `4.0.0 beta "Jelly Roll"`
 - 🍥 `4.0.1 beta "Jelly Roll"`
+- 🥧 `4.1.0 beta "Key Lime Pie"`
 
 ## 🚀 Uruchamianie lokalnie
 
@@ -322,13 +333,15 @@ bun run vite:preview
 Przed releasem warto sprawdzić:
 
 - ✅ ekran startowy pokazuje tytuł gry z glow
-- ✅ intro gra przed startem
+- ✅ intro gra przy starcie gry
+- ✅ intro nie nakłada się na pierwszy ruch ani dźwięki rozgrywki
 - ✅ `Start game` uruchamia player vs player
 - ✅ wybór `user vs ai` uruchamia grę przeciw AI
 - ✅ wybór `ai vs ai` uruchamia symulację AI
 - ✅ difficulty wpływa na decyzje AI
 - ✅ `new round` czyści planszę i zachowuje wynik
 - ✅ `main menu` czyści planszę, wynik i historię
+- ✅ `main menu` nie nadpisuje zapisanego trybu gry w `localStorage`
 - ✅ kolory O/X zmieniają markery, start button i glow tytułu
 - ✅ PPM zmienia nazwę gracza na desktopie
 - ✅ long press zmienia nazwę gracza na mobile

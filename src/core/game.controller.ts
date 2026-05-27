@@ -1,20 +1,7 @@
-import {
-  AI_MOVE_DELAY,
-  DEFAULT_MARKER_COLORS,
-  DEFAULT_PLAYER_NAMES,
-  DEFAULT_PLAYER_NAMES_BY_MODE,
-  PLAYERS,
-} from "./constants";
-import type {
-  AiDifficulty,
-  GameMode,
-  GameState,
-  MatchMode,
-  MatchState,
-  Player,
-  PlayerNames,
-  Starter,
-} from "./types";
+import { AI_MOVE_DELAY, PLAYERS } from "./constants";
+import type { GameAction, GameStore } from "./game.store";
+import { createSettingsSnapshot } from "./game.store";
+import type { GameMode, GameState } from "./types";
 import type { AiPlayer } from "../game/ai.player";
 import { GameEngine } from "../game/game.engine";
 import type { AudioService } from "../services/audio.service";
@@ -27,87 +14,63 @@ type GameControllerInitOptions = {
 };
 
 export class GameController {
-  private state: GameState = {
-    board: Array(9).fill(null),
-    current: "circle",
-    roundStarter: "circle",
-    gameOver: false,
-    gameStarted: false,
-    roundWinner: null,
-    winningCombination: null,
-    gameMode: "user-user",
-    aiDifficulty: "normal",
-    starter: "circle",
-    matchMode: "casual",
-    match: { status: "playing" },
-    muted: false,
-    markerColors: { ...DEFAULT_MARKER_COLORS },
-    score: {
-      circle: 0,
-      cross: 0,
-    },
-    playerNames: { ...DEFAULT_PLAYER_NAMES },
-    history: [],
-  };
-
   private aiMoveTimer: number | null = null;
   private isStarting = false;
-  private playerNamesByMode: Partial<Record<GameMode, Partial<PlayerNames>>> = {};
 
   constructor(
     private view: GameView,
     private aiPlayer: AiPlayer,
     private audio: AudioService,
     private storage: SettingsService,
+    private store: GameStore,
   ) {}
 
   init(options: GameControllerInitOptions = {}) {
-    this.loadSettings();
-    this.applyPlayerNamesForMode(this.state.gameMode);
+    this.store.subscribe((state, previousState, action) => {
+      this.handleStateEffects(state, previousState, action);
+      this.render();
+    });
+    this.store.dispatch({ type: "hydrateSettings", settings: this.storage.load() });
     this.audio.setMuted(this.state.muted);
     this.bindEvents();
     this.setupPlayerNameEditors();
     this.view.syncOptionsPlacement();
     this.render();
 
-    options.autoStartMode && void this.startGameWithIntro(options.autoStartMode);
+    if (options.autoStartMode) {
+      this.startGameWithIntro(options.autoStartMode);
+    }
+  }
+
+  private get state() {
+    return this.store.getState();
   }
 
   private bindEvents() {
     this.view.onTileClick((index) => {
-      if (!this.state.gameStarted) return;
-      if (this.state.gameOver) return;
-      if (this.isAiTurn()) return;
+      if (!this.state.gameStarted || this.state.gameOver || this.isAiTurn()) return;
 
-      this.makeMove(index, this.state.current);
+      this.store.dispatch({ type: "makeMove", index, player: this.state.current });
     });
 
     this.view.onStartGame(() => {
-      void this.startGameWithIntro();
+      this.startGameWithIntro();
     });
 
     this.view.onGameModeChange((mode) => {
-      this.setGameMode(mode);
-      this.saveSettings();
-      this.render();
+      this.store.dispatch({ type: "setGameMode", mode });
     });
 
     this.view.onDifficultyChange((difficulty) => {
-      this.setAiDifficulty(difficulty);
-      this.saveSettings();
-      this.render();
+      this.store.dispatch({ type: "setAiDifficulty", difficulty });
     });
 
     this.view.onStarterChange((starter) => {
-      this.setStarter(starter);
-      this.saveSettings();
-      this.render();
+      this.store.dispatch({ type: "setStarter", starter });
     });
 
     this.view.onMatchModeChange((matchMode) => {
-      this.setMatchMode(matchMode);
-      this.saveSettings();
-      this.render();
+      this.store.dispatch({ type: "setMatchMode", matchMode });
     });
 
     this.view.onHistoryToggle(() => {
@@ -120,15 +83,11 @@ export class GameController {
     });
 
     this.view.onMuteToggle(() => {
-      this.setMuted(!this.state.muted);
-      this.saveSettings();
-      this.render();
+      this.store.dispatch({ type: "setMuted", muted: !this.state.muted });
     });
 
     this.view.onMarkerColorChange((player, color) => {
-      this.setMarkerColor(player, color);
-      this.saveSettings();
-      this.render();
+      this.store.dispatch({ type: "setMarkerColor", player, color });
     });
 
     this.view.onSettingsToggle(() => {
@@ -159,21 +118,20 @@ export class GameController {
         element: this.view.playerNameElements[player],
         getName: () => this.state.playerNames[player],
         onCommit: (name) => {
-          this.setPlayerName(player, name);
-          this.saveSettings();
-          this.render();
+          this.store.dispatch({ type: "setPlayerName", player, name });
         },
       }).init();
     });
   }
 
-  private async startGameWithIntro(mode = this.state.gameMode) {
+  private startGameWithIntro(mode = this.state.gameMode) {
     if (this.isStarting) return;
 
     this.isStarting = true;
     this.view.setStartButtonsDisabled(true);
+
     try {
-      await this.audio.playIntro();
+      void this.audio.playIntro();
       this.startGame(mode);
     } finally {
       this.view.setStartButtonsDisabled(false);
@@ -183,115 +141,67 @@ export class GameController {
 
   private startGame(mode: GameMode) {
     this.cancelAiMove();
-    this.clearBoard();
-    this.state.gameMode = mode;
-    this.applyPlayerNamesForMode(mode);
-    this.state.score.circle = 0;
-    this.state.score.cross = 0;
-    this.state.current = GameEngine.getNextStarter(this.state.starter);
-    this.state.roundStarter = this.state.current;
-    this.state.gameStarted = true;
-    this.state.gameOver = false;
-    this.state.roundWinner = null;
-    this.state.match = { status: "playing" };
-    this.state.winningCombination = null;
-    this.audio.resume();
-    this.saveSettings();
-    this.render();
-    this.scheduleAiMove();
-  }
-
-  private makeMove(index: number, player: Player) {
-    if (this.state.board[index]) return;
-
-    this.state.board[index] = player;
-    this.finishTurn();
-  }
-
-  private finishTurn() {
-    const won = this.checkWinner();
-
-    if (!won && GameEngine.isBoardFull(this.state.board)) {
-      this.state.gameOver = true;
-      this.state.roundWinner = "draw";
-      this.recordRound("draw");
-      this.state.match = this.getMatchState();
-      this.audio.playDraw();
-      this.render();
-      return;
-    }
-
-    if (this.state.gameOver) return;
-
-    this.audio.playPlayerMove(this.state.current);
-    this.state.current = GameEngine.getOpponent(this.state.current);
-    this.render();
-    this.scheduleAiMove();
-  }
-
-  private checkWinner() {
-    const result = GameEngine.getWinner(this.state.board);
-    if (!result) return false;
-
-    this.state.gameOver = true;
-    this.state.roundWinner = result.winner;
-    this.state.winningCombination = result.combination;
-
-    this.state.score[result.winner]++;
-    this.recordRound(result.winner);
-    this.state.match = this.getMatchState();
-    this.audio.playWin();
-    this.render();
-    return true;
+    this.store.dispatch({
+      type: "startGame",
+      mode,
+      starter: GameEngine.getNextStarter(this.state.starter),
+    });
   }
 
   private resetRound() {
     this.cancelAiMove();
-    this.clearBoard();
-
-    this.state.current = GameEngine.getNextStarter(this.state.starter);
-    this.state.roundStarter = this.state.current;
-    this.state.gameOver = false;
-    this.state.roundWinner = null;
-    this.render();
-    this.scheduleAiMove();
+    this.store.dispatch({
+      type: "resetRound",
+      starter: GameEngine.getNextStarter(this.state.starter),
+    });
     this.view.closeOptionsModal();
   }
 
   private resetGame() {
     this.cancelAiMove();
-    this.clearBoard();
-
-    this.state.score.circle = 0;
-    this.state.score.cross = 0;
-    this.state.current = GameEngine.getNextStarter(this.state.starter);
-    this.state.roundStarter = this.state.current;
-    this.state.gameMode = "user-user";
-    this.applyPlayerNamesForMode(this.state.gameMode);
-    this.state.gameOver = false;
-    this.state.gameStarted = false;
-    this.state.roundWinner = null;
-    this.state.match = { status: "playing" };
-    this.state.history.length = 0;
-
-    this.saveSettings();
-    this.render();
+    this.store.dispatch({
+      type: "resetGame",
+      starter: GameEngine.getNextStarter(this.state.starter),
+    });
     this.view.focusStartButton();
     this.view.closeOptionsModal();
   }
 
-  private clearBoard() {
-    this.state.board = Array(9).fill(null);
-    this.state.winningCombination = null;
+  private handleStateEffects(state: GameState, previousState: GameState, action: GameAction) {
+    if (state.muted !== previousState.muted) {
+      this.audio.setMuted(state.muted);
+    }
+
+    if (action.type === "startGame") {
+      this.audio.resume();
+    }
+
+    if (action.type === "makeMove" && state.board !== previousState.board) {
+      this.playMoveResultSound(state, previousState, action.player);
+    }
+
+    if (shouldPersistSettings(action)) {
+      this.saveSettings();
+    }
+
+    if (shouldScheduleAiMove(action)) {
+      this.scheduleAiMove();
+    }
+  }
+
+  private playMoveResultSound(state: GameState, previousState: GameState, player: GameState["current"]) {
+    if (state.gameOver && !previousState.gameOver) {
+      state.roundWinner === "draw" ? this.audio.playDraw() : this.audio.playWin();
+      return;
+    }
+
+    if (state.current !== previousState.current) {
+      this.audio.playPlayerMove(player);
+    }
   }
 
   private isAiTurn() {
-    return (
-      this.state.gameStarted &&
-      !this.state.gameOver &&
-      (this.state.gameMode === "ai-ai" ||
-        (this.state.gameMode === "user-ai" && this.state.current === "cross"))
-    );
+    return isAiTurn(this.state);
   }
 
   private scheduleAiMove() {
@@ -322,138 +232,39 @@ export class GameController {
     );
     if (moveIndex === null) return;
 
-    this.makeMove(moveIndex, this.state.current);
-  }
-
-  private setAiDifficulty(difficulty: AiDifficulty) {
-    this.state.aiDifficulty = difficulty;
-  }
-
-  private setGameMode(mode: GameMode) {
-    this.state.gameMode = mode;
-    this.applyPlayerNamesForMode(mode);
-  }
-
-  private setStarter(starter: Starter) {
-    this.state.starter = starter;
-  }
-
-  private setMatchMode(matchMode: MatchMode) {
-    this.state.matchMode = matchMode;
-  }
-
-  private setMuted(nextMuted: boolean) {
-    this.state.muted = nextMuted;
-    this.audio.setMuted(nextMuted);
-  }
-
-  private setMarkerColor(player: Player, color: string) {
-    if (!SettingsService.isHexColor(color)) return;
-
-    this.state.markerColors[player] = color;
-  }
-
-  private setPlayerName(player: Player, name: string) {
-    this.state.playerNames[player] = name;
-    this.playerNamesByMode[this.state.gameMode] ||= {};
-    this.playerNamesByMode[this.state.gameMode]![player] = name;
-  }
-
-  private recordRound(winner: Player | "draw") {
-    this.state.history.unshift({
-      round: this.state.history.length + 1,
-      mode: this.state.gameMode,
-      difficulty: this.state.aiDifficulty,
-      starter: this.state.roundStarter,
-      matchMode: this.state.matchMode,
-      winner,
-    });
-  }
-
-  private loadSettings() {
-    const settings = this.storage.load();
-
-    settings.playerNamesByMode
-      ? Object.entries(settings.playerNamesByMode).forEach(([mode, playerNames]) => {
-          SettingsService.isGameMode(mode) &&
-            (this.playerNamesByMode[mode] = this.normalizePlayerNames(playerNames));
-        })
-      : settings.playerNames &&
-        (this.playerNamesByMode["user-user"] = this.normalizePlayerNames(settings.playerNames));
-
-    PLAYERS.forEach((player) => {
-      const savedColor = settings.markerColors?.[player];
-
-      SettingsService.isHexColor(savedColor) && (this.state.markerColors[player] = savedColor);
-    });
-
-    SettingsService.isGameMode(settings.gameMode) && (this.state.gameMode = settings.gameMode);
-    SettingsService.isDifficulty(settings.aiDifficulty) &&
-      (this.state.aiDifficulty = settings.aiDifficulty);
-    SettingsService.isStarter(settings.starter) && (this.state.starter = settings.starter);
-    SettingsService.isMatchMode(settings.matchMode) && (this.state.matchMode = settings.matchMode);
-    typeof settings.muted === "boolean" && (this.state.muted = settings.muted);
+    this.store.dispatch({ type: "makeMove", index: moveIndex, player: this.state.current });
   }
 
   private saveSettings() {
-    this.storage.save({
-      playerNamesByMode: this.playerNamesByMode,
-      markerColors: this.state.markerColors,
-      gameMode: this.state.gameMode,
-      aiDifficulty: this.state.aiDifficulty,
-      starter: this.state.starter,
-      matchMode: this.state.matchMode,
-      muted: this.state.muted,
-    });
-  }
-
-  private applyPlayerNamesForMode(mode: GameMode) {
-    const defaultPlayers = DEFAULT_PLAYER_NAMES_BY_MODE[mode];
-    const customPlayers = this.playerNamesByMode[mode] || {};
-
-    PLAYERS.forEach((player) => {
-      const nextName = customPlayers[player] ?? defaultPlayers[player] ?? DEFAULT_PLAYER_NAMES[player];
-
-      this.state.playerNames[player] =
-        PlayerNameEditor.normalize(nextName) || DEFAULT_PLAYER_NAMES[player];
-    });
-  }
-
-  private normalizePlayerNames(playerNames: Partial<PlayerNames> | undefined) {
-    const normalizedNames: Partial<PlayerNames> = {};
-
-    PLAYERS.forEach((player) => {
-      const name = playerNames?.[player];
-      if (!name) return;
-
-      normalizedNames[player] = PlayerNameEditor.normalize(name);
-    });
-
-    return normalizedNames;
+    this.storage.save(createSettingsSnapshot(this.state));
   }
 
   private render() {
     this.view.render(this.state);
   }
+}
 
-  private getMatchState(): MatchState {
-    if (this.state.matchMode === "casual") return { status: "playing" };
-    if (this.state.matchMode === "first-to-5") {
-      const winner = PLAYERS.find((player) => this.state.score[player] >= 5);
+function isAiTurn(state: GameState) {
+  return (
+    state.gameStarted &&
+    !state.gameOver &&
+    (state.gameMode === "ai-ai" || (state.gameMode === "user-ai" && state.current === "cross"))
+  );
+}
 
-      return winner ? { status: "complete", winner } : { status: "playing" };
-    }
+function shouldScheduleAiMove(action: GameAction) {
+  return action.type === "startGame" || action.type === "makeMove" || action.type === "resetRound";
+}
 
-    const leadingWinner = PLAYERS.find((player) => this.state.score[player] >= 3);
-    if (leadingWinner) return { status: "complete", winner: leadingWinner };
-    if (this.state.history.length < 5) return { status: "playing" };
-    if (this.state.score.circle === this.state.score.cross) {
-      return { status: "complete", winner: "draw" };
-    }
-
-    return {
-      status: "complete",
-      winner: this.state.score.circle > this.state.score.cross ? "circle" : "cross",
-    };
-  }
+function shouldPersistSettings(action: GameAction) {
+  return (
+    action.type === "startGame" ||
+    action.type === "setAiDifficulty" ||
+    action.type === "setGameMode" ||
+    action.type === "setStarter" ||
+    action.type === "setMatchMode" ||
+    action.type === "setMuted" ||
+    action.type === "setMarkerColor" ||
+    action.type === "setPlayerName"
+  );
 }
