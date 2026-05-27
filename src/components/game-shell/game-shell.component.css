@@ -1,0 +1,92 @@
+:host {
+  display: block;
+}
+
+#game {
+  display: grid;
+  place-items: center;
+  gap: var(--space-xl);
+  transition:
+    filter var(--duration-game),
+    transform var(--duration-game),
+    opacity var(--duration-game);
+}
+
+:host-context(body:not(.game-started)) #game {
+  filter: blur(var(--blur-game));
+  opacity: 0.7;
+  pointer-events: none;
+  transform: scale(0.98);
+  user-select: none;
+}
+
+#round_status {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: var(--control-width);
+  min-block-size: var(--round-status-height);
+  color: var(--text);
+  font-size: var(--font-lg);
+  font-weight: 700;
+  letter-spacing: var(--tracking-sm);
+  line-height: 1.2;
+  max-inline-size: var(--control-width);
+  overflow-wrap: anywhere;
+  padding: var(--round-status-padding-block) var(--round-status-padding-inline);
+  border-radius: var(--radius-sm);
+  isolation: isolate;
+  text-align: center;
+  transition: color var(--duration-panel) var(--ease-status-color);
+}
+
+#round_status::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--winner-color);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: center;
+}
+
+#round_status.winner {
+  color: #fff;
+}
+
+#round_status.winner::before {
+  animation: winner-status var(--duration-winner-status) var(--ease-spring) forwards;
+}
+
+#round_meta {
+  min-block-size: var(--space-lg);
+  max-inline-size: var(--control-width);
+  color: var(--text-muted);
+  font-size: var(--font-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-md);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+@keyframes winner-status {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  65% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+

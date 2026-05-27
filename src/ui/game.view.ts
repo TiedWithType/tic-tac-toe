@@ -10,33 +10,43 @@ import type {
 } from "../core/types";
 import { GameEngine } from "../game/game.engine";
 import { SettingsService } from "../services/settings.service";
-import { $, $$ } from "./dom";
+import { $, $$, shadowRootOf } from "./dom";
 
 export class GameView {
+  private roots = {
+    shell: shadowRootOf("tic-game-shell"),
+    start: shadowRootOf("tic-start-menu"),
+    options: shadowRootOf("tic-options-menu"),
+    history: shadowRootOf("tic-history-panel"),
+  };
+  private componentRoots = {
+    actions: this.getComponentRoot("tic-game-actions", this.roots.shell),
+    board: this.getComponentRoot("tic-board", this.roots.shell),
+    scoreboard: this.getComponentRoot("tic-player-scoreboard", this.roots.shell),
+  };
   private board = {
-    tiles: $$<HTMLElement>("[data-tile]"),
-    winLine: $<HTMLElement>("#win_line"),
+    tiles: $$<HTMLElement>("[data-tile]", this.componentRoots.board),
+    winLine: $<HTMLElement>("#win_line", this.componentRoots.board),
   };
   private controls = {
-    muteToggle: $<HTMLButtonElement>("#mute_toggle"),
-    reset: $<HTMLButtonElement>("#reset"),
-    resetGame: $<HTMLButtonElement>("#reset_game"),
-    mobileReset: $<HTMLButtonElement>("#mobile_reset"),
-    settingsToggle: $<HTMLButtonElement>("#settings_toggle"),
+    muteToggle: $<HTMLButtonElement>("#mute_toggle", this.roots.options),
+    reset: $<HTMLButtonElement>("#reset", this.roots.options),
+    resetGame: $<HTMLButtonElement>("#reset_game", this.roots.options),
+    mobileReset: $<HTMLButtonElement>("#mobile_reset", this.componentRoots.actions),
+    settingsToggle: $<HTMLButtonElement>("#settings_toggle", this.componentRoots.actions),
   };
   private history = {
-    panel: $<HTMLElement>("#history_panel"),
-    list: $<HTMLOListElement>("#history_list"),
-    toggle: $<HTMLButtonElement>("#history_toggle"),
-    close: $<HTMLButtonElement>("#history_close"),
+    panel: $<HTMLElement>("#history_panel", this.roots.history),
+    list: $<HTMLOListElement>("#history_list", this.roots.history),
+    toggle: $<HTMLButtonElement>("#history_toggle", this.roots.options),
+    close: $<HTMLButtonElement>("#history_close", this.roots.history),
   };
   private options = {
-    menu: $<HTMLElement>("#options_menu"),
-    modal: $<HTMLDialogElement>("#options_modal"),
-    close: $<HTMLButtonElement>("#options_close"),
+    menu: $<HTMLElement>("#options_menu", this.roots.options),
+    modal: $<HTMLDialogElement>("#options_modal", this.roots.options),
     markerColors: {
-      circle: $<HTMLInputElement>("#circle_color"),
-      cross: $<HTMLInputElement>("#cross_color"),
+      circle: $<HTMLInputElement>("#circle_color", this.roots.options),
+      cross: $<HTMLInputElement>("#cross_color", this.roots.options),
     },
   };
   private players = {
@@ -48,24 +58,24 @@ export class GameView {
     cross: this.players.cross.name,
   };
   private round = {
-    game: $<HTMLElement>("#game"),
-    meta: $<HTMLElement>("#round_meta"),
-    status: $<HTMLElement>("#round_status"),
+    game: $<HTMLElement>("#game", this.roots.shell),
+    meta: $<HTMLElement>("#round_meta", this.roots.shell),
+    status: $<HTMLElement>("#round_status", this.roots.shell),
   };
   private start = {
-    button: $<HTMLButtonElement>("#start_game"),
-    modeButtons: $$<HTMLButtonElement>("[data-mode-option]"),
-    difficultyButtons: $$<HTMLButtonElement>("[data-difficulty]"),
-    starterButtons: $$<HTMLButtonElement>("[data-starter]"),
-    matchButtons: $$<HTMLButtonElement>("[data-match-mode]"),
+    button: $<HTMLButtonElement>("#start_game", this.roots.start),
+    modeButtons: $$<HTMLButtonElement>("[data-mode-option]", this.roots.start),
+    difficultyButtons: $$<HTMLButtonElement>("[data-difficulty]", this.roots.start),
+    starterButtons: $$<HTMLButtonElement>("[data-starter]", this.roots.start),
+    matchButtons: $$<HTMLButtonElement>("[data-match-mode]", this.roots.start),
   };
   private stats = {
-    rounds: $<HTMLElement>("#stat_rounds"),
-    draws: $<HTMLElement>("#stat_draws"),
-    circleWins: $<HTMLElement>("#stat_circle_wins"),
-    crossWins: $<HTMLElement>("#stat_cross_wins"),
-    circleRate: $<HTMLElement>("#stat_circle_rate"),
-    crossRate: $<HTMLElement>("#stat_cross_rate"),
+    rounds: $<HTMLElement>("#stat_rounds", this.roots.history),
+    draws: $<HTMLElement>("#stat_draws", this.roots.history),
+    circleWins: $<HTMLElement>("#stat_circle_wins", this.roots.history),
+    crossWins: $<HTMLElement>("#stat_cross_wins", this.roots.history),
+    circleRate: $<HTMLElement>("#stat_circle_rate", this.roots.history),
+    crossRate: $<HTMLElement>("#stat_cross_rate", this.roots.history),
   };
   private queries = {
     mobileOptions: window.matchMedia("(max-width: 640px)"),
@@ -145,10 +155,11 @@ export class GameView {
 
   onDocumentDismiss(handler: () => void) {
     document.addEventListener("click", (event) => {
+      const path = event.composedPath();
       const shouldDismiss =
         this.options.modal.open &&
-        event.target instanceof Node &&
-        !this.options.menu.contains(event.target);
+        !path.includes(this.options.menu) &&
+        !path.includes(this.controls.settingsToggle);
 
       shouldDismiss && handler();
     });
@@ -156,8 +167,6 @@ export class GameView {
     document.addEventListener("keydown", (event) => {
       event.key === "Escape" && handler();
     });
-
-    this.options.close.addEventListener("click", handler);
   }
 
   onRoundReset(handler: () => void) {
@@ -481,7 +490,7 @@ export class GameView {
   }
 
   private getPlayerRefs(selector: string) {
-    const element = $<HTMLElement>(selector);
+    const element = $<HTMLElement>(selector, this.componentRoots.scoreboard);
 
     return {
       element,
@@ -496,5 +505,15 @@ export class GameView {
 
     iconElement.textContent = icon;
     labelElement.textContent = label;
+  }
+
+  private getComponentRoot(selector: string, root: ParentNode) {
+    const element = $<HTMLElement>(selector, root);
+
+    if (!element.shadowRoot) {
+      throw new Error(`Missing component shadow root: ${selector}`);
+    }
+
+    return element.shadowRoot;
   }
 }

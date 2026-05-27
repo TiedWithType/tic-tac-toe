@@ -1,0 +1,39 @@
+<section id="start_overlay" aria-label="Start game">
+  <h1 id="app_title">Tic Tac Toe</h1>
+  <section class="mode-panel" aria-label="Game mode">
+    <span>mode</span>
+    <div class="mode-options">
+      <button data-mode-option="user-user" type="button">player vs player</button>
+      <button data-mode-option="user-ai" type="button">user vs ai</button>
+      <button data-mode-option="ai-ai" type="button">ai vs ai</button>
+    </div>
+  </section>
+  <section class="difficulty-panel" aria-label="AI difficulty">
+    <span>AI difficulty</span>
+    <div class="difficulty-options">
+      <button data-difficulty="easy" type="button" title="Easy: mostly random moves with a small tactical chance.">easy</button>
+      <button data-difficulty="normal" type="button" title="Normal: blocks, wins and sometimes searches for the best move.">normal</button>
+      <button data-difficulty="hard" type="button" title="Hard: uses the best available move.">hard</button>
+    </div>
+  </section>
+  <section class="starter-panel" aria-label="Starting player">
+    <span>starts</span>
+    <div class="starter-options">
+      <button data-starter="circle" type="button">O</button>
+      <button data-starter="cross" type="button">X</button>
+      <button data-starter="random" type="button">random</button>
+    </div>
+  </section>
+  <section class="match-panel" aria-label="Match length">
+    <span>match</span>
+    <div class="match-options">
+      <button data-match-mode="casual" type="button">casual</button>
+      <button data-match-mode="best-of-5" type="button">best of 5</button>
+      <button data-match-mode="first-to-5" type="button">race to 5</button>
+    </div>
+  </section>
+  <div class="start-actions">
+    <button id="start_game" type="button">Start game</button>
+  </div>
+</section>
+

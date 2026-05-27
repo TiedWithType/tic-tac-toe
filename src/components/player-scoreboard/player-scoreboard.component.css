@@ -1,0 +1,94 @@
+:host {
+  display: block;
+}
+
+header {
+  display: flex;
+  place-content: space-between;
+  inline-size: var(--control-width);
+}
+
+header section {
+  display: grid;
+  place-items: center;
+  gap: var(--space-sm);
+}
+
+header section .name {
+  font-size: var(--font-sm);
+  letter-spacing: var(--tracking-lg);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--border);
+  padding: var(--space-lg);
+  border-radius: var(--radius-sm);
+  block-size: var(--space-2xl);
+  inline-size: var(--player-card-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-inline-size: 0;
+  overflow: hidden;
+  text-align: center;
+  transition: var(--ease-spring) var(--duration-name);
+  user-select: none;
+}
+
+header section .player-name {
+  border-radius: var(--radius-xs);
+  min-inline-size: 0;
+  outline: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+header section .player-name.editing {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--text);
+  cursor: text;
+  max-inline-size: var(--player-name-edit-width);
+  overflow-x: auto;
+  padding: 0 var(--space-name-edit);
+  user-select: text;
+}
+
+header section .marker {
+  flex: none;
+  white-space: nowrap;
+}
+
+header section .result {
+  font-size: var(--font-score);
+  font-weight: 700;
+  line-height: 1;
+}
+
+header section#player_1 .result {
+  color: var(--circle-color);
+}
+
+header section#player_2 .result {
+  color: var(--cross-color);
+}
+
+header section.active .name {
+  color: var(--text);
+}
+
+header section#player_1.active .name {
+  background: var(--circle-color);
+}
+
+header section#player_2.active .name {
+  background: var(--cross-color);
+}
+
+header .divider {
+  font-size: var(--space-xl);
+  color: var(--text-muted);
+  align-self: flex-end;
+  padding-bottom: var(--space-xs);
+}
+

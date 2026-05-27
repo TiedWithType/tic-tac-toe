@@ -1,0 +1,220 @@
+:host {
+  display: block;
+}
+
+#board {
+  position: relative;
+  inline-size: var(--board-size);
+  block-size: var(--board-size);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  place-content: center;
+  gap: var(--space-sm);
+}
+
+#board figure {
+  position: relative;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: var(--surface);
+  transition:
+    border-color var(--duration-fast),
+    background var(--duration-fast);
+}
+
+#board figure:hover:not([data-value], .winner) {
+  border-color: var(--border-hover);
+  background: #24242c;
+}
+
+#board figure:focus-visible {
+  outline: calc(var(--border-width) * 2) solid var(--text);
+  outline-offset: var(--space-xs);
+}
+
+#board figure.winner {
+  border-color: color-mix(in srgb, var(--winner-color), transparent 28%);
+  background:
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--winner-color), transparent 70%),
+      transparent 68%
+    ),
+    color-mix(in srgb, var(--winner-color), var(--surface) 86%);
+  box-shadow:
+    0 0 0 var(--border-width) color-mix(in srgb, var(--winner-color), transparent 72%),
+    0 0 var(--shadow-winner-blur) color-mix(in srgb, var(--winner-color), transparent 68%);
+}
+
+#board figure[data-value]::before,
+#board figure[data-value]::after {
+  content: "";
+  position: absolute;
+  animation: marker-in var(--ease-spring) var(--duration-marker);
+  pointer-events: none;
+}
+
+#board figure[data-value="circle"]::before {
+  inline-size: var(--marker-size-circle);
+  aspect-ratio: 1;
+  border: var(--marker-stroke) solid var(--circle-color);
+  border-radius: var(--radius-round);
+  animation-name: circle-in;
+}
+
+#board figure[data-value="circle"]::after {
+  display: none;
+}
+
+#board figure[data-value="cross"]::before,
+#board figure[data-value="cross"]::after {
+  inline-size: var(--marker-size-cross);
+  block-size: var(--marker-stroke);
+  border-radius: var(--radius-pill);
+  background: var(--cross-color);
+}
+
+#board figure[data-value="cross"]::before {
+  transform: rotate(var(--angle-diagonal));
+  animation-name: cross-a-in;
+}
+
+#board figure[data-value="cross"]::after {
+  transform: rotate(calc(var(--angle-diagonal) * -1));
+  animation-name: cross-b-in;
+}
+
+#win_line {
+  --line-length: var(--win-line-length);
+  --line-x: var(--line-center-position);
+  --line-y: var(--line-center-position);
+  --line-rotation: var(--angle-none);
+
+  position: absolute;
+  z-index: 2;
+  inset-inline-start: var(--line-x);
+  inset-block-start: var(--line-y);
+  inline-size: var(--line-length);
+  block-size: var(--line-thickness);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(
+    var(--angle-right),
+    transparent,
+    color-mix(in srgb, var(--winner-color), white 22%) 18%,
+    var(--winner-color) 50%,
+    color-mix(in srgb, var(--winner-color), white 22%) 82%,
+    transparent
+  );
+  box-shadow:
+    0 0 var(--shadow-win-line-sm) color-mix(in srgb, var(--winner-color), transparent 36%),
+    0 0 var(--shadow-win-line-lg) color-mix(in srgb, var(--winner-color), transparent 48%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(var(--line-rotation)) scaleX(0);
+  transform-origin: center;
+}
+
+#win_line.show {
+  animation: win-line var(--duration-win-line) var(--ease-spring) forwards;
+}
+
+#win_line.line-0 {
+  --line-y: var(--line-edge-position);
+}
+
+#win_line.line-1 {
+  --line-y: var(--line-center-position);
+}
+
+#win_line.line-2 {
+  --line-y: var(--line-opposite-edge-position);
+}
+
+#win_line.line-3 {
+  --line-x: var(--line-edge-position);
+  --line-rotation: var(--angle-quarter);
+}
+
+#win_line.line-4 {
+  --line-x: var(--line-center-position);
+  --line-rotation: var(--angle-quarter);
+}
+
+#win_line.line-5 {
+  --line-x: var(--line-opposite-edge-position);
+  --line-rotation: var(--angle-quarter);
+}
+
+#win_line.line-6 {
+  --line-length: var(--line-length-diagonal);
+  --line-rotation: var(--angle-diagonal);
+}
+
+#win_line.line-7 {
+  --line-length: var(--line-length-diagonal);
+  --line-rotation: calc(var(--angle-diagonal) * -1);
+}
+
+@keyframes marker-in {
+  from {
+    transform: scale(0) rotate(0);
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes circle-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes cross-a-in {
+  from {
+    transform: scale(0) rotate(var(--angle-diagonal));
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) rotate(var(--angle-diagonal));
+    opacity: 1;
+  }
+}
+
+@keyframes cross-b-in {
+  from {
+    transform: scale(0) rotate(calc(var(--angle-diagonal) * -1));
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) rotate(calc(var(--angle-diagonal) * -1));
+    opacity: 1;
+  }
+}
+
+@keyframes win-line {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--line-rotation)) scaleX(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--line-rotation)) scaleX(1);
+  }
+}
+

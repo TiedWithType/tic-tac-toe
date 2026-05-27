@@ -1,0 +1,304 @@
+:host {
+  contain: none;
+  display: contents;
+}
+
+button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  font-size: var(--font-button);
+  letter-spacing: var(--tracking-md);
+  text-transform: lowercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-button-block) var(--space-button-inline);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    color var(--duration-fast),
+    border-color var(--duration-fast),
+    background var(--duration-fast),
+    visibility var(--duration-fast);
+}
+
+button:hover {
+  color: var(--text);
+  border-color: var(--border-hover);
+  background: var(--surface);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.button-ripple {
+  position: absolute;
+  border-radius: var(--radius-round);
+  background: color-mix(in srgb, var(--text), transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  transform-origin: center;
+  animation: button-ripple var(--duration-ripple) var(--ease-status-color);
+}
+
+button:has(.material-symbols-rounded) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+button .material-symbols-rounded,
+#options_version .material-symbols-rounded {
+  display: grid;
+  place-items: center;
+  inline-size: var(--font-xl);
+  block-size: var(--font-xl);
+  font-family: "Material Symbols Rounded";
+  font-size: var(--font-xl);
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  inline-size: min(100%, var(--control-width));
+}
+
+.controls button {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: var(--settings-size);
+  padding-inline: var(--space-control-inline);
+  white-space: nowrap;
+}
+
+.marker-icon {
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--marker-icon-size);
+  block-size: var(--marker-icon-size);
+  color: var(--marker-icon-color, currentColor);
+}
+
+.marker-icon::before,
+.marker-icon::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.marker-icon.marker-icon-circle::before {
+  inset: 0;
+  border: var(--marker-icon-stroke) solid var(--marker-icon-color, currentColor);
+  border-radius: var(--radius-round);
+}
+
+.marker-icon.marker-icon-cross::before,
+.marker-icon.marker-icon-cross::after {
+  inline-size: 100%;
+  block-size: var(--marker-icon-stroke);
+  border-radius: var(--radius-pill);
+  background: var(--marker-icon-color, currentColor);
+}
+
+.marker-icon.marker-icon-cross::before {
+  transform: rotate(var(--angle-diagonal));
+}
+
+.marker-icon.marker-icon-cross::after {
+  transform: rotate(calc(var(--angle-diagonal) * -1));
+}
+
+.color-options {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+  inline-size: 100%;
+}
+
+.color-options label {
+  --marker-icon-size: var(--font-xl);
+  --marker-icon-stroke: 0.18rem;
+  --marker-icon-color: var(--swatch-color);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  min-inline-size: 0;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-color-label-block) var(--space-color-input-gap)
+    var(--space-color-label-block) var(--space-color-label-inline);
+  color: var(--text-muted);
+  font-size: var(--font-color-label);
+  font-weight: 700;
+  letter-spacing: var(--tracking-md);
+  cursor: pointer;
+}
+
+.color-options label::after {
+  content: "";
+  inline-size: var(--color-input-size);
+  block-size: var(--color-input-size);
+  flex: none;
+  border-radius: var(--radius-round);
+  background: var(--swatch-color);
+  box-shadow: inset 0 0 0 var(--border-width)
+    color-mix(in srgb, var(--text), transparent 72%);
+}
+
+.color-options label:has(input:focus-visible)::after {
+  box-shadow:
+    inset 0 0 0 var(--border-width)
+      color-mix(in srgb, var(--text), transparent 60%),
+    0 0 0 var(--border-width) var(--surface),
+    0 0 0 calc(var(--border-width) * 2) var(--swatch-color);
+}
+
+.color-options input {
+  position: absolute;
+  inset-block: 50% auto;
+  inset-inline-end: var(--space-color-input-gap);
+  inline-size: var(--color-input-size);
+  block-size: var(--color-input-size);
+  border: 0;
+  border-radius: var(--radius-round);
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+  outline: 0;
+  overflow: hidden;
+  padding: 0;
+  transform: translateY(-50%);
+}
+
+.color-options input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-options input::-webkit-color-swatch,
+.color-options input::-moz-color-swatch {
+  border: 0;
+  border-radius: var(--radius-round);
+  opacity: 0;
+}
+
+#options_modal {
+  position: fixed;
+  inset: var(--space-modal-inset) auto auto var(--space-modal-inset);
+  pointer-events: auto;
+  inline-size: min(
+    calc(var(--control-width) + (var(--space-lg) * 2)),
+    calc(var(--viewport-inline) - var(--space-2xl))
+  );
+  max-inline-size: calc(var(--control-width) + (var(--space-lg) * 2));
+  margin: 0;
+  overflow: hidden;
+  padding: var(--space-lg);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  background: rgba(30, 30, 36, 0.98);
+  box-shadow: 0 var(--shadow-modal-y) var(--shadow-modal-blur)
+    rgba(0, 0, 0, 0.45);
+  transform: translate(-50%, -50%);
+}
+
+#options_modal::backdrop {
+  background: rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(var(--blur-backdrop));
+}
+
+#options_modal:not([open]) {
+  display: none;
+}
+
+#options_version {
+  display: inline-flex;
+  grid-column: 1 / -1;
+  order: -1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  color: var(--text-muted);
+  font-size: var(--font-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-sm);
+  text-align: center;
+}
+
+#history_toggle,
+#mute_toggle {
+  order: 20;
+}
+
+#options_modal #reset {
+  display: none;
+}
+
+#reset_game {
+  grid-column: 1 / -1;
+  order: 51;
+}
+
+#reset {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.92);
+  transition:
+    opacity var(--duration-reset) ease,
+    transform var(--duration-reset) ease,
+    visibility var(--duration-reset) ease;
+  visibility: hidden;
+}
+
+#reset.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  visibility: visible;
+}
+
+#reset.show:hover,
+#reset.show:focus-visible {
+  transform: scale(1);
+}
+
+@keyframes button-ripple {
+  0% {
+    opacity: 0.36;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

@@ -1,17 +1,18 @@
 import type { AiDifficulty, GameMode, MatchMode, Starter } from "../core/types";
 import { SettingsService } from "../services/settings.service";
-import { $, $$ } from "../ui/dom";
+import { $, $$, shadowRootOf } from "../ui/dom";
 
 type StartMenuOptions = {
   onStart: (mode: GameMode) => void;
 };
 
 export class StartMenu {
-  private startBtn = $<HTMLButtonElement>("#start_game");
-  private modeButtons = $$<HTMLButtonElement>("[data-mode-option]");
-  private difficultyButtons = $$<HTMLButtonElement>("[data-difficulty]");
-  private starterButtons = $$<HTMLButtonElement>("[data-starter]");
-  private matchButtons = $$<HTMLButtonElement>("[data-match-mode]");
+  private root = shadowRootOf("tic-start-menu");
+  private startBtn = $<HTMLButtonElement>("#start_game", this.root);
+  private modeButtons = $$<HTMLButtonElement>("[data-mode-option]", this.root);
+  private difficultyButtons = $$<HTMLButtonElement>("[data-difficulty]", this.root);
+  private starterButtons = $$<HTMLButtonElement>("[data-starter]", this.root);
+  private matchButtons = $$<HTMLButtonElement>("[data-match-mode]", this.root);
   private abortController = new AbortController();
   private gameMode: GameMode = "user-user";
   private aiDifficulty: AiDifficulty = "normal";

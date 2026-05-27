@@ -1,0 +1,155 @@
+:host {
+  display: block;
+}
+
+button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  font-size: var(--font-button);
+  letter-spacing: var(--tracking-md);
+  text-transform: lowercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-button-block) var(--space-button-inline);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    color var(--duration-fast),
+    border-color var(--duration-fast),
+    background var(--duration-fast),
+    visibility var(--duration-fast);
+}
+
+button:hover {
+  color: var(--text);
+  border-color: var(--border-hover);
+  background: var(--surface);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.button-ripple {
+  position: absolute;
+  border-radius: var(--radius-round);
+  background: color-mix(in srgb, var(--text), transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  transform-origin: center;
+  animation: button-ripple var(--duration-ripple) var(--ease-status-color);
+}
+
+button:has(.material-symbols-rounded) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+button .material-symbols-rounded {
+  display: grid;
+  place-items: center;
+  inline-size: var(--font-xl);
+  block-size: var(--font-xl);
+  font-family: "Material Symbols Rounded";
+  font-size: var(--font-xl);
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+#settings_toggle {
+  z-index: 25;
+  display: none;
+  justify-content: center;
+  place-items: center;
+  inline-size: var(--settings-size);
+  block-size: var(--settings-size);
+  padding: 0;
+  color: var(--text);
+  border-color: var(--border-hover);
+  background: rgba(30, 30, 36, 0.94);
+  box-shadow: 0 var(--shadow-settings-y) var(--shadow-settings-blur)
+    rgba(0, 0, 0, 0.28);
+  font-size: var(--font-2xl);
+  line-height: 1;
+}
+
+#settings_toggle[hidden] {
+  display: none;
+}
+
+#settings_toggle:not([hidden]) {
+  display: grid;
+}
+
+#settings_toggle .material-symbols-rounded {
+  inline-size: var(--font-3xl);
+  block-size: var(--font-3xl);
+  font-size: var(--font-3xl);
+}
+
+#quick_actions {
+  display: grid;
+  grid-template-columns: minmax(0, var(--mobile-reset-width)) var(
+      --settings-size
+    );
+  gap: var(--mobile-action-gap);
+  inline-size: var(--mobile-action-width);
+  min-block-size: var(--settings-size);
+}
+
+#mobile_reset {
+  display: block;
+  inline-size: 100%;
+  min-block-size: var(--settings-size);
+  background: rgba(30, 30, 36, 0.94);
+  box-shadow: 0 var(--shadow-settings-y) var(--shadow-settings-blur)
+    rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.92);
+  transition:
+    opacity var(--duration-reset) ease,
+    transform var(--duration-reset) ease,
+    visibility var(--duration-reset) ease;
+  visibility: hidden;
+}
+
+#mobile_reset.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  visibility: visible;
+}
+
+#mobile_reset.show:hover,
+#mobile_reset.show:focus-visible {
+  transform: scale(1);
+}
+
+@keyframes button-ripple {
+  0% {
+    opacity: 0.36;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

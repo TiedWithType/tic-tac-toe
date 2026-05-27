@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.3.1.0 beta "Ice Cream"**
+Aktualna wersja: **v.4.0.0 beta "Jelly Roll"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -254,6 +254,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🍨 `2.3.0 beta "Gelato"`
 - 🍯 `3.0.0 beta "Honeycomb"`
 - 🍦 `3.1.0 beta "Ice Cream"`
+- 🍥 `4.0.0 beta "Jelly Roll"`
 
 ## 🚀 Uruchamianie lokalnie
 

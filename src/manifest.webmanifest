@@ -3,15 +3,28 @@
   "short_name": "Tic Tac Toe",
   "description": "A polished Tic Tac Toe game with local players, AI modes, custom colors, sounds and session stats.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#16161a",
   "theme_color": "#16161a",
   "icons": [
     {
-      "src": "/icon.webp",
+      "src": "/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/webp",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any"
     }
   ]
 }

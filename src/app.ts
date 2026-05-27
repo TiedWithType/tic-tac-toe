@@ -1,3 +1,4 @@
+import "./components/register";
 import { StartMenu } from "./bootstrap/start.menu";
 import type { GameMode } from "./core/types";
 import { SettingsService } from "./services/settings.service";
@@ -64,9 +65,10 @@ function createAudioContext() {
 
 function installButtonRipples() {
   document.addEventListener("pointerdown", (event) => {
-    if (!(event.target instanceof Element)) return;
+    const button = event
+      .composedPath()
+      .find((target): target is HTMLButtonElement => target instanceof HTMLButtonElement);
 
-    const button = event.target.closest("button");
     if (!button || button.disabled) return;
 
     const rect = button.getBoundingClientRect();

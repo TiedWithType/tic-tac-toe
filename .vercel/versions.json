@@ -5,7 +5,7 @@
   "codename_policy": {
     "theme": "alphabetical desserts",
     "format": "Title Case",
-    "next_codename_letter": "J",
+    "next_codename_letter": "K",
     "patch_releases_keep_parent_codename": true
   },
   "releases": [
@@ -221,7 +221,7 @@
       },
       "codename": "Ice Cream",
       "codename_letter": "I",
-      "status": "current",
+      "status": "previous",
       "scope": "minor",
       "summary": "Unify the game action menu across desktop and mobile while polishing iconography, marker color controls and static release labels.",
       "notes": [
@@ -232,12 +232,42 @@
         "Kept static version labels in HTML aligned with the release registry.",
         "Refined match modes, AI difficulty disabling for PvP and menu copy."
       ]
+    },
+    {
+      "version": {
+        "major": 4,
+        "minor": 0,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Jelly Roll",
+      "codename_letter": "J",
+      "status": "current",
+      "scope": "major",
+      "summary": "Move the app shell and UI layer to Web Components with per-component templates and styles.",
+      "breaking_changes": [
+        "The DOM shell moved from static page markup into an app-root Web Component.",
+        "UI module boundaries changed from a single DOM view to component-scoped templates and Shadow DOM styles.",
+        "Global CSS modules were removed in favor of component-owned styles."
+      ],
+      "migration_notes": [
+        "No localStorage schema changes were introduced.",
+        "Existing saved player names, colors, mode, difficulty, starter, match mode and mute settings remain compatible."
+      ],
+      "notes": [
+        "Added app-root as the top-level Web Component for the game shell.",
+        "Converted the board, scoreboard, quick actions, start menu, settings modal, history panel and footer into Web Components.",
+        "Moved component markup into .component.html files and component styles into .component.css files.",
+        "Added TypeScript declarations for Vite raw HTML imports.",
+        "Fixed PWA icon paths with public install icons for browser and Apple home screen installs.",
+        "Removed obsolete global CSS modules after moving styles into components."
+      ]
     }
   ],
   "planned_codenames": [
     {
-      "letter": "J",
-      "codename": "Jelly Roll",
+      "letter": "K",
+      "codename": "Key Lime Pie",
       "status": "next"
     }
   ],
