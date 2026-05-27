@@ -12,6 +12,10 @@ import { GameEngine } from "../game/game.engine";
 import { SettingsService } from "../services/settings.service";
 import { $, $$, shadowRootOf } from "./dom";
 
+const MATERIAL_SYMBOLS_FONT = "/fonts/material-symbols-rounded.woff2";
+
+let materialSymbolsLoading = false;
+
 export class GameView {
   private roots = {
     shell: shadowRootOf("tic-game-shell"),
@@ -81,6 +85,10 @@ export class GameView {
     mobileOptions: window.matchMedia("(max-width: 640px)"),
   };
   private matchComplete = false;
+
+  constructor() {
+    loadMaterialSymbols();
+  }
 
   onTileClick(handler: (index: number) => void) {
     this.board.tiles.forEach((tile, index) => {
@@ -516,4 +524,34 @@ export class GameView {
 
     return element.shadowRoot;
   }
+}
+
+function loadMaterialSymbols() {
+  if (materialSymbolsLoading || document.querySelector("style[data-material-symbols-rounded]")) {
+    return;
+  }
+
+  materialSymbolsLoading = true;
+
+  const link = document.createElement("link");
+  link.dataset.materialSymbolsRounded = "true";
+  link.rel = "preload";
+  link.as = "font";
+  link.type = "font/woff2";
+  link.crossOrigin = "anonymous";
+  link.href = MATERIAL_SYMBOLS_FONT;
+
+  const style = document.createElement("style");
+  style.dataset.materialSymbolsRounded = "true";
+  style.textContent = `
+    @font-face {
+      font-family: "Material Symbols Rounded";
+      font-style: normal;
+      font-weight: 500;
+      font-display: block;
+      src: url("${MATERIAL_SYMBOLS_FONT}") format("woff2");
+    }
+  `;
+
+  document.head.append(link, style);
 }

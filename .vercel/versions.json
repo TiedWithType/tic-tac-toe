@@ -242,7 +242,7 @@
       },
       "codename": "Jelly Roll",
       "codename_letter": "J",
-      "status": "current",
+      "status": "previous",
       "scope": "major",
       "summary": "Move the app shell and UI layer to Web Components with per-component templates and styles.",
       "breaking_changes": [
@@ -261,6 +261,26 @@
         "Added TypeScript declarations for Vite raw HTML imports.",
         "Fixed PWA icon paths with public install icons for browser and Apple home screen installs.",
         "Removed obsolete global CSS modules after moving styles into components."
+      ]
+    },
+    {
+      "version": {
+        "major": 4,
+        "minor": 0,
+        "patch": 1,
+        "release": "beta"
+      },
+      "codename": "Jelly Roll",
+      "codename_letter": "J",
+      "status": "current",
+      "scope": "patch",
+      "summary": "Serve fonts locally to reduce render flashes and remove Google Fonts from the initial page.",
+      "notes": [
+        "Bundled Quicksand latin and latin-ext WOFF2 subsets under public font assets.",
+        "Bundled the subsetted Material Symbols Rounded icon font under public font assets.",
+        "Preloaded local text fonts from the document head with a valid font preload type.",
+        "Deferred the local icon font preload and @font-face registration until the game runtime starts.",
+        "Removed runtime dependencies on fonts.googleapis.com and fonts.gstatic.com."
       ]
     }
   ],

@@ -23,7 +23,7 @@ Rules:
 - `MINOR` changes for new player-facing features, new modes, UI additions, or AI behavior changes.
 - `PATCH` changes for bug fixes, copy tweaks, visual polish, and small compatibility fixes.
 - `RELEASE` must be one of: `alpha`, `beta`, `rc`, `stable`.
-- `.vercel/versions.json` and static version text in `src/index.html` must be updated together for every release.
+- `.vercel/versions.json` and static version labels in UI component templates must be updated together for every release.
 
 ## Source Naming Rules
 
@@ -50,7 +50,7 @@ For every major release:
 
 - document breaking changes in `.vercel/versions.json`,
 - add migration notes if localStorage or config changes,
-- update static version labels in `src/index.html`,
+- update static version labels in UI component templates,
 - run the production build before commit,
 - keep the next codename alphabetical.
 
@@ -96,7 +96,7 @@ J: Jelly Roll
 Before tagging or deploying a release:
 
 - Update `.vercel/versions.json`.
-- Update static version text in `src/index.html` when present.
+- Update static version text in UI component templates when present.
 - Confirm the footer shows the expected app name, version, release, codename, and author.
 - Run the production build.
 - Use the same version in commit message, tag, and deployment notes.

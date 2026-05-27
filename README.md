@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.4.0.0 beta "Jelly Roll"**
+Aktualna wersja: **v.4.0.1 beta "Jelly Roll"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -25,6 +25,7 @@ Autor: **TiedWithType**
 - ✏️ Zmiana nazw graczy przez **PPM** albo **long press** na mobile.
 - 🏷️ Domyślne nazwy graczy zależne od trybu gry.
 - ⚡ Dynamiczne ładowanie runtime gry dopiero po wyborze trybu.
+- 🔤 Lokalne fonty tekstu i ikon ograniczające FOUT/FOIT oraz zewnętrzne requesty.
 - 🧩 Kod podzielony na moduły: controller, view, game engine, AI i serwisy.
 
 ## 🕹️ Jak grać?
@@ -158,14 +159,23 @@ src/
     game.view.ts
     player.name.editor.ts
 
+  components/
+    app-root/
+    game-shell/
+    game-board/
+    player-scoreboard/
+    game-actions/
+    options-menu/
+    start-menu/
+    history-panel/
+    app-footer/
+
   styles/
     base.css
-    game-layout.css
-    board.css
-    controls.css
-    start-overlay.css
-    shell.css
-    mobile.css
+
+  public/
+    fonts/
+    icons/
 ```
 
 ### 🧠 `GameController`
@@ -200,6 +210,20 @@ Warstwa DOM i renderowania UI:
 - status rundy
 - modal ustawień
 
+### 🧩 `components/*`
+
+Komponenty Web Components z własnymi template'ami i stylami Shadow DOM:
+
+- `app-root` - główny shell aplikacji
+- `game-shell` - układ rundy, planszy i akcji
+- `game-board` - plansza oraz linia wygranej
+- `player-scoreboard` - nazwy i wyniki graczy
+- `game-actions` - szybkie akcje pod planszą
+- `options-menu` - modal ustawień
+- `start-menu` - ekran startowy
+- `history-panel` - historia i statystyki sesji
+- `app-footer` - statyczna etykieta wersji
+
 ### 🔊 `AudioService`
 
 Dźwięki generowane przez Web Audio API.
@@ -208,23 +232,22 @@ Dźwięki generowane przez Web Audio API.
 
 Zapis i odczyt ustawień z `localStorage`.
 
-### 🎨 `styles/*`
+### 🎨 Style i fonty
 
-Style są podzielone na moduły CSS importowane przez `src/style.css`:
+Globalny arkusz `src/styles/base.css` zawiera tokeny, reset, style strony oraz lokalne `@font-face`.
+Style elementów interfejsu są trzymane przy komponentach jako pliki `.component.css`.
 
-- `base.css` - tokeny, reset i globalne style strony
-- `game-layout.css` - layout gry, status rundy i scoreboard
-- `board.css` - plansza, O/X rysowane w CSS, zwycięska linia i animacje
-- `controls.css` - przyciski, quick actions, menu opcji, kolory graczy i modal ustawień
-- `start-overlay.css` - ekran startowy, difficulty, starter i przyciski startu
-- `shell.css` - footer oraz panel historii
-- `mobile.css` - mobilne dopasowania historii
+Fonty są serwowane lokalnie z `src/public/fonts`:
+
+- `quicksand-latin.woff2`
+- `quicksand-latin-ext.woff2`
+- `material-symbols-rounded.woff2`
 
 ## 🏷️ Konfiguracja aplikacji
 
 Konfiguracja jest trzymana blisko miejsca użycia:
 
-- wersja publiczna: `src/index.html` oraz `.vercel/versions.json`
+- wersja publiczna: komponenty `app-footer` i `options-menu` oraz `.vercel/versions.json`
 - domyślne nazwy graczy: `src/core/constants.ts`
 - ustawienia użytkownika i migracje storage: `src/services/settings.service.ts`
 
@@ -255,6 +278,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🍯 `3.0.0 beta "Honeycomb"`
 - 🍦 `3.1.0 beta "Ice Cream"`
 - 🍥 `4.0.0 beta "Jelly Roll"`
+- 🍥 `4.0.1 beta "Jelly Roll"`
 
 ## 🚀 Uruchamianie lokalnie
 
