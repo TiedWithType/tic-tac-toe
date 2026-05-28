@@ -368,7 +368,7 @@
       },
       "codename": "Key Lime Pie",
       "codename_letter": "K",
-      "status": "current",
+      "status": "previous",
       "scope": "patch",
       "summary": "Componentize ripple buttons and Material Symbols icons while keeping the runtime lighter with lazy AI loading and targeted rendering hints.",
       "commit_message": "fix: componentize ripple icons and lazy AI loading (v4.1.1 Key Lime Pie)",
@@ -383,6 +383,31 @@
         "Lazy-load AI player code when the controller needs an AI move instead of including it in the initial game runtime.",
         "Restored targeted contain and will-change hints on animated component surfaces without reintroducing broad global rendering hints.",
         "Tightened release governance so every shipped version in versions.json carries an authoritative commit_message."
+      ]
+    },
+    {
+      "version": {
+        "major": 4,
+        "minor": 1,
+        "patch": 2,
+        "release": "beta"
+      },
+      "codename": "Key Lime Pie",
+      "codename_letter": "K",
+      "status": "current",
+      "scope": "patch",
+      "summary": "Replace the start menu blur with smoother animated O/X waves and simplify footer markup.",
+      "commit_message": "fix: refine start menu waves and footer markup (v4.1.2 Key Lime Pie)",
+      "migration_notes": [
+        "No localStorage schema changes were introduced.",
+        "Existing saved player names, colors, mode, difficulty, starter, match mode and mute settings remain compatible."
+      ],
+      "notes": [
+        "Replaced the start menu backdrop blur with animated non-repeating wave masks.",
+        "Limited the wave effect palette to the configured circle and cross colors.",
+        "Increased wave animation speed and scaled the effect up on mobile viewports.",
+        "Kept the wave animation disabled for users who prefer reduced motion.",
+        "Removed the internal footer id and styled the semantic footer element directly inside Shadow DOM."
       ]
     }
   ],

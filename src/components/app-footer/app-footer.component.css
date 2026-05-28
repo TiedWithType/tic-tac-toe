@@ -2,7 +2,7 @@
   display: contents;
 }
 
-#app_footer {
+footer {
   position: fixed;
   inset-inline: 0;
   inset-block-end: var(--footer-bottom);

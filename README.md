@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.4.1.1 beta "Key Lime Pie"**
+Aktualna wersja: **v.4.1.2 beta "Key Lime Pie"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -299,6 +299,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🍥 `4.0.1 beta "Jelly Roll"`
 - 🥧 `4.1.0 beta "Key Lime Pie"`
 - 🥧 `4.1.1 beta "Key Lime Pie"`
+- 🥧 `4.1.2 beta "Key Lime Pie"`
 
 ## 🚀 Uruchamianie lokalnie
 
