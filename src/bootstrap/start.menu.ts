@@ -1,4 +1,5 @@
 import type { AiDifficulty, GameMode, MatchMode, Starter } from "../core/types";
+import type { ButtonRippleComponent } from "../components/button-ripple/button-ripple.component";
 import { SettingsService } from "../services/settings.service";
 import { $, $$, shadowRootOf } from "../ui/dom";
 
@@ -8,11 +9,11 @@ type StartMenuOptions = {
 
 export class StartMenu {
   private root = shadowRootOf("tic-start-menu");
-  private startBtn = $<HTMLButtonElement>("#start_game", this.root);
-  private modeButtons = $$<HTMLButtonElement>("[data-mode-option]", this.root);
-  private difficultyButtons = $$<HTMLButtonElement>("[data-difficulty]", this.root);
-  private starterButtons = $$<HTMLButtonElement>("[data-starter]", this.root);
-  private matchButtons = $$<HTMLButtonElement>("[data-match-mode]", this.root);
+  private startBtn = $<ButtonRippleComponent>("#start_game", this.root);
+  private modeButtons = $$<ButtonRippleComponent>("[data-mode-option]", this.root);
+  private difficultyButtons = $$<ButtonRippleComponent>("[data-difficulty]", this.root);
+  private starterButtons = $$<ButtonRippleComponent>("[data-starter]", this.root);
+  private matchButtons = $$<ButtonRippleComponent>("[data-match-mode]", this.root);
   private abortController = new AbortController();
   private gameMode: GameMode = "user-user";
   private aiDifficulty: AiDifficulty = "normal";

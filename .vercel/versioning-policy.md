@@ -23,7 +23,37 @@ Rules:
 - `MINOR` changes for new player-facing features, new modes, UI additions, or AI behavior changes.
 - `PATCH` changes for bug fixes, copy tweaks, visual polish, and small compatibility fixes.
 - `RELEASE` must be one of: `alpha`, `beta`, `rc`, `stable`.
-- `.vercel/versions.json` and static version labels in UI component templates must be updated together for every release.
+- Every release must have exactly one entry in `.vercel/versions.json`.
+- `.vercel/versions.json`, README release documentation and static version labels in UI component templates must be updated together for every release.
+- The `commit_message` stored in `.vercel/versions.json` is authoritative and must be used exactly for the release commit.
+
+## Release Registry Rules
+
+Every release entry in `.vercel/versions.json` must include:
+
+- `version` with `major`, `minor`, `patch` and `release`.
+- `codename`.
+- `codename_letter`.
+- `status`.
+- `scope`.
+- `summary`.
+- `commit_message`.
+- `notes`.
+
+Additional fields are required when relevant:
+
+- `breaking_changes` for every `MAJOR` release.
+- `migration_notes` when localStorage, install metadata, config, routing or persisted user-facing behavior changes.
+
+Release registry rules:
+
+- There must be exactly one `current` release.
+- All older shipped releases must use `previous`.
+- Planned releases must stay outside `releases`, under `planned_releases` or `planned_codenames`.
+- `commit_message` must use the format `type: concise release summary (vMAJOR.MINOR.PATCH Codename)`.
+- Use `feat` for `MAJOR` and `MINOR` releases, `fix` for `PATCH` releases, and `chore` only for metadata-only or initial registry releases.
+- `commit_message` must substantially overlap with the release `summary`, `breaking_changes`, `migration_notes` and/or the most important `notes`; do not use generic messages like `release vX.Y.Z Codename`.
+- The release commit, tag and deployment notes must use the same version and codename as the registry entry.
 
 ## Source Naming Rules
 
@@ -49,6 +79,7 @@ A `MAJOR` release must include at least one meaningful breaking or structural ch
 For every major release:
 
 - document breaking changes in `.vercel/versions.json`,
+- add a `commit_message` in `.vercel/versions.json`,
 - add migration notes if localStorage or config changes,
 - update static version labels in UI component templates,
 - run the production build before commit,
@@ -97,7 +128,10 @@ K: Key Lime Pie
 Before tagging or deploying a release:
 
 - Update `.vercel/versions.json`.
+- Confirm each release entry has a `commit_message`.
+- Use the current release entry's `commit_message` exactly as the git commit message.
 - Update static version text in UI component templates when present.
+- Update README release/versioning notes when the release changes architecture, user-visible behavior, tooling, install behavior or the documented release process.
 - Confirm the footer shows the expected app name, version, release, codename, and author.
 - Run the production build.
 - Use the same version in commit message, tag, and deployment notes.

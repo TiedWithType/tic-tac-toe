@@ -11,10 +11,6 @@ import type { PlayerScoreboardComponent } from "../components/player-scoreboard/
 import type { StartMenuComponent } from "../components/start-menu/start-menu.component";
 import { $, appRoot } from "./dom";
 
-const MATERIAL_SYMBOLS_FONT = "/fonts/material-symbols-rounded.woff2";
-
-let materialSymbolsLoading = false;
-
 export class GameView {
   private root = appRoot();
   private shell = this.getComponent<GameShellComponent>("tic-game-shell");
@@ -34,10 +30,6 @@ export class GameView {
   private queries = {
     mobileOptions: window.matchMedia("(max-width: 640px)"),
   };
-
-  constructor() {
-    loadMaterialSymbols();
-  }
 
   onTileClick(handler: (index: number) => void) {
     this.board.onTileClick(handler);
@@ -188,26 +180,4 @@ export class GameView {
 
     return element;
   }
-}
-
-function loadMaterialSymbols() {
-  if (materialSymbolsLoading || document.querySelector("style[data-material-symbols-rounded]")) {
-    return;
-  }
-
-  materialSymbolsLoading = true;
-
-  const style = document.createElement("style");
-  style.dataset.materialSymbolsRounded = "true";
-  style.textContent = `
-    @font-face {
-      font-family: "Material Symbols Rounded";
-      font-style: normal;
-      font-weight: 500;
-      font-display: block;
-      src: url("${MATERIAL_SYMBOLS_FONT}") format("woff2");
-    }
-  `;
-
-  document.head.append(style);
 }

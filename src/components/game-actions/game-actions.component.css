@@ -27,7 +27,7 @@
   display: grid;
 }
 
-#settings_toggle .material-symbols-rounded {
+#settings_toggle material-icon {
   inline-size: var(--font-3xl);
   block-size: var(--font-3xl);
   font-size: var(--font-3xl);
@@ -44,7 +44,8 @@
 }
 
 #mobile_reset {
-  display: block;
+  display: grid;
+  place-items: center;
   inline-size: 100%;
   min-block-size: var(--settings-size);
   background: rgba(30, 30, 36, 0.94);
@@ -65,6 +66,7 @@
   pointer-events: auto;
   transform: scale(1);
   visibility: visible;
+  will-change: transform, opacity;
 }
 
 #mobile_reset.show:hover,

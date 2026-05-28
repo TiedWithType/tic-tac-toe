@@ -65,10 +65,10 @@
   gap: var(--space-sm);
 }
 
-.mode-options button,
-.difficulty-options button,
-.starter-options button,
-.match-options button {
+.mode-options button-ripple,
+.difficulty-options button-ripple,
+.starter-options button-ripple,
+.match-options button-ripple {
   min-inline-size: 0;
   padding: var(--space-color-input-gap) var(--start-stripe-width);
   font-size: var(--font-xs);
@@ -76,67 +76,67 @@
   letter-spacing: var(--tracking-sm);
 }
 
-.mode-options button.active {
+.mode-options button-ripple.active {
   color: var(--text);
   border-color: var(--border-hover);
   background: var(--surface);
 }
 
-.starter-options button[data-starter="circle"] {
+.starter-options button-ripple[data-starter="circle"] {
   color: var(--circle-color);
   border-color: color-mix(in srgb, var(--circle-color), transparent 55%);
 }
 
-.starter-options button[data-starter="circle"].active {
+.starter-options button-ripple[data-starter="circle"].active {
   color: var(--bg);
   border-color: var(--circle-color);
   background: var(--circle-color);
 }
 
-.starter-options button[data-starter="cross"] {
+.starter-options button-ripple[data-starter="cross"] {
   color: var(--cross-color);
   border-color: color-mix(in srgb, var(--cross-color), transparent 55%);
 }
 
-.starter-options button[data-starter="cross"].active {
+.starter-options button-ripple[data-starter="cross"].active {
   color: var(--text);
   border-color: var(--cross-color);
   background: var(--cross-color);
 }
 
-.starter-options button[data-starter="random"] {
+.starter-options button-ripple[data-starter="random"] {
   color: var(--text-muted);
   border-color: var(--border);
 }
 
-.starter-options button[data-starter="random"].active {
+.starter-options button-ripple[data-starter="random"].active {
   color: var(--text);
   border-color: var(--border-hover);
   background: var(--surface);
 }
 
-.difficulty-options button[data-difficulty="easy"] {
+.difficulty-options button-ripple[data-difficulty="easy"] {
   color: var(--easy-color);
   border-color: color-mix(in srgb, var(--easy-color), transparent 55%);
 }
 
-.difficulty-options button[data-difficulty="normal"] {
+.difficulty-options button-ripple[data-difficulty="normal"] {
   color: var(--normal-color);
   border-color: color-mix(in srgb, var(--normal-color), transparent 55%);
 }
 
-.difficulty-options button[data-difficulty="hard"] {
+.difficulty-options button-ripple[data-difficulty="hard"] {
   color: var(--hard-color);
   border-color: color-mix(in srgb, var(--hard-color), transparent 55%);
 }
 
-.difficulty-options button.active {
+.difficulty-options button-ripple.active {
   color: var(--bg);
   border-color: var(--difficulty-color);
   background: var(--difficulty-color);
 }
 
-.match-options button.active {
+.match-options button-ripple.active {
   color: var(--bg);
   border-color: var(--text);
   background: var(--text);
@@ -148,7 +148,7 @@
   inline-size: min(var(--panel-width), 100%);
 }
 
-.start-actions button {
+.start-actions button-ripple {
   position: relative;
   inline-size: 100%;
   color: var(--text);
@@ -164,7 +164,7 @@
   text-transform: none;
 }
 
-.start-actions button::before {
+.start-actions button-ripple::before {
   content: "";
   position: absolute;
   inset-block: 0;
@@ -174,8 +174,8 @@
   opacity: 0.9;
 }
 
-.start-actions button:hover,
-.start-actions button:focus-visible {
+.start-actions button-ripple:hover,
+.start-actions button-ripple:focus-visible {
   border-color: var(--difficulty-color);
   background: #292933;
   color: var(--text);

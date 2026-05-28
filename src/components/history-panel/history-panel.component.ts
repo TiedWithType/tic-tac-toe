@@ -1,6 +1,7 @@
 import html from "./history-panel.component.html?raw";
 import css from "./history-panel.component.css?raw";
 import { defineComponent, renderComponent } from "../component.utils";
+import type { ButtonRippleComponent } from "../button-ripple/button-ripple.component";
 import type { GameState, MatchMode } from "../../core/types";
 import { GameEngine } from "../../game/game.engine";
 
@@ -14,7 +15,7 @@ export class HistoryPanelComponent extends HTMLElement {
   }
 
   onToggle(handler: () => void, signal?: AbortSignal) {
-    this.root.querySelector<HTMLButtonElement>("#history_toggle")?.addEventListener(
+    this.root.querySelector<ButtonRippleComponent>("#history_toggle")?.addEventListener(
       "click",
       handler,
       { signal },
@@ -22,7 +23,7 @@ export class HistoryPanelComponent extends HTMLElement {
   }
 
   onClose(handler: () => void, signal?: AbortSignal) {
-    this.root.querySelector<HTMLButtonElement>("#history_close")!.addEventListener("click", handler, {
+    this.root.querySelector<ButtonRippleComponent>("#history_close")!.addEventListener("click", handler, {
       signal,
     });
   }

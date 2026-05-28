@@ -19,6 +19,12 @@
       "codename": "First Move",
       "codename_letter": null,
       "status": "previous",
+      "scope": "major",
+      "summary": "Establish the initial public app metadata release and historical baseline.",
+      "commit_message": "chore: establish initial metadata baseline (v1.0.0 First Move)",
+      "breaking_changes": [
+        "Initial public release baseline."
+      ],
       "notes": [
         "Initial public app metadata release.",
         "Historical pre-policy codename; dessert codenames start with the next release."
@@ -34,6 +40,9 @@
       "codename": "Apple Pie",
       "codename_letter": "A",
       "status": "previous",
+      "scope": "minor",
+      "summary": "Add session history, mode metadata, mode switching and mobile name editing polish.",
+      "commit_message": "feat: add session history and mode metadata (v1.1.0 Apple Pie)",
       "notes": [
         "Added current-session score history.",
         "Added game mode and AI difficulty meta in the UI.",
@@ -51,6 +60,9 @@
       "codename": "Brownie",
       "codename_letter": "B",
       "status": "previous",
+      "scope": "minor",
+      "summary": "Add winning line animation, generated game sounds, mute and persisted player settings.",
+      "commit_message": "feat: add winning line sounds and persisted settings (v1.2.0 Brownie)",
       "notes": [
         "Added winning line animation.",
         "Added move, win and draw sound effects.",
@@ -68,6 +80,9 @@
       "codename": "Cheesecake",
       "codename_letter": "C",
       "status": "previous",
+      "scope": "minor",
+      "summary": "Add starter selection, round statistics, win-rate tracking and AI difficulty descriptions.",
+      "commit_message": "feat: add starter selection and round statistics (v1.3.0 Cheesecake)",
       "notes": [
         "Added O, X and random round starter selection.",
         "Added round, draw, win and win-rate statistics.",
@@ -84,6 +99,9 @@
       "codename": "Cheesecake",
       "codename_letter": "C",
       "status": "previous",
+      "scope": "patch",
+      "summary": "Polish mobile round actions, settings iconography and per-player move sounds.",
+      "commit_message": "fix: polish mobile actions and move sounds (v1.3.1 Cheesecake)",
       "notes": [
         "Kept mobile new round action under the board.",
         "Used a Material Symbols settings icon for mobile options.",
@@ -100,6 +118,18 @@
       "codename": "Donut",
       "codename_letter": "D",
       "status": "previous",
+      "scope": "major",
+      "summary": "Refactor the app into focused runtime modules and typed metadata boundaries.",
+      "commit_message": "feat: refactor runtime modules and typed metadata (v2.0.0 Donut)",
+      "breaking_changes": [
+        "Application code moved into controller, view, game, AI and service modules.",
+        "Environment variable config was replaced with typed app metadata.",
+        "Intro audio moved from public assets to generated Web Audio tones."
+      ],
+      "migration_notes": [
+        "No localStorage schema changes were introduced.",
+        "Existing saved settings remain compatible with the modular runtime."
+      ],
       "notes": [
         "Refactored the app into controller, view, game, AI and service modules.",
         "Replaced environment variable config with typed src/app.config.ts metadata.",
@@ -118,6 +148,9 @@
       "codename": "Eclair",
       "codename_letter": "E",
       "status": "previous",
+      "scope": "minor",
+      "summary": "Improve mode-specific player defaults, reset language and CSS token organization.",
+      "commit_message": "feat: add mode defaults and CSS tokens (v2.1.0 Eclair)",
       "notes": [
         "Added game-mode-specific default player names for player and AI modes.",
         "Renamed the full reset action to main menu for clearer intent.",
@@ -136,6 +169,9 @@
       "codename": "Eclair",
       "codename_letter": "E",
       "status": "previous",
+      "scope": "patch",
+      "summary": "Polish color swatches and winner status badge visuals while keeping layout stable.",
+      "commit_message": "fix: polish swatches and winner status badge (v2.1.1 Eclair)",
       "notes": [
         "Polished color picker swatches to remove native browser borders.",
         "Added a winner status badge with player-colored animated background.",
@@ -153,6 +189,9 @@
       "codename": "Fudge",
       "codename_letter": "F",
       "status": "previous",
+      "scope": "minor",
+      "summary": "Load the game runtime after mode selection and split production runtime chunks.",
+      "commit_message": "feat: lazy-load game runtime after mode selection (v2.2.0 Fudge)",
       "notes": [
         "Added a lightweight start menu bootstrap so the game runtime loads only after choosing a mode.",
         "Split GameController, GameView, AI, audio and game engine code into dynamic production chunks.",
@@ -171,6 +210,9 @@
       "codename": "Gelato",
       "codename_letter": "G",
       "status": "previous",
+      "scope": "minor",
+      "summary": "Normalize module and service naming, static labels and production metadata.",
+      "commit_message": "feat: normalize modules services and static metadata (v2.3.0 Gelato)",
       "notes": [
         "Renamed class modules to lowercase dot-separated filenames.",
         "Replaced SettingsStorage with SettingsService naming.",
@@ -193,6 +235,7 @@
       "status": "previous",
       "scope": "major",
       "summary": "Productize the game flow with versioned settings, a pre-game setup screen, match-based play, accessibility upgrades and a lightweight PWA shell.",
+      "commit_message": "feat: add versioned setup matches and PWA shell (v3.0.0 Honeycomb)",
       "breaking_changes": [
         "Settings storage moved to a versioned schema.",
         "The start flow changed from direct mode buttons to a setup-first flow.",
@@ -224,6 +267,7 @@
       "status": "previous",
       "scope": "minor",
       "summary": "Unify the game action menu across desktop and mobile while polishing iconography, marker color controls and static release labels.",
+      "commit_message": "feat: unify game action menu and icon controls (v3.1.0 Ice Cream)",
       "notes": [
         "Unified settings access into a shared modal on desktop and mobile.",
         "Moved quick actions under the board so settings and new round share the same layout across viewports.",
@@ -245,6 +289,7 @@
       "status": "previous",
       "scope": "major",
       "summary": "Move the app shell and UI layer to Web Components with per-component templates and styles.",
+      "commit_message": "feat: move UI shell to Web Components (v4.0.0 Jelly Roll)",
       "breaking_changes": [
         "The DOM shell moved from static page markup into an app-root Web Component.",
         "UI module boundaries changed from a single DOM view to component-scoped templates and Shadow DOM styles.",
@@ -275,6 +320,7 @@
       "status": "previous",
       "scope": "patch",
       "summary": "Serve fonts locally to reduce render flashes and remove Google Fonts from the initial page.",
+      "commit_message": "fix: serve local fonts and remove Google Font requests (v4.0.1 Jelly Roll)",
       "notes": [
         "Bundled Quicksand latin and latin-ext WOFF2 subsets under public font assets.",
         "Bundled the subsetted Material Symbols Rounded icon font under public font assets.",
@@ -292,9 +338,10 @@
       },
       "codename": "Key Lime Pie",
       "codename_letter": "K",
-      "status": "current",
+      "status": "previous",
       "scope": "minor",
       "summary": "Move game state into a reducer store and let Web Components own their render work while keeping the first load lighter.",
+      "commit_message": "feat: move game state to reducer store (v4.1.0 Key Lime Pie)",
       "migration_notes": [
         "No localStorage schema changes were introduced.",
         "Returning to the main menu no longer overwrites the saved game mode.",
@@ -310,6 +357,32 @@
         "Preloaded the game runtime during idle time to reduce perceived start delay.",
         "Prevented intro audio from overlapping gameplay sounds.",
         "Preserved the original version 4 marker animations while avoiding unnecessary tile attribute resets."
+      ]
+    },
+    {
+      "version": {
+        "major": 4,
+        "minor": 1,
+        "patch": 1,
+        "release": "beta"
+      },
+      "codename": "Key Lime Pie",
+      "codename_letter": "K",
+      "status": "current",
+      "scope": "patch",
+      "summary": "Componentize ripple buttons and Material Symbols icons while keeping the runtime lighter with lazy AI loading and targeted rendering hints.",
+      "commit_message": "fix: componentize ripple icons and lazy AI loading (v4.1.1 Key Lime Pie)",
+      "migration_notes": [
+        "No localStorage schema changes were introduced.",
+        "Existing saved player names, colors, mode, difficulty, starter, match mode and mute settings remain compatible."
+      ],
+      "notes": [
+        "Added a button-ripple Web Component with a default slot so button attributes, classes, data attributes and click handlers stay on the custom element host.",
+        "Added a material-icon Web Component with slotted icon names and component-owned Material Symbols font registration.",
+        "Updated game action, start menu, history and options templates to use shared button-ripple and material-icon components.",
+        "Lazy-load AI player code when the controller needs an AI move instead of including it in the initial game runtime.",
+        "Restored targeted contain and will-change hints on animated component surfaces without reintroducing broad global rendering hints.",
+        "Tightened release governance so every shipped version in versions.json carries an authoritative commit_message."
       ]
     }
   ],

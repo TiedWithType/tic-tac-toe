@@ -1,6 +1,7 @@
 import html from "./options-menu.component.html?raw";
 import css from "./options-menu.component.css?raw";
 import { defineComponent, renderComponent } from "../component.utils";
+import type { ButtonRippleComponent } from "../button-ripple/button-ripple.component";
 import type { GameState, Player } from "../../core/types";
 
 export class OptionsMenuComponent extends HTMLElement {
@@ -90,11 +91,11 @@ export class OptionsMenuComponent extends HTMLElement {
   }
 
   private button(selector: string) {
-    return this.root.querySelector<HTMLButtonElement>(selector)!;
+    return this.root.querySelector<ButtonRippleComponent>(selector)!;
   }
 
-  private setIconButton(button: HTMLButtonElement, icon: string, label: string) {
-    button.querySelector<HTMLElement>(".material-symbols-rounded")!.textContent = icon;
+  private setIconButton(button: ButtonRippleComponent, icon: string, label: string) {
+    button.querySelector<HTMLElement>("material-icon")!.textContent = icon;
     button.querySelector<HTMLElement>("span:last-child")!.textContent = label;
   }
 }

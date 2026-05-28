@@ -11,8 +11,6 @@ type AudioWindow = Window &
 let isRuntimeLoading = false;
 let runtimePreload: ReturnType<typeof loadRuntimeModules> | null = null;
 
-installButtonRipples();
-
 const startMenu = new StartMenu({
   onStart: (mode) => {
     void loadGameRuntime(mode);
@@ -30,14 +28,14 @@ async function loadGameRuntime(mode: GameMode) {
 
   try {
     const audioContext = createAudioContext();
-    const [{ GameController }, { GameStore }, { AiPlayer }, { AudioService }, { GameView }] =
+    const [{ GameController }, { GameStore }, { AudioService }, { GameView }] =
       await (runtimePreload || loadRuntimeModules());
 
     startMenu.destroy();
 
     const controller = new GameController(
       new GameView(),
-      new AiPlayer(),
+      createAiPlayerLoader(),
       new AudioService(audioContext),
       new SettingsService(),
       new GameStore(),
@@ -55,10 +53,19 @@ function loadRuntimeModules() {
   return Promise.all([
     import("./core/game.controller"),
     import("./core/game.store"),
-    import("./game/ai.player"),
     import("./services/audio.service"),
     import("./ui/game.view"),
   ]);
+}
+
+function createAiPlayerLoader() {
+  let aiPlayerPromise: Promise<import("./game/ai.player").AiPlayer> | null = null;
+
+  return () => {
+    aiPlayerPromise ||= import("./game/ai.player").then(({ AiPlayer }) => new AiPlayer());
+
+    return aiPlayerPromise;
+  };
 }
 
 function preloadRuntime() {
@@ -82,27 +89,4 @@ function createAudioContext() {
   audioContext.state === "suspended" && void audioContext.resume();
 
   return audioContext;
-}
-
-function installButtonRipples() {
-  document.addEventListener("pointerdown", (event) => {
-    const button = event
-      .composedPath()
-      .find((target): target is HTMLButtonElement => target instanceof HTMLButtonElement);
-
-    if (!button || button.disabled) return;
-
-    const rect = button.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height) * 2;
-    const ripple = document.createElement("span");
-
-    ripple.className = "button-ripple";
-    ripple.style.inlineSize = `${size}px`;
-    ripple.style.blockSize = `${size}px`;
-    ripple.style.insetInlineStart = `${event.clientX - rect.left}px`;
-    ripple.style.insetBlockStart = `${event.clientY - rect.top}px`;
-
-    button.append(ripple);
-    ripple.addEventListener("animationend", () => ripple.remove(), { once: true });
-  });
 }

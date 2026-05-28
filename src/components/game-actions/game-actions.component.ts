@@ -1,6 +1,7 @@
 import html from "./game-actions.component.html?raw";
 import css from "./game-actions.component.css?raw";
 import { defineComponent, renderComponent } from "../component.utils";
+import type { ButtonRippleComponent } from "../button-ripple/button-ripple.component";
 import type { GameState } from "../../core/types";
 
 export class GameActionsComponent extends HTMLElement {
@@ -51,11 +52,11 @@ export class GameActionsComponent extends HTMLElement {
   private matchComplete = false;
 
   private get mobileReset() {
-    return this.root.querySelector<HTMLButtonElement>("#mobile_reset")!;
+    return this.root.querySelector<ButtonRippleComponent>("#mobile_reset")!;
   }
 
   private get settingsToggle() {
-    return this.root.querySelector<HTMLButtonElement>("#settings_toggle")!;
+    return this.root.querySelector<ButtonRippleComponent>("#settings_toggle")!;
   }
 }
 

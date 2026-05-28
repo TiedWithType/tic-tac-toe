@@ -17,6 +17,7 @@
   border-radius: var(--radius-md);
   background: rgba(30, 30, 36, 0.94);
   box-shadow: 0 var(--space-lg) var(--space-2xl) rgba(0, 0, 0, 0.35);
+  contain: layout paint;
   opacity: 0;
   overflow: hidden;
   transform: translateX(calc(100% + var(--space-lg)));
@@ -31,6 +32,7 @@
   opacity: 1;
   transform: translateX(0);
   visibility: visible;
+  will-change: transform, opacity;
 }
 
 #history_panel header {
@@ -45,7 +47,7 @@
   text-transform: uppercase;
 }
 
-#history_panel button {
+#history_panel button-ripple {
   padding: var(--space-color-label-block) var(--space-md);
   font-size: var(--font-2xs);
 }

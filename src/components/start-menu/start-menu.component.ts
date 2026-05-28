@@ -1,6 +1,7 @@
 import html from "./start-menu.component.html?raw";
 import css from "./start-menu.component.css?raw";
 import { defineComponent, renderComponent } from "../component.utils";
+import type { ButtonRippleComponent } from "../button-ripple/button-ripple.component";
 import type { AiDifficulty, GameMode, GameState, MatchMode, Starter } from "../../core/types";
 import { SettingsService } from "../../services/settings.service";
 
@@ -86,23 +87,23 @@ export class StartMenuComponent extends HTMLElement {
   }
 
   private get startButton() {
-    return this.root.querySelector<HTMLButtonElement>("#start_game")!;
+    return this.root.querySelector<ButtonRippleComponent>("#start_game")!;
   }
 
   private get modeButtons() {
-    return [...this.root.querySelectorAll<HTMLButtonElement>("[data-mode-option]")];
+    return [...this.root.querySelectorAll<ButtonRippleComponent>("[data-mode-option]")];
   }
 
   private get difficultyButtons() {
-    return [...this.root.querySelectorAll<HTMLButtonElement>("[data-difficulty]")];
+    return [...this.root.querySelectorAll<ButtonRippleComponent>("[data-difficulty]")];
   }
 
   private get starterButtons() {
-    return [...this.root.querySelectorAll<HTMLButtonElement>("[data-starter]")];
+    return [...this.root.querySelectorAll<ButtonRippleComponent>("[data-starter]")];
   }
 
   private get matchButtons() {
-    return [...this.root.querySelectorAll<HTMLButtonElement>("[data-match-mode]")];
+    return [...this.root.querySelectorAll<ButtonRippleComponent>("[data-match-mode]")];
   }
 }
 

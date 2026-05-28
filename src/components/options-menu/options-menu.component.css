@@ -12,7 +12,7 @@
   inline-size: min(100%, var(--control-width));
 }
 
-.controls button {
+.controls button-ripple {
   inline-size: 100%;
   min-inline-size: 0;
   min-block-size: var(--settings-size);
@@ -154,6 +154,7 @@
   border-radius: var(--radius-lg);
   color: var(--text);
   background: rgba(30, 30, 36, 0.98);
+  contain: layout paint;
   box-shadow: 0 var(--shadow-modal-y) var(--shadow-modal-blur)
     rgba(0, 0, 0, 0.45);
   transform: translate(-50%, -50%);
@@ -212,6 +213,7 @@
   pointer-events: auto;
   transform: scale(1);
   visibility: visible;
+  will-change: transform, opacity;
 }
 
 #reset.show:hover,

@@ -1,4 +1,5 @@
 :host {
+  contain: layout paint;
   display: block;
 }
 
@@ -56,6 +57,7 @@
   position: absolute;
   animation: marker-in var(--ease-spring) var(--duration-marker);
   pointer-events: none;
+  will-change: transform, opacity;
 }
 
 #board figure[data-value="circle"]::before {
@@ -120,6 +122,7 @@
 
 #win_line.show {
   animation: win-line var(--duration-win-line) var(--ease-spring) forwards;
+  will-change: transform, opacity;
 }
 
 #win_line.line-0 {

@@ -13,13 +13,15 @@ type GameControllerInitOptions = {
   autoStartMode?: GameMode;
 };
 
+type AiPlayerLoader = () => Promise<AiPlayer>;
+
 export class GameController {
   private aiMoveTimer: number | null = null;
   private isStarting = false;
 
   constructor(
     private view: GameView,
-    private aiPlayer: AiPlayer,
+    private loadAiPlayer: AiPlayerLoader,
     private audio: AudioService,
     private storage: SettingsService,
     private store: GameStore,
@@ -211,7 +213,7 @@ export class GameController {
 
     this.aiMoveTimer = window.setTimeout(() => {
       this.aiMoveTimer = null;
-      this.playAiMove();
+      void this.playAiMove();
     }, AI_MOVE_DELAY);
   }
 
@@ -222,10 +224,13 @@ export class GameController {
     this.aiMoveTimer = null;
   }
 
-  private playAiMove() {
+  private async playAiMove() {
     if (!this.isAiTurn()) return;
 
-    const moveIndex = this.aiPlayer.getMove(
+    const aiPlayer = await this.loadAiPlayer();
+    if (!this.isAiTurn()) return;
+
+    const moveIndex = aiPlayer.getMove(
       this.state.board,
       this.state.current,
       this.state.aiDifficulty,

@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.4.1.0 beta "Key Lime Pie"**
+Aktualna wersja: **v.4.1.1 beta "Key Lime Pie"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -169,6 +169,8 @@ src/
     options-menu/
     start-menu/
     history-panel/
+    button-ripple/
+    material-icon/
     app-footer/
 
   styles/
@@ -232,6 +234,8 @@ Komponenty Web Components z własnymi template'ami, stylami Shadow DOM i lokaln�
 - `options-menu` - modal ustawień
 - `start-menu` - ekran startowy
 - `history-panel` - historia i statystyki sesji
+- `button-ripple` - slottowany przycisk z ripple na hoście custom elementu
+- `material-icon` - slottowana ikona Material Symbols z własnym ładowaniem fonta
 - `app-footer` - statyczna etykieta wersji
 
 ### 🔊 `AudioService`
@@ -246,6 +250,7 @@ Zapis i odczyt ustawień z `localStorage`.
 
 Globalny arkusz `src/styles/base.css` zawiera tokeny, reset, style strony oraz lokalne `@font-face`.
 Style elementów interfejsu są trzymane przy komponentach jako pliki `.component.css`.
+Komponent `material-icon` odpowiada za rejestrację fonta Material Symbols dopiero wtedy, gdy ikony są używane.
 
 Fonty są serwowane lokalnie z `src/public/fonts`:
 
@@ -275,6 +280,9 @@ Rejestr wersji znajduje się w:
 .vercel/versions.json
 ```
 
+Każdy wpis wydania w `.vercel/versions.json` musi zawierać `commit_message`.
+Ten komunikat jest źródłem prawdy dla commita release, powinien zostać użyty dokładnie w tej samej formie i musi streszczać realne zmiany opisane w `summary`, `migration_notes` oraz `notes`.
+
 Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 
 - 🍎 `1.1.0 beta "Apple Pie"`
@@ -290,6 +298,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🍥 `4.0.0 beta "Jelly Roll"`
 - 🍥 `4.0.1 beta "Jelly Roll"`
 - 🥧 `4.1.0 beta "Key Lime Pie"`
+- 🥧 `4.1.1 beta "Key Lime Pie"`
 
 ## 🚀 Uruchamianie lokalnie
 

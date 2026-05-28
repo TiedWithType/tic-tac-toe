@@ -1,0 +1,32 @@
+:host {
+  display: grid;
+  place-items: center;
+  inline-size: var(--font-xl);
+  block-size: var(--font-xl);
+  font-size: var(--font-xl);
+}
+
+.icon,
+slot,
+::slotted(*) {
+  font-family: "Material Symbols Rounded";
+  font-size: inherit;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  block-size: 100%;
+}
