@@ -13,23 +13,36 @@ import { $, appRoot } from "./dom";
 
 export class GameView {
   private root = appRoot();
-  private shell = this.getComponent<GameShellComponent>("tic-game-shell");
-  private start = this.getComponent<StartMenuComponent>("tic-start-menu");
-  private options = this.getComponent<OptionsMenuComponent>("tic-options-menu");
-  private history = this.getComponent<HistoryPanelComponent>("tic-history-panel");
-  private board = this.getNestedComponent<BoardComponent>("tic-board", this.shell.root);
-  private actions = this.getNestedComponent<GameActionsComponent>(
-    "tic-game-actions",
-    this.shell.root,
-  );
-  private scoreboard = this.getNestedComponent<PlayerScoreboardComponent>(
-    "tic-player-scoreboard",
-    this.shell.root,
-  );
-  readonly playerNameElements = this.scoreboard.playerNameElements;
+  private shell: GameShellComponent;
+  private start: StartMenuComponent;
+  private options: OptionsMenuComponent;
+  private history: HistoryPanelComponent;
+  private board: BoardComponent;
+  private actions: GameActionsComponent;
+  private scoreboard: PlayerScoreboardComponent;
+  readonly playerNameElements: PlayerScoreboardComponent["playerNameElements"];
   private queries = {
     mobileOptions: window.matchMedia("(max-width: 640px)"),
   };
+
+  constructor() {
+    this.mountGameComponents();
+
+    this.shell = this.getComponent<GameShellComponent>("tic-game-shell");
+    this.start = this.getComponent<StartMenuComponent>("tic-start-menu");
+    this.options = this.getComponent<OptionsMenuComponent>("tic-options-menu");
+    this.history = this.getComponent<HistoryPanelComponent>("tic-history-panel");
+    this.board = this.getNestedComponent<BoardComponent>("tic-board", this.shell.root);
+    this.actions = this.getNestedComponent<GameActionsComponent>(
+      "tic-game-actions",
+      this.shell.root,
+    );
+    this.scoreboard = this.getNestedComponent<PlayerScoreboardComponent>(
+      "tic-player-scoreboard",
+      this.shell.root,
+    );
+    this.playerNameElements = this.scoreboard.playerNameElements;
+  }
 
   onTileClick(handler: (index: number) => void) {
     this.board.onTileClick(handler);
@@ -169,6 +182,26 @@ export class GameView {
 
   private getComponent<T extends HTMLElement>(selector: string) {
     return $<T>(selector, this.root);
+  }
+
+  private mountGameComponents() {
+    this.ensureRootElement("tic-game-shell", "before-start");
+    this.ensureRootElement("tic-options-menu", "before-start");
+    this.ensureRootElement("tic-history-panel", "after-start");
+  }
+
+  private ensureRootElement(tagName: string, placement: "before-start" | "after-start") {
+    if (this.root.querySelector(tagName)) return;
+
+    const element = document.createElement(tagName);
+    const start = this.root.querySelector("tic-start-menu");
+
+    if (!start) {
+      this.root.append(element);
+      return;
+    }
+
+    placement === "before-start" ? start.before(element) : start.after(element);
   }
 
   private getNestedComponent<T extends HTMLElement>(selector: string, root: ParentNode) {

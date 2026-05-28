@@ -9,7 +9,6 @@ type AudioWindow = Window &
   };
 
 let isRuntimeLoading = false;
-let runtimePreload: ReturnType<typeof loadRuntimeModules> | null = null;
 
 const startMenu = new StartMenu({
   onStart: (mode) => {
@@ -18,7 +17,6 @@ const startMenu = new StartMenu({
 });
 
 startMenu.init();
-preloadRuntime();
 
 async function loadGameRuntime(mode: GameMode) {
   if (isRuntimeLoading) return;
@@ -29,7 +27,7 @@ async function loadGameRuntime(mode: GameMode) {
   try {
     const audioContext = createAudioContext();
     const [{ GameController }, { GameStore }, { AudioService }, { GameView }] =
-      await (runtimePreload || loadRuntimeModules());
+      await loadRuntimeModules();
 
     startMenu.destroy();
 
@@ -66,18 +64,6 @@ function createAiPlayerLoader() {
 
     return aiPlayerPromise;
   };
-}
-
-function preloadRuntime() {
-  const schedulePreload = () => {
-    runtimePreload ||= loadRuntimeModules();
-  };
-  const idleCallback = window.requestIdleCallback || ((callback: IdleRequestCallback) => {
-    window.setTimeout(() => callback({ didTimeout: false, timeRemaining: () => 0 }), 1);
-    return 0;
-  });
-
-  idleCallback(schedulePreload, { timeout: 1200 });
 }
 
 function createAudioContext() {

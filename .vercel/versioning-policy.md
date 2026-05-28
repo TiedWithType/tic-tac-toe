@@ -22,7 +22,9 @@ Rules:
 - `MAJOR` changes for breaking gameplay, storage, deployment, or config changes.
 - `MINOR` changes for new player-facing features, new modes, UI additions, or AI behavior changes.
 - `PATCH` changes for bug fixes, copy tweaks, visual polish, and small compatibility fixes.
-- `RELEASE` must be one of: `alpha`, `beta`, `rc`, `stable`.
+- `RELEASE` must be one of: `alpha`, `beta`, `preview`, `rc`, `stable`.
+- Releases with `MAJOR` lower than `5` may use `alpha`, `beta`, `rc` or `stable`.
+- Releases starting with `5.0.0` must use `preview` instead of `beta` unless this policy is intentionally revised.
 - Every release must have exactly one entry in `.vercel/versions.json`.
 - `.vercel/versions.json`, README release documentation and static version labels in UI component templates must be updated together for every release.
 - The `commit_message` stored in `.vercel/versions.json` is authoritative and must be used exactly for the release commit.
@@ -96,7 +98,7 @@ If localStorage structure changes:
 
 ## Codename Rules
 
-Codename theme: alphabetical desserts.
+Current codename theme: alphabetical desserts.
 
 Rules:
 
@@ -107,7 +109,7 @@ Rules:
 - If a patch is notable enough to need a new codename, it must use the next available letter.
 - The historical `1.0.0 alpha` codename is allowed to remain `First Move`; dessert codenames start with the next release.
 
-Suggested sequence:
+Current cycle suggested sequence:
 
 ```text
 A: Apple Pie
@@ -121,6 +123,37 @@ H: Honeycomb
 I: Ice Cream
 J: Jelly Roll
 K: Key Lime Pie
+```
+
+## Version Cycle Rollover
+
+The current version cycle runs from `1.0.0` through `9.9.9`.
+
+When `9.9.9` has shipped:
+
+- the next shipped version starts a new version cycle from `1.0.0`,
+- the new cycle must be distinguishable in `.vercel/versions.json` with a cycle field such as `"version_cycle": 2`,
+- release labels may still show `v.1.0.0`, but registry entries, deployment notes and README release notes must mention the cycle when needed to avoid ambiguity,
+- the codename theme must change to a new single domain and restart alphabetically,
+- patch releases in the new cycle usually keep the parent codename, following the same patch rule as the current cycle.
+
+Next cycle codename theme: alphabetical space missions and probes.
+
+Suggested next-cycle sequence:
+
+```text
+A: Apollo
+B: BepiColombo
+C: Cassini
+D: DART
+E: Euclid
+F: Fermi
+G: Galileo
+H: Hubble
+I: InSight
+J: Juno
+K: Kepler
+L: Lucy
 ```
 
 ## Release Checklist

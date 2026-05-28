@@ -36,9 +36,7 @@ export class StartMenu {
   }
 
   setLoading(isLoading: boolean) {
-    [this.startBtn, ...this.modeButtons].forEach((button) => {
-      button.disabled = isLoading;
-    });
+    this.startBtn.disabled = isLoading;
   }
 
   private bindEvents() {

@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.4.1.2 beta "Key Lime Pie"**
+Aktualna wersja: **v.4.1.3 beta "Key Lime Pie"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -24,7 +24,7 @@ Autor: **TiedWithType**
 - 📱 Jednolite menu ustawień w modalu na mobile i desktopie.
 - ✏️ Zmiana nazw graczy przez **PPM** albo **long press** na mobile.
 - 🏷️ Domyślne nazwy graczy zależne od trybu gry.
-- ⚡ Lekki ekran startowy z dynamicznym runtime gry i idle preloadem.
+- ⚡ Lekki ekran startowy z lazy loadingiem runtime i komponentów gry.
 - 🔤 Lokalne fonty tekstu i ikon ograniczające FOUT/FOIT oraz zewnętrzne requesty.
 - 🧩 Kod podzielony na moduły: reducer/store, controller, Web Components, game engine, AI i serwisy.
 
@@ -222,6 +222,8 @@ Lekki adapter między kontrolerem a komponentami. Deleguje renderowanie i zdarze
 - status rundy
 - modal ustawień
 
+Komponenty rozgrywki są montowane dopiero po załadowaniu runtime gry, więc initial load zawiera tylko ekran startowy i stopkę.
+
 ### 🧩 `components/*`
 
 Komponenty Web Components z własnymi template'ami, stylami Shadow DOM i lokalną logiką renderowania:
@@ -283,6 +285,9 @@ Rejestr wersji znajduje się w:
 Każdy wpis wydania w `.vercel/versions.json` musi zawierać `commit_message`.
 Ten komunikat jest źródłem prawdy dla commita release, powinien zostać użyty dokładnie w tej samej formie i musi streszczać realne zmiany opisane w `summary`, `migration_notes` oraz `notes`.
 
+Wydania przed `5.0.0` mogą pozostać w kanale `beta`. Od `5.0.0` kolejne wydania używają kanału `preview`.
+Po dojściu do `9.9.9` następny cykl wersji startuje od `1.0.0`, z nową dziedziną nazw kodowych opisaną w polityce wersjonowania.
+
 Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 
 - 🍎 `1.1.0 beta "Apple Pie"`
@@ -300,6 +305,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🥧 `4.1.0 beta "Key Lime Pie"`
 - 🥧 `4.1.1 beta "Key Lime Pie"`
 - 🥧 `4.1.2 beta "Key Lime Pie"`
+- 🥧 `4.1.3 beta "Key Lime Pie"`
 
 ## 🚀 Uruchamianie lokalnie
 

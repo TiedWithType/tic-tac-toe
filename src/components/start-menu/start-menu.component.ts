@@ -61,9 +61,7 @@ export class StartMenuComponent extends HTMLElement {
   }
 
   setLoading(isLoading: boolean) {
-    [this.startButton, ...this.modeButtons].forEach((button) => {
-      button.disabled = isLoading;
-    });
+    this.startButton.disabled = isLoading;
   }
 
   focusStartButton() {

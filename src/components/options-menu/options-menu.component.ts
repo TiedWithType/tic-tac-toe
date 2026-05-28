@@ -1,5 +1,6 @@
 import html from "./options-menu.component.html?raw";
 import css from "./options-menu.component.css?raw";
+import "../material-icon/material-icon.component";
 import { defineComponent, renderComponent } from "../component.utils";
 import type { ButtonRippleComponent } from "../button-ripple/button-ripple.component";
 import type { GameState, Player } from "../../core/types";
