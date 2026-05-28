@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.4.1.4 beta "Key Lime Pie"**
+Aktualna wersja: **v.4.1.5 beta "Key Lime Pie"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -139,9 +139,6 @@ Kod aplikacji jest podzielony na mniejsze moduły:
 src/
   app.ts
 
-  bootstrap/
-    start.menu.ts
-
   core/
     game.controller.ts
     game.store.ts
@@ -188,7 +185,7 @@ Reducer-backed store dla stanu aplikacji. Odpowiada za:
 - planszę i aktualnego gracza
 - wynik, historię i status meczu
 - tryb gry, poziom AI, startującego i ustawienia graczy
-- snapshot ustawień zapisywany w `localStorage`
+- ustawienia zapisywane w `localStorage` jako osobne klucze
 
 ### 🧭 `GameController`
 
@@ -222,7 +219,7 @@ Lekki adapter między kontrolerem a komponentami. Deleguje renderowanie i zdarze
 - status rundy
 - modal ustawień
 
-Komponenty rozgrywki są montowane dopiero po załadowaniu runtime gry, więc initial load zawiera tylko ekran startowy i stopkę.
+Komponenty rozgrywki są montowane dopiero po załadowaniu runtime gry, więc initial load zawiera tylko ekran startowy i stopkę. `start-menu` sam obsługuje swoje ustawienia, aktywne opcje i event startu, a `app.ts` tylko ładuje runtime gry.
 
 ### 🧩 `components/*`
 
@@ -246,7 +243,7 @@ Dźwięki generowane przez Web Audio API. Intro jest anulowane przed efektami ro
 
 ### 💾 `SettingsService`
 
-Zapis i odczyt ustawień z `localStorage`.
+Zapis i odczyt ustawień z `localStorage`. Każda część konfiguracji ma osobny klucz, a starszy pojedynczy snapshot jest migrowany przy pierwszym odczycie.
 
 ### 🎨 Style i fonty
 
@@ -307,6 +304,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🥧 `4.1.2 beta "Key Lime Pie"`
 - 🥧 `4.1.3 beta "Key Lime Pie"`
 - 🥧 `4.1.4 beta "Key Lime Pie"`
+- 🥧 `4.1.5 beta "Key Lime Pie"`
 
 ## 🚀 Uruchamianie lokalnie
 

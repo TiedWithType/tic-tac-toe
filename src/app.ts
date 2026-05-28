@@ -1,7 +1,8 @@
 import "./components/register";
-import { StartMenu } from "./bootstrap/start.menu";
+import type { StartMenuComponent } from "./components/start-menu/start-menu.component";
 import type { GameMode } from "./core/types";
 import { SettingsService } from "./services/settings.service";
+import { $, appRoot } from "./ui/dom";
 
 type AudioWindow = Window &
   typeof globalThis & {
@@ -10,13 +11,11 @@ type AudioWindow = Window &
 
 let isRuntimeLoading = false;
 
-const startMenu = new StartMenu({
-  onStart: (mode) => {
-    void loadGameRuntime(mode);
-  },
-});
+const startMenu = $<StartMenuComponent>("tic-start-menu", appRoot());
 
-startMenu.init();
+startMenu.onStart((mode) => {
+  void loadGameRuntime(mode);
+});
 
 async function loadGameRuntime(mode: GameMode) {
   if (isRuntimeLoading) return;
@@ -28,8 +27,6 @@ async function loadGameRuntime(mode: GameMode) {
     const audioContext = createAudioContext();
     const [{ GameController }, { GameStore }, { AudioService }, { GameView }] =
       await loadRuntimeModules();
-
-    startMenu.destroy();
 
     const controller = new GameController(
       new GameView(),

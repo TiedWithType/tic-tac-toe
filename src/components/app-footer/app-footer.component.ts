@@ -6,7 +6,7 @@ export class AppFooterComponent extends Component {
   readonly version = {
     major: 4,
     minor: 1,
-    patch: 4,
+    patch: 5,
     release: "beta",
     codename: "Key Lime Pie",
     author: "TiedWithType",

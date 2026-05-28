@@ -1,30 +1,62 @@
 import { SETTINGS_KEY, SETTINGS_SCHEMA_VERSION } from "../core/constants";
 import type { AiDifficulty, GameMode, MatchMode, SettingsSnapshot, Starter } from "../core/types";
 
+const SETTINGS_KEYS = [
+  "settingsSchemaVersion",
+  "playerNames",
+  "playerNamesByMode",
+  "markerColors",
+  "gameMode",
+  "aiDifficulty",
+  "starter",
+  "matchMode",
+  "muted",
+] as const satisfies readonly (keyof SettingsSnapshot)[];
+
+type SettingsKey = (typeof SETTINGS_KEYS)[number];
+
 export class SettingsService {
   load() {
     try {
-      const rawSettings = localStorage.getItem(SETTINGS_KEY);
+      const splitSettings = this.loadSplitSettings();
+      if (SettingsService.hasSettings(splitSettings)) {
+        return this.migrate(splitSettings);
+      }
 
-      return rawSettings ? this.migrate(JSON.parse(rawSettings) as SettingsSnapshot) : {};
+      const legacySettings = this.loadLegacySettings();
+      if (!legacySettings) return {};
+
+      const migratedSettings = this.migrate(legacySettings);
+
+      this.save(migratedSettings);
+
+      return migratedSettings;
     } catch {
-      localStorage.removeItem(SETTINGS_KEY);
+      this.reset();
       return {};
     }
   }
 
   save(settings: SettingsSnapshot) {
-    localStorage.setItem(
-      SETTINGS_KEY,
-      JSON.stringify({
-        ...settings,
-        settingsSchemaVersion: SETTINGS_SCHEMA_VERSION,
-      }),
-    );
+    const nextSettings = {
+      ...settings,
+      settingsSchemaVersion: SETTINGS_SCHEMA_VERSION,
+    };
+
+    SETTINGS_KEYS.forEach((key) => {
+      const value = nextSettings[key];
+      const storageKey = SettingsService.getStorageKey(key);
+
+      value === undefined
+        ? localStorage.removeItem(storageKey)
+        : localStorage.setItem(storageKey, JSON.stringify(value));
+    });
+    localStorage.removeItem(SETTINGS_KEY);
   }
 
   reset() {
     localStorage.removeItem(SETTINGS_KEY);
+    SETTINGS_KEYS.forEach((key) => localStorage.removeItem(SettingsService.getStorageKey(key)));
   }
 
   static isGameMode(value: unknown): value is GameMode {
@@ -45,6 +77,38 @@ export class SettingsService {
 
   static isHexColor(value: unknown): value is string {
     return typeof value === "string" && /^#[\da-f]{6}$/i.test(value);
+  }
+
+  private static getStorageKey(key: SettingsKey) {
+    return `${SETTINGS_KEY}:${key}`;
+  }
+
+  private static hasSettings(settings: SettingsSnapshot) {
+    return Object.keys(settings).length > 0;
+  }
+
+  private loadSplitSettings() {
+    return SETTINGS_KEYS.reduce<SettingsSnapshot>((settings, key) => {
+      const storageKey = SettingsService.getStorageKey(key);
+      const rawValue = localStorage.getItem(storageKey);
+      if (rawValue === null) return settings;
+
+      try {
+        return {
+          ...settings,
+          [key]: JSON.parse(rawValue),
+        } as SettingsSnapshot;
+      } catch {
+        localStorage.removeItem(storageKey);
+        return settings;
+      }
+    }, {});
+  }
+
+  private loadLegacySettings() {
+    const rawSettings = localStorage.getItem(SETTINGS_KEY);
+
+    return rawSettings ? (JSON.parse(rawSettings) as SettingsSnapshot) : null;
   }
 
   private migrate(settings: SettingsSnapshot) {
