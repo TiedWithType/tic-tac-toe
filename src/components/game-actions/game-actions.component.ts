@@ -1,19 +1,11 @@
 import html from "./game-actions.component.html?raw";
 import css from "./game-actions.component.css?raw";
 import "../material-icon/material-icon.component";
-import { defineComponent, renderComponent } from "../component.utils";
+import { Component, defineDynamicComponent } from "../component.utils";
 import type { ButtonRippleComponent } from "../button-ripple/button-ripple.component";
 import type { GameState } from "../../core/types";
 
-export class GameActionsComponent extends HTMLElement {
-  readonly root = this.attachShadow({ mode: "open" });
-
-  connectedCallback() {
-    if (this.root.childElementCount) return;
-
-    renderComponent(this.root, html, css);
-  }
-
+export class GameActionsComponent extends Component {
   onSettingsToggle(handler: () => void) {
     this.settingsToggle.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -61,5 +53,10 @@ export class GameActionsComponent extends HTMLElement {
   }
 }
 
-defineComponent("tic-game-actions", GameActionsComponent);
+defineDynamicComponent({
+  selector: "tic-game-actions",
+  component: GameActionsComponent,
+  html,
+  css,
+});
 

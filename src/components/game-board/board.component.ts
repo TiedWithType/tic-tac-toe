@@ -1,18 +1,11 @@
 import html from "./board.component.html?raw";
 import css from "./board.component.css?raw";
-import { defineComponent, renderComponent } from "../component.utils";
+import { Component, defineDynamicComponent } from "../component.utils";
 import { WINS } from "../../core/constants";
 import type { GameState } from "../../core/types";
 
-export class BoardComponent extends HTMLElement {
-  readonly root = this.attachShadow({ mode: "open" });
+export class BoardComponent extends Component {
   private tileElements: HTMLElement[] | null = null;
-
-  connectedCallback() {
-    if (this.root.childElementCount) return;
-
-    renderComponent(this.root, html, css);
-  }
 
   onTileClick(handler: (index: number) => void) {
     this.tiles.forEach((tile, index) => {
@@ -96,5 +89,10 @@ export class BoardComponent extends HTMLElement {
   }
 }
 
-defineComponent("tic-board", BoardComponent);
+defineDynamicComponent({
+  selector: "tic-board",
+  component: BoardComponent,
+  html,
+  css,
+});
 

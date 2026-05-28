@@ -3,20 +3,12 @@ import "../game-board/board.component";
 import "../player-scoreboard/player-scoreboard.component";
 import html from "./game-shell.component.html?raw";
 import css from "./game-shell.component.css?raw";
-import { defineComponent, renderComponent } from "../component.utils";
+import { Component, defineDynamicComponent } from "../component.utils";
 import { PLAYERS } from "../../core/constants";
 import type { GameState, MatchMode, MatchWinner } from "../../core/types";
 import { GameEngine } from "../../game/game.engine";
 
-export class GameShellComponent extends HTMLElement {
-  readonly root = this.attachShadow({ mode: "open" });
-
-  connectedCallback() {
-    if (this.root.childElementCount) return;
-
-    renderComponent(this.root, html, css);
-  }
-
+export class GameShellComponent extends Component {
   render(state: GameState) {
     const game = this.root.querySelector<HTMLElement>("#game")! as HTMLElement & {
       inert: boolean;
@@ -97,5 +89,10 @@ export class GameShellComponent extends HTMLElement {
   }
 }
 
-defineComponent("tic-game-shell", GameShellComponent);
+defineDynamicComponent({
+  selector: "tic-game-shell",
+  component: GameShellComponent,
+  html,
+  css,
+});
 

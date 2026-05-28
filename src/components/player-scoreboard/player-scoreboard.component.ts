@@ -1,17 +1,9 @@
 import html from "./player-scoreboard.component.html?raw";
 import css from "./player-scoreboard.component.css?raw";
-import { defineComponent, renderComponent } from "../component.utils";
+import { Component, defineDynamicComponent } from "../component.utils";
 import type { GameState, Player } from "../../core/types";
 
-export class PlayerScoreboardComponent extends HTMLElement {
-  readonly root = this.attachShadow({ mode: "open" });
-
-  connectedCallback() {
-    if (this.root.childElementCount) return;
-
-    renderComponent(this.root, html, css);
-  }
-
+export class PlayerScoreboardComponent extends Component {
   get playerNameElements() {
     return {
       circle: this.getPlayerRefs("circle").name,
@@ -47,5 +39,10 @@ export class PlayerScoreboardComponent extends HTMLElement {
   }
 }
 
-defineComponent("tic-player-scoreboard", PlayerScoreboardComponent);
+defineDynamicComponent({
+  selector: "tic-player-scoreboard",
+  component: PlayerScoreboardComponent,
+  html,
+  css,
+});
 

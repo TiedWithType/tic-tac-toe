@@ -27,6 +27,7 @@ Rules:
 - Releases starting with `5.0.0` must use `preview` instead of `beta` unless this policy is intentionally revised.
 - Every release must have exactly one entry in `.vercel/versions.json`.
 - `.vercel/versions.json`, README release documentation and static version labels in UI component templates must be updated together for every release.
+- The `version` object in `src/components/app-footer/app-footer.component.ts` must match the latest `current` release in `.vercel/versions.json`.
 - The `commit_message` stored in `.vercel/versions.json` is authoritative and must be used exactly for the release commit.
 
 ## Release Registry Rules
@@ -163,6 +164,7 @@ Before tagging or deploying a release:
 - Update `.vercel/versions.json`.
 - Confirm each release entry has a `commit_message`.
 - Use the current release entry's `commit_message` exactly as the git commit message.
+- Confirm `src/components/app-footer/app-footer.component.ts` has a `version` object matching the current `.vercel/versions.json` release.
 - Update static version text in UI component templates when present.
 - Update README release/versioning notes when the release changes architecture, user-visible behavior, tooling, install behavior or the documented release process.
 - Confirm the footer shows the expected app name, version, release, codename, and author.

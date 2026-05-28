@@ -1,19 +1,11 @@
 import html from "./options-menu.component.html?raw";
 import css from "./options-menu.component.css?raw";
 import "../material-icon/material-icon.component";
-import { defineComponent, renderComponent } from "../component.utils";
+import { Component, defineDynamicComponent } from "../component.utils";
 import type { ButtonRippleComponent } from "../button-ripple/button-ripple.component";
 import type { GameState, Player } from "../../core/types";
 
-export class OptionsMenuComponent extends HTMLElement {
-  readonly root = this.attachShadow({ mode: "open" });
-
-  connectedCallback() {
-    if (this.root.childElementCount) return;
-
-    renderComponent(this.root, html, css);
-  }
-
+export class OptionsMenuComponent extends Component {
   onHistoryToggle(handler: () => void) {
     this.button("#history_toggle").addEventListener("click", handler);
   }
@@ -101,5 +93,10 @@ export class OptionsMenuComponent extends HTMLElement {
   }
 }
 
-defineComponent("tic-options-menu", OptionsMenuComponent);
+defineDynamicComponent({
+  selector: "tic-options-menu",
+  component: OptionsMenuComponent,
+  html,
+  css,
+});
 

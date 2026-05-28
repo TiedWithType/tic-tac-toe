@@ -419,7 +419,7 @@
       },
       "codename": "Key Lime Pie",
       "codename_letter": "K",
-      "status": "current",
+      "status": "previous",
       "scope": "patch",
       "summary": "Reduce initial requests by lazy-mounting game UI and formalize the next release policy rules.",
       "commit_message": "fix: lazy-load game UI and update release policy (v4.1.3 Key Lime Pie)",
@@ -435,6 +435,33 @@
         "Prevent start menu mode buttons from flashing by disabling only the main Start game button during runtime loading.",
         "Document AI assistance metadata in package.json.",
         "Formalize the versioning policy so releases from 5.0.0 use preview and the cycle after 9.9.9 restarts at 1.0.0 with space mission codenames."
+      ]
+    },
+    {
+      "version": {
+        "major": 4,
+        "minor": 1,
+        "patch": 4,
+        "release": "beta"
+      },
+      "codename": "Key Lime Pie",
+      "codename_letter": "K",
+      "status": "current",
+      "scope": "patch",
+      "summary": "Move Web Components onto a shared Component renderer and reuse app-footer version rendering.",
+      "commit_message": "fix: unify component rendering and footer version labels (v4.1.4 Key Lime Pie)",
+      "migration_notes": [
+        "No localStorage schema changes were introduced.",
+        "Existing saved player names, colors, mode, difficulty, starter, match mode and mute settings remain compatible."
+      ],
+      "notes": [
+        "Added a shared Component base renderer with {{ expression }} template interpolation.",
+        "Replaced legacy component attachShadow, renderComponent and defineComponent setup with Component and defineDynamicComponent.",
+        "Removed unused renderComponent and defineComponent helpers from component utilities.",
+        "Refactored app-footer to render from a structured version object matching the release registry.",
+        "Reused tic-app-footer inline inside the options menu instead of duplicating a static version label.",
+        "Kept Material Symbols font loading owned by MaterialIconComponent.",
+        "Added a release policy rule requiring the app-footer version object to match the current versions.json release."
       ]
     }
   ],

@@ -2,6 +2,12 @@
   display: contents;
 }
 
+:host([inline]) {
+  display: block;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
 footer {
   position: fixed;
   inset-inline: 0;
@@ -17,3 +23,10 @@ footer {
   text-align: center;
 }
 
+:host([inline]) footer {
+  position: static;
+  inset: auto;
+  z-index: auto;
+  inline-size: 100%;
+  padding-inline: 0;
+}

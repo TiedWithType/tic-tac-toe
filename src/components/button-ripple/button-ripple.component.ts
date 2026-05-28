@@ -1,13 +1,11 @@
 import html from "./button-ripple.component.html?raw";
 import css from "./button-ripple.component.css?raw";
-import { defineComponent, renderComponent } from "../component.utils";
+import { Component, defineDynamicComponent } from "../component.utils";
 
-export class ButtonRippleComponent extends HTMLElement {
+export class ButtonRippleComponent extends Component {
   static get observedAttributes() {
     return ["disabled"];
   }
-
-  readonly root = this.attachShadow({ mode: "open" });
 
   get disabled() {
     return this.hasAttribute("disabled");
@@ -18,10 +16,7 @@ export class ButtonRippleComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    if (!this.root.childElementCount) {
-      renderComponent(this.root, html, css);
-    }
-
+    super.connectedCallback();
     this.setDefaultAccessibility();
     this.slotElement.addEventListener("slotchange", this.handleSlotChange);
     this.addEventListener("click", this.handleClick, { capture: true });
@@ -151,4 +146,9 @@ export class ButtonRippleComponent extends HTMLElement {
   }
 }
 
-defineComponent("button-ripple", ButtonRippleComponent);
+defineDynamicComponent({
+  selector: "button-ripple",
+  component: ButtonRippleComponent,
+  html,
+  css,
+});

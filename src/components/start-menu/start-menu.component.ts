@@ -1,19 +1,11 @@
 import html from "./start-menu.component.html?raw";
 import css from "./start-menu.component.css?raw";
-import { defineComponent, renderComponent } from "../component.utils";
+import { Component, defineDynamicComponent } from "../component.utils";
 import type { ButtonRippleComponent } from "../button-ripple/button-ripple.component";
 import type { AiDifficulty, GameMode, GameState, MatchMode, Starter } from "../../core/types";
 import { SettingsService } from "../../services/settings.service";
 
-export class StartMenuComponent extends HTMLElement {
-  readonly root = this.attachShadow({ mode: "open" });
-
-  connectedCallback() {
-    if (this.root.childElementCount) return;
-
-    renderComponent(this.root, html, css);
-  }
-
+export class StartMenuComponent extends Component {
   onStart(handler: () => void, signal?: AbortSignal) {
     this.startButton.addEventListener("click", handler, { signal });
   }
@@ -105,5 +97,10 @@ export class StartMenuComponent extends HTMLElement {
   }
 }
 
-defineComponent("tic-start-menu", StartMenuComponent);
+defineDynamicComponent({
+  selector: "tic-start-menu",
+  component: StartMenuComponent,
+  html,
+  css,
+});
 

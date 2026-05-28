@@ -2,7 +2,7 @@
 
 **Tic Tac Toe** to rozbudowana wersja klasycznego kółka i krzyżyka, z trybami gry dla dwóch graczy, AI, statystykami sesji, personalizacją graczy, dźwiękami i mobilnym menu ustawień.
 
-Aktualna wersja: **v.4.1.3 beta "Key Lime Pie"**
+Aktualna wersja: **v.4.1.4 beta "Key Lime Pie"**
 Autor: **TiedWithType**
 
 ## ✨ Co potrafi gra?
@@ -226,7 +226,7 @@ Komponenty rozgrywki są montowane dopiero po załadowaniu runtime gry, więc in
 
 ### 🧩 `components/*`
 
-Komponenty Web Components z własnymi template'ami, stylami Shadow DOM i lokalną logiką renderowania:
+Komponenty Web Components z własnymi template'ami, stylami Shadow DOM i lokalną logiką renderowania. Wspólna baza `Component` obsługuje render przez template oraz interpolację `{{ expression }}`:
 
 - `app-root` - główny shell aplikacji
 - `game-shell` - układ rundy, planszy i akcji
@@ -238,7 +238,7 @@ Komponenty Web Components z własnymi template'ami, stylami Shadow DOM i lokaln�
 - `history-panel` - historia i statystyki sesji
 - `button-ripple` - slottowany przycisk z ripple na hoście custom elementu
 - `material-icon` - slottowana ikona Material Symbols z własnym ładowaniem fonta
-- `app-footer` - statyczna etykieta wersji
+- `app-footer` - etykieta wersji renderowana z obiektu `version`
 
 ### 🔊 `AudioService`
 
@@ -264,7 +264,7 @@ Fonty są serwowane lokalnie z `src/public/fonts`:
 
 Konfiguracja jest trzymana blisko miejsca użycia:
 
-- wersja publiczna: komponenty `app-footer` i `options-menu` oraz `.vercel/versions.json`
+- wersja publiczna: obiekt `version` w `app-footer`, inline footer w `options-menu` oraz `.vercel/versions.json`
 - domyślne nazwy graczy: `src/core/constants.ts`
 - ustawienia użytkownika i migracje storage: `src/services/settings.service.ts`
 
@@ -306,6 +306,7 @@ Nazwy kodowe idą alfabetycznie i są inspirowane deserami:
 - 🥧 `4.1.1 beta "Key Lime Pie"`
 - 🥧 `4.1.2 beta "Key Lime Pie"`
 - 🥧 `4.1.3 beta "Key Lime Pie"`
+- 🥧 `4.1.4 beta "Key Lime Pie"`
 
 ## 🚀 Uruchamianie lokalnie
 
