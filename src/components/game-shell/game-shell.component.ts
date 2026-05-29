@@ -9,48 +9,51 @@ import type { GameState, MatchMode, MatchWinner } from "../../core/types";
 import { GameEngine } from "../../game/game.engine";
 
 export class GameShellComponent extends Component {
+  private roundStatus = "Start game";
+  private roundMeta = "";
+
   render(state: GameState) {
     const game = this.root.querySelector<HTMLElement>("#game")! as HTMLElement & {
       inert: boolean;
     };
 
     game.inert = !state.gameStarted;
-    this.renderStatus(state);
-    this.renderMeta(state);
+    this.setTemplateProperties({
+      roundStatus: this.getRoundStatus(state),
+      roundMeta: this.getRoundMeta(state),
+    });
+    this.updateStatusState(state);
   }
 
-  private renderStatus(state: GameState) {
+  private updateStatusState(state: GameState) {
     const status = this.root.querySelector<HTMLElement>("#round_status")!;
 
     status.classList.toggle(
       "winner",
       Boolean(state.roundWinner && state.roundWinner !== "draw"),
     );
-
-    status.textContent = !state.gameStarted
-      ? "Start game"
-      : state.match.status === "complete"
-        ? this.getMatchWinnerLabel(state.match.winner, state)
-        : state.roundWinner === "draw"
-          ? "draw"
-          : state.roundWinner
-            ? `${state.playerNames[state.roundWinner]} wins`
-            : this.isAiTurn(state)
-              ? `${state.playerNames[state.current]} is thinking`
-              : `${state.playerNames[state.current]}'s turn`;
   }
 
-  private renderMeta(state: GameState) {
-    const meta = this.root.querySelector<HTMLElement>("#round_meta")!;
+  private getRoundStatus(state: GameState) {
+    if (!state.gameStarted) return "Start game";
+    if (state.match.status === "complete") return this.getMatchWinnerLabel(state.match.winner, state);
+    if (state.roundWinner === "draw") return "draw";
+    if (state.roundWinner) return `${state.playerNames[state.roundWinner]} wins`;
+    if (this.isAiTurn(state)) return `${state.playerNames[state.current]} is thinking`;
+
+    return `${state.playerNames[state.current]}'s turn`;
+  }
+
+  private getRoundMeta(state: GameState) {
+    if (!state.gameStarted) return "";
+
     const mode = GameEngine.getModeLabel(state.gameMode);
     const difficulty = state.gameMode === "user-user" ? "no AI" : state.aiDifficulty;
     const starterName = state.playerNames[state.roundStarter];
     const matchLabel = this.getMatchLabel(state);
     const matchPoint = this.isMatchPoint(state) ? " | match point" : "";
 
-    meta.textContent = state.gameStarted
-      ? `${mode} | ${difficulty} | ${matchLabel} | started: ${starterName}${matchPoint}`
-      : "";
+    return `${mode} | ${difficulty} | ${matchLabel} | started: ${starterName}${matchPoint}`;
   }
 
   private isAiTurn(state: GameState) {

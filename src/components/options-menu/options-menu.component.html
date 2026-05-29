@@ -1,33 +1,35 @@
-<dialog id="options_modal" aria-label="Game options">
-  <section id="options_menu" class="controls" aria-label="Game options">
-    <section class="color-options" aria-label="Marker colors">
-      <label aria-label="Circle marker color">
-        <span class="marker-icon marker-icon-circle" aria-hidden="true"></span>
-        <input id="circle_color" type="color" />
-      </label>
-      <label aria-label="Cross marker color">
-        <span class="marker-icon marker-icon-cross" aria-hidden="true"></span>
-        <input id="cross_color" type="color" />
-      </label>
+<dialog id="options_modal" aria-label="{{ labels.options }}">
+  <section id="options_menu" class="controls" aria-label="{{ labels.options }}">
+    <section class="color-options" aria-label="{{ labels.markerColors }}">
+      <tic-color-picker
+        marker="circle"
+        label="{{ labels.circleColor }}"
+        value="{{ circleColor }}"
+      ></tic-color-picker>
+      <tic-color-picker
+        marker="cross"
+        label="{{ labels.crossColor }}"
+        value="{{ crossColor }}"
+      ></tic-color-picker>
     </section>
     <button-ripple id="reset">
-      <material-icon>restart_alt</material-icon>
-      <span>new round</span>
+      <material-icon>{{ labels.resetIcon }}</material-icon>
+      <span>{{ labels.reset }}</span>
     </button-ripple>
     <button-ripple id="history_toggle">
-      <material-icon>history</material-icon>
-      <span>history</span>
+      <material-icon>{{ labels.historyIcon }}</material-icon>
+      <span>{{ labels.history }}</span>
     </button-ripple>
     <button-ripple id="mute_toggle">
-      <material-icon>volume_up</material-icon>
-      <span>sound</span>
+      <material-icon>{{ muteIcon }}</material-icon>
+      <span>{{ labels.sound }}</span>
     </button-ripple>
     <button-ripple id="reset_game">
-      <material-icon>home</material-icon>
-      <span>menu</span>
+      <material-icon>{{ labels.menuIcon }}</material-icon>
+      <span>{{ labels.menu }}</span>
     </button-ripple>
     <p id="options_version">
-      <material-icon>info</material-icon>
+      <material-icon>{{ labels.infoIcon }}</material-icon>
       <tic-app-footer inline></tic-app-footer>
     </p>
   </section>

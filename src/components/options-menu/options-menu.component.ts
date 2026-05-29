@@ -1,11 +1,36 @@
 import html from "./options-menu.component.html?raw";
 import css from "./options-menu.component.css?raw";
+import "../color-picker/color-picker.component";
 import "../material-icon/material-icon.component";
+import { DEFAULT_MARKER_COLORS } from "../../core/constants";
 import { Component, defineDynamicComponent } from "../component.utils";
 import type { ButtonRippleComponent } from "../button-ripple/button-ripple.component";
 import type { GameState, Player } from "../../core/types";
 
+type ColorPickerEventDetail = {
+  player: Player;
+  color: string;
+};
+
 export class OptionsMenuComponent extends Component {
+  private readonly labels = {
+    options: "Game options",
+    markerColors: "Marker colors",
+    circleColor: "Circle marker color",
+    crossColor: "Cross marker color",
+    reset: "new round",
+    resetIcon: "restart_alt",
+    history: "history",
+    historyIcon: "history",
+    sound: "sound",
+    menu: "menu",
+    menuIcon: "home",
+    infoIcon: "info",
+  };
+  private muteIcon = "volume_up";
+  private circleColor = DEFAULT_MARKER_COLORS.circle;
+  private crossColor = DEFAULT_MARKER_COLORS.cross;
+
   onHistoryToggle(handler: () => void) {
     this.button("#history_toggle").addEventListener("click", handler);
   }
@@ -15,11 +40,11 @@ export class OptionsMenuComponent extends Component {
   }
 
   onMarkerColorChange(handler: (player: Player, color: string) => void) {
-    this.colorInput("circle").addEventListener("input", () =>
-      handler("circle", this.colorInput("circle").value),
-    );
-    this.colorInput("cross").addEventListener("input", () =>
-      handler("cross", this.colorInput("cross").value),
+    this.menu.addEventListener(
+      "color-change",
+      ((event: CustomEvent<ColorPickerEventDetail>) => {
+        handler(event.detail.player, event.detail.color);
+      }) as EventListener,
     );
   }
 
@@ -52,22 +77,15 @@ export class OptionsMenuComponent extends Component {
   }
 
   render(state: GameState) {
-    this.setIconButton(this.button("#mute_toggle"), state.muted ? "volume_off" : "volume_up", "sound");
-    this.colorInput("circle").value = state.markerColors.circle;
-    this.colorInput("cross").value = state.markerColors.cross;
-    this.colorInput("circle").parentElement?.style.setProperty(
-      "--swatch-color",
-      state.markerColors.circle,
-    );
-    this.colorInput("cross").parentElement?.style.setProperty(
-      "--swatch-color",
-      state.markerColors.cross,
-    );
+    this.setTemplateProperties({
+      muteIcon: state.muted ? "volume_off" : "volume_up",
+      circleColor: state.markerColors.circle,
+      crossColor: state.markerColors.cross,
+    });
 
     const matchComplete = state.match.status === "complete";
     const desktopVisible = state.gameStarted && state.gameOver && !matchComplete;
 
-    this.setIconButton(this.button("#reset"), "restart_alt", "new round");
     this.button("#reset").classList.toggle("show", desktopVisible);
   }
 
@@ -79,17 +97,8 @@ export class OptionsMenuComponent extends Component {
     return this.root.querySelector<HTMLDialogElement>("#options_modal")!;
   }
 
-  private colorInput(player: Player) {
-    return this.root.querySelector<HTMLInputElement>(`#${player}_color`)!;
-  }
-
   private button(selector: string) {
     return this.root.querySelector<ButtonRippleComponent>(selector)!;
-  }
-
-  private setIconButton(button: ButtonRippleComponent, icon: string, label: string) {
-    button.querySelector<HTMLElement>("material-icon")!.textContent = icon;
-    button.querySelector<HTMLElement>("span:last-child")!.textContent = label;
   }
 }
 

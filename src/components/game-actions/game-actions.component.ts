@@ -6,6 +6,11 @@ import type { ButtonRippleComponent } from "../button-ripple/button-ripple.compo
 import type { GameState } from "../../core/types";
 
 export class GameActionsComponent extends Component {
+  private mobileResetLabel = "new round";
+  private settingsIcon = "settings";
+  private settingsLabel = "Open game settings";
+  private matchComplete = false;
+
   onSettingsToggle(handler: () => void) {
     this.settingsToggle.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -30,7 +35,9 @@ export class GameActionsComponent extends Component {
     const mobileVisible = state.gameStarted && state.gameOver;
     this.matchComplete = matchComplete;
 
-    this.mobileReset.textContent = matchComplete ? "main menu" : "new round";
+    this.setTemplateProperties({
+      mobileResetLabel: matchComplete ? "main menu" : "new round",
+    });
     this.mobileReset.classList.toggle("show", mobileVisible);
     this.settingsToggle.hidden = !state.gameStarted;
   }
@@ -41,8 +48,6 @@ export class GameActionsComponent extends Component {
       (target === this.settingsToggle || this.settingsToggle.contains(target))
     );
   }
-
-  private matchComplete = false;
 
   private get mobileReset() {
     return this.root.querySelector<ButtonRippleComponent>("#mobile_reset")!;

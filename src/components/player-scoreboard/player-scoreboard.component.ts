@@ -1,9 +1,19 @@
 import html from "./player-scoreboard.component.html?raw";
 import css from "./player-scoreboard.component.css?raw";
 import { Component, defineDynamicComponent } from "../component.utils";
+import { DEFAULT_PLAYER_NAMES_BY_MODE } from "../../core/constants";
 import type { GameState, Player } from "../../core/types";
 
+const DEFAULT_SCOREBOARD_NAMES = DEFAULT_PLAYER_NAMES_BY_MODE["user-user"];
+
 export class PlayerScoreboardComponent extends Component {
+  private circleName = DEFAULT_SCOREBOARD_NAMES.circle;
+  private circleScore = 0;
+  private circleMarker = "O";
+  private crossName = DEFAULT_SCOREBOARD_NAMES.cross;
+  private crossScore = 0;
+  private crossMarker = "X";
+
   get playerNameElements() {
     return {
       circle: this.getPlayerRefs("circle").name,
@@ -12,15 +22,19 @@ export class PlayerScoreboardComponent extends Component {
   }
 
   render(state: GameState) {
-    this.renderPlayer("circle", state);
-    this.renderPlayer("cross", state);
+    this.setTemplateProperties({
+      circleName: state.playerNames.circle,
+      circleScore: state.score.circle,
+      crossName: state.playerNames.cross,
+      crossScore: state.score.cross,
+    });
+    this.updatePlayerState("circle", state);
+    this.updatePlayerState("cross", state);
   }
 
-  private renderPlayer(player: Player, state: GameState) {
+  private updatePlayerState(player: Player, state: GameState) {
     const refs = this.getPlayerRefs(player);
 
-    refs.result.textContent = String(state.score[player]);
-    refs.name.textContent = state.playerNames[player];
     refs.element.classList.toggle(
       "active",
       state.current === player && !state.gameOver && state.gameStarted,
@@ -34,7 +48,6 @@ export class PlayerScoreboardComponent extends Component {
     return {
       element,
       name: element.querySelector<HTMLElement>(".player-name")!,
-      result: element.querySelector<HTMLElement>(".result")!,
     };
   }
 }

@@ -5,7 +5,7 @@
   "codename_policy": {
     "theme": "alphabetical desserts",
     "format": "Title Case",
-    "next_codename_letter": "L",
+    "next_codename_letter": "M",
     "patch_releases_keep_parent_codename": true
   },
   "releases": [
@@ -473,7 +473,7 @@
       },
       "codename": "Key Lime Pie",
       "codename_letter": "K",
-      "status": "current",
+      "status": "previous",
       "scope": "patch",
       "summary": "Move start menu state into its Web Component and split persisted settings into separate localStorage keys.",
       "commit_message": "fix: componentize start menu and split settings storage (v4.1.5 Key Lime Pie)",
@@ -490,12 +490,37 @@
         "Preserved synchronous settings loading so the start menu can render saved active options without a loading flash.",
         "Documented the split localStorage layout in README."
       ]
+    },
+    {
+      "version": {
+        "major": 4,
+        "minor": 2,
+        "patch": 0,
+        "release": "beta"
+      },
+      "codename": "Lemon Tart",
+      "codename_letter": "L",
+      "status": "current",
+      "scope": "minor",
+      "summary": "Add a shared interpolation update flow and a consistent custom marker color picker.",
+      "commit_message": "feat: add interpolated color picker controls (v4.2.0 Lemon Tart)",
+      "migration_notes": [
+        "No localStorage schema changes were introduced.",
+        "Existing saved player names, colors, mode, difficulty, starter, match mode and mute settings remain compatible."
+      ],
+      "notes": [
+        "Extended the shared Component renderer with text and attribute interpolation updates.",
+        "Moved scoreboard, shell, actions, options, history, board and start menu labels onto template interpolation.",
+        "Added a tic-color-picker Web Component with a reducer-backed local store, preset colors, HEX entry and color-change events.",
+        "Replaced native browser color inputs with a consistent custom picker across desktop and mobile.",
+        "Displayed color names and animated color picker expansion while preserving saved marker color persistence."
+      ]
     }
   ],
   "planned_codenames": [
     {
-      "letter": "L",
-      "codename": "Lemon Tart",
+      "letter": "M",
+      "codename": "Mochi",
       "status": "next"
     }
   ],

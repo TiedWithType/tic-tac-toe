@@ -16,6 +16,32 @@ type StartMenuEventDetail = {
 };
 
 export class StartMenuComponent extends Component {
+  private readonly labels = {
+    title: "Tic Tac Toe",
+    startGame: "Start game",
+    gameMode: "Game mode",
+    mode: "mode",
+    userUserMode: "player vs player",
+    userAiMode: "user vs ai",
+    aiAiMode: "ai vs ai",
+    aiDifficulty: "AI difficulty",
+    easy: "easy",
+    easyTitle: "Easy: mostly random moves with a small tactical chance.",
+    normal: "normal",
+    normalTitle: "Normal: blocks, wins and sometimes searches for the best move.",
+    hard: "hard",
+    hardTitle: "Hard: uses the best available move.",
+    startingPlayer: "Starting player",
+    starts: "starts",
+    circleMarker: "O",
+    crossMarker: "X",
+    random: "random",
+    matchLength: "Match length",
+    match: "match",
+    casual: "casual",
+    bestOf5: "best of 5",
+    raceTo5: "race to 5",
+  };
   private abortController: AbortController | null = null;
   private storage = new SettingsService();
   private gameMode: GameMode = "user-user";

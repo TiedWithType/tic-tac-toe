@@ -5,6 +5,9 @@ import { WINS } from "../../core/constants";
 import type { GameState } from "../../core/types";
 
 export class BoardComponent extends Component {
+  private readonly labels = {
+    board: "Tic Tac Toe board",
+  };
   private tileElements: HTMLElement[] | null = null;
 
   onTileClick(handler: (index: number) => void) {

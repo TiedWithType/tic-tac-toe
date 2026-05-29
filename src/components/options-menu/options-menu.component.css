@@ -20,122 +20,17 @@
   white-space: nowrap;
 }
 
-.marker-icon {
-  position: relative;
-  display: inline-grid;
-  flex: none;
-  place-items: center;
-  inline-size: var(--marker-icon-size);
-  block-size: var(--marker-icon-size);
-  color: var(--marker-icon-color, currentColor);
-}
-
-.marker-icon::before,
-.marker-icon::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-}
-
-.marker-icon.marker-icon-circle::before {
-  inset: 0;
-  border: var(--marker-icon-stroke) solid var(--marker-icon-color, currentColor);
-  border-radius: var(--radius-round);
-}
-
-.marker-icon.marker-icon-cross::before,
-.marker-icon.marker-icon-cross::after {
-  inline-size: 100%;
-  block-size: var(--marker-icon-stroke);
-  border-radius: var(--radius-pill);
-  background: var(--marker-icon-color, currentColor);
-}
-
-.marker-icon.marker-icon-cross::before {
-  transform: rotate(var(--angle-diagonal));
-}
-
-.marker-icon.marker-icon-cross::after {
-  transform: rotate(calc(var(--angle-diagonal) * -1));
-}
-
 .color-options {
   display: grid;
   grid-column: 1 / -1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: var(--space-md);
   inline-size: 100%;
 }
 
-.color-options label {
-  --marker-icon-size: var(--font-xl);
-  --marker-icon-stroke: 0.18rem;
-  --marker-icon-color: var(--swatch-color);
-
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
+.color-options tic-color-picker {
   min-inline-size: 0;
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-color-label-block) var(--space-color-input-gap)
-    var(--space-color-label-block) var(--space-color-label-inline);
-  color: var(--text-muted);
-  font-size: var(--font-color-label);
-  font-weight: 700;
-  letter-spacing: var(--tracking-md);
-  cursor: pointer;
-}
-
-.color-options label::after {
-  content: "";
-  inline-size: var(--color-input-size);
-  block-size: var(--color-input-size);
-  flex: none;
-  border-radius: var(--radius-round);
-  background: var(--swatch-color);
-  box-shadow: inset 0 0 0 var(--border-width)
-    color-mix(in srgb, var(--text), transparent 72%);
-}
-
-.color-options label:has(input:focus-visible)::after {
-  box-shadow:
-    inset 0 0 0 var(--border-width)
-      color-mix(in srgb, var(--text), transparent 60%),
-    0 0 0 var(--border-width) var(--surface),
-    0 0 0 calc(var(--border-width) * 2) var(--swatch-color);
-}
-
-.color-options input {
-  position: absolute;
-  inset-block: 50% auto;
-  inset-inline-end: var(--space-color-input-gap);
-  inline-size: var(--color-input-size);
-  block-size: var(--color-input-size);
-  border: 0;
-  border-radius: var(--radius-round);
-  appearance: none;
-  -webkit-appearance: none;
-  background: transparent;
-  cursor: pointer;
-  opacity: 0;
-  outline: 0;
-  overflow: hidden;
-  padding: 0;
-  transform: translateY(-50%);
-}
-
-.color-options input::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-
-.color-options input::-webkit-color-swatch,
-.color-options input::-moz-color-swatch {
-  border: 0;
-  border-radius: var(--radius-round);
-  opacity: 0;
 }
 
 #options_modal {
@@ -148,13 +43,13 @@
   );
   max-inline-size: calc(var(--control-width) + (var(--space-lg) * 2));
   margin: 0;
-  overflow: hidden;
+  overflow: visible;
   padding: var(--space-lg);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
   color: var(--text);
   background: rgba(30, 30, 36, 0.98);
-  contain: layout paint;
+  contain: layout;
   box-shadow: 0 var(--shadow-modal-y) var(--shadow-modal-blur)
     rgba(0, 0, 0, 0.45);
   transform: translate(-50%, -50%);

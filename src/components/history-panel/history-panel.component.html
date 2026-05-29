@@ -1,15 +1,15 @@
-<aside id="history_panel" aria-label="Session history" aria-hidden="true">
+<aside id="history_panel" aria-label="{{ labels.history }}" aria-hidden="true">
   <header>
-    <span>session</span>
-    <button-ripple id="history_close" aria-label="Close history">close</button-ripple>
+    <span>{{ labels.session }}</span>
+    <button-ripple id="history_close" aria-label="{{ labels.closeHistory }}">{{ labels.close }}</button-ripple>
   </header>
   <section class="stats">
-    <span id="stat_rounds">0 rounds</span>
-    <span id="stat_draws">0 draws</span>
-    <span id="stat_circle_wins">O 0 wins</span>
-    <span id="stat_cross_wins">X 0 wins</span>
-    <span id="stat_circle_rate">O 0%</span>
-    <span id="stat_cross_rate">X 0%</span>
+    <span id="stat_rounds">{{ roundsLabel }}</span>
+    <span id="stat_draws">{{ drawsLabel }}</span>
+    <span id="stat_circle_wins">{{ circleWinsLabel }}</span>
+    <span id="stat_cross_wins">{{ crossWinsLabel }}</span>
+    <span id="stat_circle_rate">{{ circleRateLabel }}</span>
+    <span id="stat_cross_rate">{{ crossRateLabel }}</span>
   </section>
   <ol id="history_list"></ol>
 </aside>

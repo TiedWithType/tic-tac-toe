@@ -1,18 +1,18 @@
 <header>
   <section id="player_1">
     <span class="name">
-      <span class="player-name">player 1</span>
-      <span class="marker"> (O)</span>
+      <span class="player-name">{{ circleName }}</span>
+      <span class="marker">({{ circleMarker }})</span>
     </span>
-    <span class="result">0</span>
+    <span class="result">{{ circleScore }}</span>
   </section>
   <section class="divider">:</section>
   <section id="player_2">
     <span class="name">
-      <span class="player-name">player 2</span>
-      <span class="marker"> (X)</span>
+      <span class="player-name">{{ crossName }}</span>
+      <span class="marker">({{ crossMarker }})</span>
     </span>
-    <span class="result">0</span>
+    <span class="result">{{ crossScore }}</span>
   </section>
 </header>
 

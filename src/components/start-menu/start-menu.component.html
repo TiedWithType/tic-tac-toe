@@ -1,39 +1,39 @@
-<section id="start_overlay" aria-label="Start game">
-  <h1 id="app_title">Tic Tac Toe</h1>
-  <section class="mode-panel" aria-label="Game mode">
-    <span>mode</span>
+<section id="start_overlay" aria-label="{{ labels.startGame }}">
+  <h1 id="app_title">{{ labels.title }}</h1>
+  <section class="mode-panel" aria-label="{{ labels.gameMode }}">
+    <span>{{ labels.mode }}</span>
     <div class="mode-options">
-      <button-ripple data-mode-option="user-user">player vs player</button-ripple>
-      <button-ripple data-mode-option="user-ai">user vs ai</button-ripple>
-      <button-ripple data-mode-option="ai-ai">ai vs ai</button-ripple>
+      <button-ripple data-mode-option="user-user">{{ labels.userUserMode }}</button-ripple>
+      <button-ripple data-mode-option="user-ai">{{ labels.userAiMode }}</button-ripple>
+      <button-ripple data-mode-option="ai-ai">{{ labels.aiAiMode }}</button-ripple>
     </div>
   </section>
-  <section class="difficulty-panel" aria-label="AI difficulty">
-    <span>AI difficulty</span>
+  <section class="difficulty-panel" aria-label="{{ labels.aiDifficulty }}">
+    <span>{{ labels.aiDifficulty }}</span>
     <div class="difficulty-options">
-      <button-ripple data-difficulty="easy" title="Easy: mostly random moves with a small tactical chance.">easy</button-ripple>
-      <button-ripple data-difficulty="normal" title="Normal: blocks, wins and sometimes searches for the best move.">normal</button-ripple>
-      <button-ripple data-difficulty="hard" title="Hard: uses the best available move.">hard</button-ripple>
+      <button-ripple data-difficulty="easy" title="{{ labels.easyTitle }}">{{ labels.easy }}</button-ripple>
+      <button-ripple data-difficulty="normal" title="{{ labels.normalTitle }}">{{ labels.normal }}</button-ripple>
+      <button-ripple data-difficulty="hard" title="{{ labels.hardTitle }}">{{ labels.hard }}</button-ripple>
     </div>
   </section>
-  <section class="starter-panel" aria-label="Starting player">
-    <span>starts</span>
+  <section class="starter-panel" aria-label="{{ labels.startingPlayer }}">
+    <span>{{ labels.starts }}</span>
     <div class="starter-options">
-      <button-ripple data-starter="circle">O</button-ripple>
-      <button-ripple data-starter="cross">X</button-ripple>
-      <button-ripple data-starter="random">random</button-ripple>
+      <button-ripple data-starter="circle">{{ labels.circleMarker }}</button-ripple>
+      <button-ripple data-starter="cross">{{ labels.crossMarker }}</button-ripple>
+      <button-ripple data-starter="random">{{ labels.random }}</button-ripple>
     </div>
   </section>
-  <section class="match-panel" aria-label="Match length">
-    <span>match</span>
+  <section class="match-panel" aria-label="{{ labels.matchLength }}">
+    <span>{{ labels.match }}</span>
     <div class="match-options">
-      <button-ripple data-match-mode="casual">casual</button-ripple>
-      <button-ripple data-match-mode="best-of-5">best of 5</button-ripple>
-      <button-ripple data-match-mode="first-to-5">race to 5</button-ripple>
+      <button-ripple data-match-mode="casual">{{ labels.casual }}</button-ripple>
+      <button-ripple data-match-mode="best-of-5">{{ labels.bestOf5 }}</button-ripple>
+      <button-ripple data-match-mode="first-to-5">{{ labels.raceTo5 }}</button-ripple>
     </div>
   </section>
   <div class="start-actions">
-    <button-ripple id="start_game">Start game</button-ripple>
+    <button-ripple id="start_game">{{ labels.startGame }}</button-ripple>
   </div>
 </section>
 

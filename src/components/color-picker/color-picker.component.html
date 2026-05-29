@@ -1,0 +1,23 @@
+<div id="color_picker">
+  <button
+    id="color_trigger"
+    type="button"
+    aria-expanded="{{ expanded }}"
+    aria-label="{{ label }}"
+  >
+    <span class="marker-icon marker-icon-{{ marker }}" aria-hidden="true"></span>
+    <span class="value">
+      <span>{{ colorName }}</span>
+      <small>{{ value }}</small>
+    </span>
+    <span class="swatch" aria-hidden="true"></span>
+  </button>
+  <section id="color_panel" aria-hidden="true" aria-label="{{ panelLabel }}">
+    <div class="preset-grid" aria-label="{{ presetLabel }}"></div>
+    <label>
+      <span>{{ hexLabel }}</span>
+      <input id="hex_input" value="{{ draftValue }}" maxlength="7" spellcheck="false" />
+    </label>
+    <p id="color_error" aria-live="polite">{{ error }}</p>
+  </section>
+</div>

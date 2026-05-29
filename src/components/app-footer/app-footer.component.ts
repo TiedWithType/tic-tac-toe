@@ -5,10 +5,10 @@ import { Component, defineDynamicComponent } from "../component.utils";
 export class AppFooterComponent extends Component {
   readonly version = {
     major: 4,
-    minor: 1,
-    patch: 5,
+    minor: 2,
+    patch: 0,
     release: "beta",
-    codename: "Key Lime Pie",
+    codename: "Lemon Tart",
     author: "TiedWithType",
   };
 }
